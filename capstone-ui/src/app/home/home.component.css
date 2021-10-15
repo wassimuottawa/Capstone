@@ -1,0 +1,9 @@
+.mat-tab-label.mat-tab-disabled {
+  min-width: 0px;
+  padding: 0;
+}
+
+.example-spacer {
+  width: 100%;
+  flex: 1 1 auto;
+}
