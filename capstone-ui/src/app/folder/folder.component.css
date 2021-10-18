@@ -1,0 +1,114 @@
+.title {
+  align-items: center;
+  display: flex;
+  height: 48px;
+  left: 0;
+  line-height: 48px;
+  right: 0;
+}
+
+.title-text {
+  padding-right: 24px;
+  letter-spacing: .01785714em;
+  font-size: .875rem !important;
+  font-weight: 500 !important;
+  line-height: 1.25rem !important;
+  color: #3c4043;
+  display: inline;
+  flex: 0 1 auto;
+  left: 0;
+  overflow: hidden;
+  margin: 0 !important;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.title:hover .title-text {
+  transform: translateX(5px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.select-folder {
+  color: #797979;
+  display: none;
+  opacity: 0;
+}
+
+.title:hover .select-folder {
+  display: block;
+  opacity: 1;
+  animation: anim .3s ease-in-out;
+}
+
+.image {
+ height: 170px;
+}
+
+.image-container {
+  margin-right: 4px;
+  position: relative;
+  height: 100%;
+  width: fit-content;
+}
+
+.check-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #ffffff45;
+  display: none;
+}
+
+.image-container:hover .check-button {
+  display: block;
+}
+
+.check-button:hover {
+  color: white;
+  transition: color 0.5s ease;
+}
+
+button.check-button.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
+  display: none;
+}
+button.select-folder.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
+  display: none;
+}
+
+.image-row {
+  display: flex;
+  width: fit-content;
+  flex-wrap: wrap;
+}
+
+.folder-container {
+  margin-right: 35px;
+  width: fit-content;
+}
+
+.main-container {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
+  margin-left: 24px;
+}
+
+
+@keyframes anim {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+
+

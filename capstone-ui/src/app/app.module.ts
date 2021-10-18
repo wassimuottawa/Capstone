@@ -39,13 +39,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import {ReactiveFormsModule} from "@angular/forms";
 import { BannerComponent } from './banner/banner.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
+import { FolderComponent } from './folder/folder.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     BannerComponent,
-    SideMenuComponent
+    SideMenuComponent,
+    FolderComponent
   ],
   imports: [
     BrowserModule,
