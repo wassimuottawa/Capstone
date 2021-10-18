@@ -24,9 +24,9 @@
   white-space: nowrap;
 }
 
-.title:hover .title-text {
-  transform: translateX(5px);
-  transition: transform 0.3s ease-in-out;
+.folder-container:hover .title-text {
+  transform: translateX(3px);
+  transition: transform 0.3s ease;
 }
 
 .select-folder {
@@ -35,7 +35,7 @@
   opacity: 0;
 }
 
-.title:hover .select-folder {
+.folder-container:hover .select-folder {
   display: block;
   opacity: 1;
   animation: anim .3s ease-in-out;
