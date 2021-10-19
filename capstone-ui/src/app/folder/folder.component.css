@@ -24,25 +24,24 @@
   white-space: nowrap;
 }
 
-.folder-container:hover .title-text {
+.folder-buttons {
+  display:flex;
+  color: #3c4043;
+}
+
+.title-text-translateX {
   transform: translateX(3px);
   transition: transform 0.3s ease;
 }
 
-.select-folder {
+.select-folder-hidden {
   color: #797979;
   display: none;
   opacity: 0;
 }
 
-.folder-container:hover .select-folder {
-  display: block;
-  opacity: 1;
-  animation: anim .3s ease-in-out;
-}
-
 .image {
- height: 170px;
+  height: 100%;
 }
 
 .image-container {
@@ -50,6 +49,8 @@
   position: relative;
   height: 100%;
   width: fit-content;
+  background-color: #e8f0fe;
+
 }
 
 .check-button {
@@ -60,11 +61,16 @@
   display: none;
 }
 
-.image-container:hover .check-button {
+.selected-check-button {
+  display: block;
+  color: #1a73e8;
+}
+
+.check-button-on-image-container-hover {
   display: block;
 }
 
-.check-button:hover {
+.check-button-hover {
   color: white;
   transition: color 0.5s ease;
 }
@@ -72,11 +78,12 @@
 button.check-button.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
   display: none;
 }
-button.select-folder.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
+button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
   display: none;
 }
 
 .image-row {
+  height: 170px;
   display: flex;
   width: fit-content;
   flex-wrap: wrap;
@@ -92,6 +99,22 @@ button.select-folder.mat-button-base.mat-focus-indicator.mat-icon-button .mat-bu
   flex-wrap: wrap;
   height: auto;
   margin-left: 24px;
+  animation: flexanimation 1s ease-out 1s infinite alternate backwards;
+}
+
+.selected-image {
+  transform: scale(0.8,0.8);
+  animation: scale-anim 0.3s ease-in-out;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.select-folder-visible {
+  display: block;
+  opacity: 1;
+  animation: anim .3s ease-in-out;
 }
 
 
@@ -106,6 +129,21 @@ button.select-folder.mat-button-base.mat-focus-indicator.mat-icon-button .mat-bu
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes scale-anim {
+  0% {
+    transform: scale(1,1);
+
+  }
+  1% {
+    transform: scale(1,1);
+
+  }
+  100% {
+    transform: scale(0.8,0.8);
+
   }
 }
 
