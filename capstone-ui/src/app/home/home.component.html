@@ -10,7 +10,8 @@
   <button disabled mat-icon-button class="action_button">
     <mat-icon>delete</mat-icon>
   </button>
-  <button (click)="toggleExpandAll()" [disabled]="expandAllLoading" matTooltip="Expand all" mat-icon-button class="action_button">
+  <button (click)="toggleExpandAll()" [disabled]="expandAllLoading" matTooltip="Expand all" mat-icon-button
+          class="action_button">
     <mat-icon>{{allExpanded ? 'close_fullscreen' : 'open_in_full'}}</mat-icon>
   </button>
   <button [matMenuTriggerFor]="menu" mat-icon-button class="action_button">
@@ -23,7 +24,7 @@
 
 
 <div class="main-container">
-  <app-folder *ngFor="let folder of getFolders()" [folder]="folder" [images]="getImages(folder)"
+  <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [images]="getImages(folder)"
               (onFolderExpand)="toggleFolderExpansion($event, folder)"
               (onSelectedImagesChange)="onSelectionChange($event, folder)"
               [isLoading]="foldersLoading.has(folder)"

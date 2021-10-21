@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Output, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Utils} from "../utils/utils";
+import {FolderComponent} from "../folder/folder.component";
 
 @Component({
   selector: 'app-home',
@@ -9,6 +10,7 @@ import {Utils} from "../utils/utils";
 })
 export class HomeComponent {
 
+  @ViewChildren('folderComponent') folders: QueryList<FolderComponent> = new QueryList<FolderComponent>()
   @Output() onSideMenuClick: EventEmitter<any> = new EventEmitter<any>()
 
   folderToImagesMap: Map<string, Set<string>> = new Map();
@@ -51,10 +53,13 @@ export class HomeComponent {
     return new Promise(resolve => {
       setTimeout(() => {
           isExpanded ? this.reduceFolder(folder) : this.expandFolder(folder)
+          if (this.allExpanded) {
+            this.allExpanded = false
+          }
           this.foldersLoading.delete(folder)
           resolve(true)
         },
-        1500);
+        Math.floor(Math.random() * (4000 - 500 + 1) + 500));
     })
   }
 
@@ -75,12 +80,14 @@ export class HomeComponent {
   }
 
   toggleExpandAll() {
-    this.expandAllLoading = !this.expandAllLoading
-    const promises : any = []
-    Array.from(this.folderToImagesMap.keys()).forEach(folder => promises.push(this.toggleFolderExpansion(this.allExpanded, folder)))
+    this.expandAllLoading = true
+    const promises: any = []
+    const expand = this.allExpanded
+    Array.from(this.folderToImagesMap.keys()).forEach(folder => promises.push(this.toggleFolderExpansion(expand, folder)))
     Promise.all(promises).then(() => {
-      this.allExpanded = !this.allExpanded
-      this.expandAllLoading = !this.expandAllLoading
+      this.allExpanded = !expand
+      this.expandAllLoading = false
+      this.folders.forEach(folder => folder.isExpanded = this.allExpanded)
     })
   }
 }
