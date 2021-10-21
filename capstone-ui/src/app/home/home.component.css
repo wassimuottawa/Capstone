@@ -1,9 +1,17 @@
-.mat-tab-label.mat-tab-disabled {
-  min-width: 0px;
-  padding: 0;
+.main-container {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
+  margin-left: 24px;
+  margin-bottom: 24px;
+  animation: flexanimation 1s ease-out 1s infinite alternate backwards;
 }
 
 .example-spacer {
-  width: 100%;
   flex: 1 1 auto;
 }
+
+.action_button {
+  margin-left: 20px;
+}
+

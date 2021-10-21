@@ -37,7 +37,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import {ReactiveFormsModule} from "@angular/forms";
-import { BannerComponent } from './banner/banner.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
 import { FolderComponent } from './folder/folder.component';
 
@@ -45,7 +44,6 @@ import { FolderComponent } from './folder/folder.component';
   declarations: [
     AppComponent,
     HomeComponent,
-    BannerComponent,
     SideMenuComponent,
     FolderComponent
   ],

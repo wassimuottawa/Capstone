@@ -1,37 +1,39 @@
-<div class="main-container">
-
-  <div class="folder-container" *ngFor="let folder of folderToImagesMap.keys()"
-       (mouseenter)="hoveredFolder = folder" (mouseleave)="hoveredFolder = ''">
-    <div class="title">
-      <button (click)="selectFolder(folder)"
-              [ngClass]="{
-              'select-folder-visible' : isFolderSelected(folder) || hoveredFolder == folder,
-              'selected-check-button' : isFolderSelected(folder)}"
-              class="select-folder-hidden" mat-icon-button><mat-icon>check_circle</mat-icon></button>
-      <h2 [ngClass]="{'title-text-translateX' : hoveredFolder == folder || isFolderSelected(folder)}"
-          class="title-text">{{folder}}</h2>
-      <span class="folder-buttons">
-        <button mat-icon-button (click)="expandOrReduceFolder(folder)"><mat-icon>{{expandedFolders.has(folder) ? 'expand_less' : 'expand_more'}}</mat-icon></button>
+<div class="folder-container"
+     (mouseenter)="isHoveredFolder = true" (mouseleave)="isHoveredFolder = false">
+  <div class="title">
+    <button (click)="toggleFolderSelect()"
+            [ngClass]="{
+              'select-folder-visible' : isFolderSelected() || isHoveredFolder,
+              'selected-check-button' : isFolderSelected()}"
+            class="select-folder-hidden" mat-icon-button>
+      <mat-icon>check_circle</mat-icon>
+    </button>
+    <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isFolderSelected()}"
+        class="title-text">{{folder}}</h2>
+    <span class="folder-buttons">
+        <span *ngIf="isLoading" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
+        <button *ngIf="!isLoading" mat-icon-button (click)="toggleFolderExpansion()"><mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon></button>
         <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
       </span>
-    </div>
+  </div>
 
-    <div class="image-row">
-      <div class="image-container" *ngFor="let image of folderToImagesMap.get(folder)"
-           (mouseenter)="hoveredImage = [folder, image]" (mouseleave)="hoveredImage = ['',''] ">
-        <img [ngClass]="{
-        'selected-image' : isImageSelected(folder, image)}"
-             class="image" (click)="selectedImages.size ? selectImage(folder, image) : ''"
-             src="{{image}}"
-             alt="idk">
-        <button class="check-button"
-                (mouseenter)="hoveredCheckButton = [folder, image]" (mouseleave)="hoveredCheckButton = ['','']"
-                [ngClass]="{
-                'selected-check-button' : isImageSelected(folder, image),
-                'check-button-hover' : (isCheckButtonHovered(folder,image) && !isImageSelected(folder, image)),
-                'check-button-on-image-container-hover' : isImageHovered(folder,image)}"
-                (click)="selectImage(folder, image)" mat-icon-button><mat-icon>check_circle</mat-icon></button>
-      </div>
+  <div class="image-row">
+    <div class="image-container" *ngFor="let image of images"
+         (mouseenter)="hoveredImage = image" (mouseleave)="hoveredImage = ''">
+      <img [ngClass]="{
+        'selected-image' : isImageSelected(image)}"
+           class="image" (click)="selectedImages.size ? toggleImageSelect(image) : ''"
+           src="{{image}}"
+           alt="idk">
+      <button class="check-button"
+              (mouseenter)="hoveredCheckButton = image" (mouseleave)="hoveredCheckButton = ''"
+              [ngClass]="{
+                'selected-check-button' : isImageSelected(image),
+                'check-button-hover' : (isCheckButtonHovered(image) && !isImageSelected(image)),
+                'check-button-on-image-container-hover' : isImageHovered(image)}"
+              (click)="toggleImageSelect(image)" mat-icon-button>
+        <mat-icon>check_circle</mat-icon>
+      </button>
     </div>
   </div>
 </div>

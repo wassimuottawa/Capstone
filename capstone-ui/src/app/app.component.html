@@ -1,10 +1,9 @@
 
-<app-banner (onSideMenuClick)="drawer.toggle()"></app-banner>
 <mat-drawer-container class="sidenav-container" autosize>
   <mat-drawer class="sidenav" #drawer  mode="side">
     <app-side-menu></app-side-menu>
   </mat-drawer>
 
-  <app-home class="home" ></app-home>
+  <app-home (onSideMenuClick)="drawer.toggle()" class="home" ></app-home>
 
 </mat-drawer-container>

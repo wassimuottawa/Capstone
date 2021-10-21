@@ -1,22 +1,33 @@
+<mat-toolbar style="height: 6%; background-color: #58a0ff70">
+  <button mat-icon-button aria-label="menu">
+    <mat-icon (click)="onSideMenuClick.emit()">menu</mat-icon>
+  </button>
+  <span style="margin-left: 10px">Person Re-identification Annotator</span>
+  <span class="example-spacer"></span>
+  <button disabled mat-icon-button class="action_button">
+    <mat-icon>content_cut</mat-icon>
+  </button>
+  <button disabled mat-icon-button class="action_button">
+    <mat-icon>delete</mat-icon>
+  </button>
+  <button (click)="toggleExpandAll()" [disabled]="expandAllLoading" matTooltip="Expand all" mat-icon-button class="action_button">
+    <mat-icon>{{allExpanded ? 'close_fullscreen' : 'open_in_full'}}</mat-icon>
+  </button>
+  <button [matMenuTriggerFor]="menu" mat-icon-button class="action_button">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item>Select All</button>
+  </mat-menu>
+</mat-toolbar>
 
 
+<div class="main-container">
+  <app-folder *ngFor="let folder of getFolders()" [folder]="folder" [images]="getImages(folder)"
+              (onFolderExpand)="toggleFolderExpansion($event, folder)"
+              (onSelectedImagesChange)="onSelectionChange($event, folder)"
+              [isLoading]="foldersLoading.has(folder)"
+              (onSelectAllToggle)="onSelectAllToggle($event, folder)"></app-folder>
+</div>
 
-<mat-tab-group [selectedIndex]="activeLink" style="height: 5%">
-  <mat-tab *ngFor="let link of links">
-    <ng-template matTabLabel>
-      <mat-icon *ngIf="link == links[0]">home</mat-icon>
-      <span *ngIf="link != links[0]">{{link}}</span>
-      <button *ngIf="!isHomeTab(link)" mat-icon-button><mat-icon>close</mat-icon></button>
-    </ng-template>
-    <!--{{link}}-->
-  </mat-tab>
-  <mat-tab disabled>
-    <ng-template mat-tab-label>
-      <button mat-icon-button (click)="addLink()" class="add_button">
-        <mat-icon>add</mat-icon>
-      </button>
-    </ng-template>
-  </mat-tab>
-</mat-tab-group>
-<app-folder></app-folder>
 

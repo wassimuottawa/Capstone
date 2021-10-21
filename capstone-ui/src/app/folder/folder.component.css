@@ -25,12 +25,12 @@
 }
 
 .folder-buttons {
-  display:flex;
+  display: flex;
   color: #3c4043;
 }
 
 .title-text-translateX {
-  transform: translateX(3px);
+  transform: translateX(5px);
   transition: transform 0.3s ease;
 }
 
@@ -45,12 +45,10 @@
 }
 
 .image-container {
-  margin-right: 4px;
   position: relative;
-  height: 100%;
+  height: 170px;
   width: fit-content;
   background-color: #e8f0fe;
-
 }
 
 .check-button {
@@ -78,15 +76,16 @@
 button.check-button.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
   display: none;
 }
+
 button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
   display: none;
 }
 
 .image-row {
-  height: 170px;
   display: flex;
   width: fit-content;
   flex-wrap: wrap;
+  gap: 4px;
 }
 
 .folder-container {
@@ -94,16 +93,13 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
   width: fit-content;
 }
 
-.main-container {
-  display: flex;
-  flex-wrap: wrap;
-  height: auto;
-  margin-left: 24px;
-  animation: flexanimation 1s ease-out 1s infinite alternate backwards;
+.spinner {
+  align-self: center;
+  margin-right: 10px;
 }
 
 .selected-image {
-  transform: scale(0.8,0.8);
+  transform: scale(0.8, 0.8);
   animation: scale-anim 0.3s ease-in-out;
 }
 
@@ -112,6 +108,7 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 }
 
 .select-folder-visible {
+  width: auto;
   display: block;
   opacity: 1;
   animation: anim .3s ease-in-out;
@@ -134,15 +131,15 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 
 @keyframes scale-anim {
   0% {
-    transform: scale(1,1);
+    transform: scale(1, 1);
 
   }
   1% {
-    transform: scale(1,1);
+    transform: scale(1, 1);
 
   }
   100% {
-    transform: scale(0.8,0.8);
+    transform: scale(0.8, 0.8);
 
   }
 }

@@ -1,6 +1,6 @@
 .sidenav-container {
   background-color: transparent;
-  height: 94%;
+  height: 100%;
 }
 
 .sidenav {
@@ -8,4 +8,5 @@
 }
 
 .home {
+  height: 100%;
 }
