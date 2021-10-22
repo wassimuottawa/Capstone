@@ -11,14 +11,12 @@
     <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isFolderSelected()}"
         class="title-text">{{folder}}</h2>
     <span class="folder-buttons">
-        <span *ngIf="isLoading" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
-        <button *ngIf="!isLoading" mat-icon-button (click)="toggleFolderExpansion()"><mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon></button>
         <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
       </span>
   </div>
 
-  <div class="image-row">
-    <div class="image-container" *ngFor="let image of images"
+  <drag-scroll [snap-disabled]="true" class="image-row">
+    <div drag-scroll-item class="image-container" *ngFor="let image of images"
          (mouseenter)="hoveredImage = image" (mouseleave)="hoveredImage = ''">
       <img [ngClass]="{
         'selected-image' : isImageSelected(image)}"
@@ -35,5 +33,5 @@
         <mat-icon>check_circle</mat-icon>
       </button>
     </div>
-  </div>
+  </drag-scroll>
 </div>

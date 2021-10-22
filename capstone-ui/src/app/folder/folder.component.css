@@ -49,6 +49,7 @@
   height: 170px;
   width: fit-content;
   background-color: #e8f0fe;
+  margin-right: 2px;
 }
 
 .check-button {
@@ -82,20 +83,14 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 }
 
 .image-row {
-  display: flex;
-  width: fit-content;
-  flex-wrap: wrap;
-  gap: 4px;
+  margin-right: 15px;
+}
+
+.drag-scroll-content {
+  overflow: hidden !important;
 }
 
 .folder-container {
-  margin-right: 35px;
-  width: fit-content;
-}
-
-.spinner {
-  align-self: center;
-  margin-right: 10px;
 }
 
 .selected-image {
@@ -112,6 +107,11 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
   display: block;
   opacity: 1;
   animation: anim .3s ease-in-out;
+}
+
+.folder-container:hover .drag-scroll-content {
+  /*noinspection CssInvalidPropertyValue*/
+  overflow: overlay !important;
 }
 
 

@@ -9,14 +9,11 @@ import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angula
 export class FolderComponent {
 
   @Output() onSelectedImagesChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
-  @Output() onFolderExpand: EventEmitter<boolean> = new EventEmitter<boolean>()
   @Output() onSelectAllToggle: EventEmitter<boolean> = new EventEmitter<boolean>()
   @Input() folder: string = ""
   @Input() images: Set<string> = new Set<string>()
-  @Input() isLoading: boolean = false
 
   selectedImages: Set<string> = new Set<string>();
-  isExpanded: boolean = false
   hoveredCheckButton: string = ''
   isHoveredFolder: boolean = false
   hoveredImage: string = ''
@@ -41,14 +38,9 @@ export class FolderComponent {
 
   selectImage(imageId: string) {
     this.selectedImages.add(imageId)
-    if (this.selectedImages.size == this.images.size && this.isExpanded) {
+    if (this.selectedImages.size == this.images.size) {
       this.isSelectAll = true
     }
-  }
-
-  toggleFolderExpansion() {
-    this.onFolderExpand.emit(this.isExpanded)
-    this.isExpanded = !this.isExpanded
   }
 
   isImageHovered(imageId: string): boolean {

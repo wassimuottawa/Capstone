@@ -1,18 +1,14 @@
-<mat-toolbar style="height: 6%; background-color: #58a0ff70">
+<mat-toolbar class="toolbar">
   <button mat-icon-button aria-label="menu">
     <mat-icon (click)="onSideMenuClick.emit()">menu</mat-icon>
   </button>
   <span style="margin-left: 10px">Person Re-identification Annotator</span>
-  <span class="example-spacer"></span>
+  <span class="spacer"></span>
   <button disabled mat-icon-button class="action_button">
     <mat-icon>content_cut</mat-icon>
   </button>
   <button disabled mat-icon-button class="action_button">
     <mat-icon>delete</mat-icon>
-  </button>
-  <button (click)="toggleExpandAll()" [disabled]="expandAllLoading" matTooltip="Expand all" mat-icon-button
-          class="action_button">
-    <mat-icon>{{allExpanded ? 'close_fullscreen' : 'open_in_full'}}</mat-icon>
   </button>
   <button [matMenuTriggerFor]="menu" mat-icon-button class="action_button">
     <mat-icon>more_vert</mat-icon>
@@ -23,12 +19,14 @@
 </mat-toolbar>
 
 
-<div class="main-container">
+<div class="main-container" (scroll)="onScroll($event)">
   <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [images]="getImages(folder)"
-              (onFolderExpand)="toggleFolderExpansion($event, folder)"
               (onSelectedImagesChange)="onSelectionChange($event, folder)"
-              [isLoading]="foldersLoading.has(folder)"
               (onSelectAllToggle)="onSelectAllToggle($event, folder)"></app-folder>
+  <div class="loading-spinner">
+    <span *ngIf="isLoading"><mat-spinner diameter="50" *ngIf="isLoading"></mat-spinner></span>
+    <span *ngIf="endOfItems">END OF ITEMS</span>
+  </div>
 </div>
 
 
