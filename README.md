@@ -2,4 +2,4 @@
 
 To run locally: 
 
-* run `start-backend.sh` then `start-ui`
+* run `start-backend.sh` then `start-ui.sh`
