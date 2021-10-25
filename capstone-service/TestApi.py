@@ -30,8 +30,7 @@ def getImages(folder):
     f = []
     for subdir, dirs, files in os.walk("./assets/" + folder):
         for file in files:
-            filepath = subdir + os.sep + file
-            if str(filepath).endswith(".png"):
+            if str(file).endswith(".png"):
                 f.append(file)
         return jsonify(f)
 
