@@ -1,6 +1,6 @@
 <div class="folder-container"
      (mouseenter)="isHoveredFolder = true" (mouseleave)="isHoveredFolder = false">
-  <div class="title">
+  <div #title class="title">
     <button (click)="toggleFolderSelect()"
             [ngClass]="{
               'select-folder-visible' : isFolderSelected() || isHoveredFolder,
@@ -11,18 +11,22 @@
     <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isFolderSelected()}"
         class="title-text">{{folder}}</h2>
     <span class="folder-buttons">
+      <span *ngIf="isLoading" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
         <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
       </span>
   </div>
 
-  <drag-scroll [snap-disabled]="true" class="image-row">
-    <div drag-scroll-item class="image-container" *ngFor="let image of images"
+  <drag-scroll #nav [snap-disabled]="true" class="image-row" (indexChanged)="scrolled()">
+    <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()"
          (mouseenter)="hoveredImage = image" (mouseleave)="hoveredImage = ''">
-      <img [ngClass]="{
-        'selected-image' : isImageSelected(image)}"
-           class="image" (click)="selectedImages.size ? toggleImageSelect(image) : ''"
-           src="{{image}}"
-           alt="idk">
+      <div #img class="imageDivContainer" (click)="selectionMode ? toggleImageSelect(image) : ''" [ngClass]="{
+        'selected-image' : isImageSelected(image)}">
+        <img
+          class="image"
+          [ngClass]="{'resizedImage' : isWideImage(image)}"
+          [src]="getImageFile(image)"
+          alt="detection">
+      </div>
       <button class="check-button"
               (mouseenter)="hoveredCheckButton = image" (mouseleave)="hoveredCheckButton = ''"
               [ngClass]="{

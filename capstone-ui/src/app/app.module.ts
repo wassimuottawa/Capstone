@@ -39,8 +39,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {ReactiveFormsModule} from "@angular/forms";
 import {SideMenuComponent} from './side-menu/side-menu.component';
 import {FolderComponent} from './folder/folder.component';
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {DragScrollModule} from "ngx-drag-scroll";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -89,7 +89,8 @@ import {DragScrollModule} from "ngx-drag-scroll";
     MatSortModule,
     MatPaginatorModule,
     ReactiveFormsModule,
-    DragScrollModule
+    DragScrollModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

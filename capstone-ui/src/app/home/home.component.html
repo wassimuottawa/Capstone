@@ -1,6 +1,6 @@
 <mat-toolbar class="toolbar">
   <button mat-icon-button aria-label="menu">
-    <mat-icon (click)="onSideMenuClick.emit()">menu</mat-icon>
+    <mat-icon>menu</mat-icon>
   </button>
   <span style="margin-left: 10px">Person Re-identification Annotator</span>
   <span class="spacer"></span>
@@ -19,12 +19,12 @@
 </mat-toolbar>
 
 
+
 <div class="main-container" (scroll)="onScroll($event)">
-  <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [images]="getImages(folder)"
+  <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder"
               (onSelectedImagesChange)="onSelectionChange($event, folder)"
-              (onSelectAllToggle)="onSelectAllToggle($event, folder)"></app-folder>
+              [selectionMode]="this.folderToSelectedImagesMap.size > 0"></app-folder>
   <div class="loading-spinner">
-    <span *ngIf="isLoading"><mat-spinner diameter="50" *ngIf="isLoading"></mat-spinner></span>
     <span *ngIf="endOfItems">END OF ITEMS</span>
   </div>
 </div>

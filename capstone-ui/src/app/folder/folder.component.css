@@ -40,23 +40,35 @@
   opacity: 0;
 }
 
+.imageDivContainer {
+  height: 100%;
+  background-color: white;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
 .image {
   height: 100%;
 }
 
+.resizedImage {
+  width: 100%;
+}
+
 .image-container {
+  width: 150px;
   position: relative;
-  height: 170px;
-  width: fit-content;
+  height: 150px;
   background-color: #e8f0fe;
   margin-right: 2px;
+  text-align: center;
 }
 
 .check-button {
   position: absolute;
   top: 0;
   left: 0;
-  color: #ffffff45;
+  color: rgba(121, 121, 121, 0.57);
   display: none;
 }
 
@@ -70,7 +82,7 @@
 }
 
 .check-button-hover {
-  color: white;
+  color: #797979;
   transition: color 0.5s ease;
 }
 
@@ -100,6 +112,11 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 
 .pointer {
   cursor: pointer;
+}
+
+.spinner {
+  align-self: center;
+  margin-right: 10px;
 }
 
 .select-folder-visible {
