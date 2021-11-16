@@ -44,7 +44,8 @@ def get_dir_content(path, extensions = ''):
         break
     return (subdirs_list, files_list)
 
-# Returns all images in a specific date range
+
+# Returns all images in a specific date range. The Unix timestamp must be in nanoseconds.
 def get_images_in_date_range(path, start_y, start_m, stary_d, end_y, end_m, end_d):
     start_date = datetime(start_y, start_m, stary_d)
     end_date   = datetime(end_y, end_m, end_d)
