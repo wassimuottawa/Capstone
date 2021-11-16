@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from flask import *
 from flask_cors import cross_origin
@@ -42,6 +43,23 @@ def get_dir_content(path, extensions = ''):
         
         break
     return (subdirs_list, files_list)
+
+# Returns all images in a specific date range
+def get_images_in_date_range(path, start_y, start_m, stary_d, end_y, end_m, end_d):
+    start_date = datetime(start_y, start_m, stary_d)
+    end_date   = datetime(end_y, end_m, end_d)
+    files_in_range = []
+
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            if f.endswith('.png'):
+                file_name = os.path.splitext(f)[0] # Remove file extension
+                img_date = datetime.fromtimestamp(float(file_name) / 1e9) # Divide to convert to secs
+                
+                if ((img_date >= start_date) and (img_date <= end_date)):
+                    files_in_range.append(os.path.join(root, f))
+    
+    return files_in_range
 
 
 if __name__ == '__main__':
