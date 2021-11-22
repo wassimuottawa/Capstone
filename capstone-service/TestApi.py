@@ -25,6 +25,13 @@ def getFolders():
 def getImages(folder):
     dirs, files = get_dir_content("./assets/" + folder, ".png")
     return jsonify(files)
+
+
+@app.route("/delete/<string:folder>/<string:image>")
+@cross_origin()
+def delete_image(folder, image):
+    path = os.path.join('./assets', folder, image)
+    os.remove(path)
     
 
 # Gets all immediate subdirectories and all immediate files (or only files with a ceratin extension) in a directory
