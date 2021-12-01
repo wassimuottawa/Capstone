@@ -12,7 +12,7 @@ Shahzaib Sahibzada: ssahi017@uottawa.ca
 ## Getting Started
 For a full environment setup, see the wiki documentation [here](https://github.com/AndreMarieKabeya/Capstone/wiki/Environment-Setup)
 
-To run locally:
+#### RUN PROJECT
 1. Clone repo `git clone https://github.com/AndreMarieKabeya/Capstone` 
 1. RUN `start-backend.sh` 
 2. RUN `start-ui.sh`
