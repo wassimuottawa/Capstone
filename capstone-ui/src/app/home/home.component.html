@@ -19,7 +19,6 @@
 </mat-toolbar>
 
 
-
 <div class="main-container" (scroll)="onScroll($event)">
   <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder"
               (onSelectedImagesChange)="onSelectionChange($event, folder)"

@@ -1,0 +1,33 @@
+<mat-toolbar>
+    <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
+      <mat-icon *ngIf="sidenav.opened">close</mat-icon>
+    </button>
+    Responsive side navigation
+  </mat-toolbar>
+    
+  <mat-sidenav-container>
+    <mat-sidenav #sidenav="matSidenav">
+      <button mat-button class="menu-button">
+        <mat-icon>home</mat-icon>
+        <span>Button</span>
+      </button>
+      <button mat-button class="menu-button">
+        <mat-icon>home</mat-icon>
+        <span>Button</span>
+      </button>
+      <button mat-button class="menu-button">
+        <mat-icon>home</mat-icon>
+        <span>Button</span>
+      </button>
+      <button mat-button class="menu-button">
+          <mat-icon>home</mat-icon>
+          <span>Button</span>
+      </button>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <div class="content mat-elevation-z4">
+          <app-home class="home" ></app-home>
+        </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>

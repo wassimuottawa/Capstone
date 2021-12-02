@@ -6,6 +6,7 @@ import {HomeComponent} from './home/home.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
+import {MatDividerModule} from "@angular/material/divider";
 import {MatNativeDateModule, MatOptionModule} from "@angular/material/core";
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonModule} from '@angular/material/button';
@@ -37,7 +38,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {ReactiveFormsModule} from "@angular/forms";
-import {SideMenuComponent} from './side-menu/side-menu.component';
+import {SideMenuComponent} from './sideMenu/sideMenu.component';
 import {FolderComponent} from './folder/folder.component';
 import {DragScrollModule} from "ngx-drag-scroll";
 import {HttpClientModule} from "@angular/common/http";
@@ -50,6 +51,11 @@ import {HttpClientModule} from "@angular/common/http";
     FolderComponent
   ],
   imports: [
+    MatToolbarModule,
+    MatSidenavModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatSliderModule,
