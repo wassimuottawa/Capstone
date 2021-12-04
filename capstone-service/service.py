@@ -34,13 +34,13 @@ def get_cams(run):
     return get_folders_in_path(os.path.join(ROOT_PATH, run))
 
 
-def is_image(run, cam, folder, file):
+def file_exists(run, cam, folder, file):
     return os.path.isfile(os.path.join(ROOT_PATH, run, cam, folder, file))
 
 
 def get_file(run, folder, file):
     for cam in get_cams(run):
-        if is_image(run, cam, folder, file):
+        if file_exists(run, cam, folder, file):
             return send_from_directory(os.path.join(ROOT_PATH, run, cam, folder), file)
 
 
@@ -77,7 +77,7 @@ def move_files(run, files_mapping, destination):
     for folder, files in files_mapping.items():
         for file in files:
             for cam in get_cams(run):
-                if is_image(run, cam, folder, file):
+                if file_exists(run, cam, folder, file):
                     shutil.move(os.path.join(ROOT_PATH, run, cam, folder, file), destination)
                     break
 
