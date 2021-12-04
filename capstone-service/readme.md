@@ -1,7 +1,7 @@
 run the following in the current folder : 
 
 
-`set FLASK_APP=TestApi.py`
+`set FLASK_APP=api.py`
 
 
 `flask run`
