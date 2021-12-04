@@ -16,10 +16,10 @@
       </span>
   </div>
 
-  <drag-scroll #nav [snap-disabled]="true" class="image-row" (indexChanged)="scrolled()">
+  <drag-scroll #nav [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()">
     <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()"
-         (mouseenter)="hoveredImage = image" (mouseleave)="hoveredImage = ''">
-      <div #img class="imageDivContainer" (click)="selectionMode ? toggleImageSelect(image) : ''" [ngClass]="{
+         (mouseenter)="hoveredImageId = image" (mouseleave)="hoveredImageId = ''">
+      <div class="imageDivContainer" (click)="selectionMode ? toggleImageSelect(image) : ''" [ngClass]="{
         'selected-image' : isImageSelected(image)}">
         <img
           class="image"
@@ -28,7 +28,7 @@
           alt="detection">
       </div>
       <button class="check-button"
-              (mouseenter)="hoveredCheckButton = image" (mouseleave)="hoveredCheckButton = ''"
+              (mouseenter)="hoveredCheckButtonId = image" (mouseleave)="hoveredCheckButtonId = ''"
               [ngClass]="{
                 'selected-check-button' : isImageSelected(image),
                 'check-button-hover' : (isCheckButtonHovered(image) && !isImageSelected(image)),
@@ -36,6 +36,7 @@
               (click)="toggleImageSelect(image)" mat-icon-button>
         <mat-icon>check_circle</mat-icon>
       </button>
+      <div class="image-time">{{getDate(image)}}</div>
     </div>
   </drag-scroll>
 </div>

@@ -8,9 +8,10 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
 import {DragScrollComponent} from "ngx-drag-scroll";
 import {Utils} from "../utils/utils";
+import {HttpService} from "../service/HttpService";
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'app-folder',
@@ -21,7 +22,7 @@ import {Utils} from "../utils/utils";
 export class FolderComponent implements AfterViewInit {
 
   ngAfterViewInit() {
-    this.imagesPerScreen = Math.ceil(this.title?.nativeElement.offsetWidth / this.imageWidth) + 1
+    this.imagesPerRow = Math.ceil(this.title?.nativeElement.offsetWidth / this.imageWidth) + 1
     this.initialLoad()
   }
 
@@ -31,22 +32,22 @@ export class FolderComponent implements AfterViewInit {
   @ViewChild('nav', {read: DragScrollComponent}) ds: DragScrollComponent | undefined
   @ViewChild('title') title: ElementRef | undefined
 
-  selectedImages: Set<string> = new Set<string>();
-  images: Map<string, any> = new Map<string, any>()
-  hoveredCheckButton: string = ''
+  selectedImagesIds: Set<string> = new Set<string>();
+  imageIdToImageMap: Map<string, any> = new Map<string, any>()
+  hoveredCheckButtonId: string = ''
   isHoveredFolder: boolean = false
-  hoveredImage: string = ''
+  hoveredImageId: string = ''
   isSelectAll: boolean = false
   isLoading: boolean = false
   dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
   imageWidth = 150
-  imagesPerScreen = 0
+  imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
 
-  constructor(private http: HttpClient) {
+  constructor(private service: HttpService, private datePipe : DatePipe) {
   }
 
-  scrolled() {
+  onScroll() {
     let ref: any = this.ds?._contentRef
     const reachedScrollThreshold = ref.nativeElement.scrollLeft + ref.nativeElement.offsetWidth >= this.dragThreshold * ref.nativeElement.scrollWidth;
     if (reachedScrollThreshold) {
@@ -55,7 +56,7 @@ export class FolderComponent implements AfterViewInit {
   }
 
   initialLoad() {
-    this.http.get("http://127.0.0.1:5000/folder/" + this.folder).subscribe((files: any) => {
+    this.service.getFolderContents(this.folder).subscribe((files: any) => {
       files.forEach((file: any) => {
           this.unloadedImages.add(file)
         }
@@ -64,72 +65,96 @@ export class FolderComponent implements AfterViewInit {
     })
   }
 
+  refreshContent() {
+    console.log("refreshing" + this.folder)
+    this.selectedImagesIds.clear()
+    this.imageIdToImageMap.clear()
+    this.unloadedImages.clear()
+    this.initialLoad()
+  }
+
+  getDate(imageId : string) : string {
+    return this.datePipe.transform(new Date(parseInt(imageId.split(".")[0])*1000), 'hh:mm:ss') ?? ""
+  }
+
+  deleteSelected() {
+    this.selectedImagesIds.forEach(img => {
+      this.imageIdToImageMap.delete(img)
+      this.unloadedImages.delete(img)
+    })
+    this.selectedImagesIds.clear()
+  }
+
   loadFiles() {
     let loaded = 0
     for (let imageId of this.unloadedImages) {
-      if (loaded >= this.imagesPerScreen) break
+      if (loaded >= this.imagesPerRow) break
       this.getImageFromService(imageId)
       loaded++
     }
   }
 
-  getImageFromService(img: string) {
+  getImageFromService(imageId: string) {
     this.isLoading = true
     let imageFile = new Image()
-    imageFile.src = `http://127.0.0.1:5000/image/${this.folder}/${img}`
-    this.unloadedImages.delete(img)
-    this.images.set(img, imageFile)
+    imageFile.src = this.service.getImageSrc(this.folder, imageId)
+    this.unloadedImages.delete(imageId)
+    this.imageIdToImageMap.set(imageId, imageFile)
     imageFile.onload = (() => {
       this.isLoading = false
     })
   }
 
   isWideImage(image: string) {
-    let img: HTMLImageElement = this.images.get(image)
+    let img: HTMLImageElement = this.imageIdToImageMap.get(image)
     return img.width > img.height
   }
 
   toggleImageSelect(imageId: string) {
-    this.selectedImages.has(imageId) ? this.deselectImage(imageId) : this.selectImage(imageId)
+    this.selectedImagesIds.has(imageId) ? this.deselectImage(imageId) : this.selectImage(imageId)
     this.selectionChanged()
   }
 
   isCheckButtonHovered(imageId: string): boolean {
-    return this.hoveredCheckButton == imageId
+    return this.hoveredCheckButtonId == imageId
   }
 
   deselectImage(imageId: string) {
-    this.selectedImages.delete(imageId)
+    this.selectedImagesIds.delete(imageId)
     this.isSelectAll = false
   }
 
   selectImage(imageId: string) {
-    this.selectedImages.add(imageId)
-    if (this.selectedImages.size == this.images.size) {
+    this.selectedImagesIds.add(imageId)
+    if (this.selectedImagesIds.size == this.imageIdToImageMap.size) {
       this.isSelectAll = true
     }
   }
 
   getImageNames(): string[] {
-    return Utils.getKeysFromMap(this.images)
+    return Utils.getKeysFromMap(this.imageIdToImageMap)
   }
 
   getImageFile(image: string) {
-    return this.images.get(image)?.src
+    return this.imageIdToImageMap.get(image)?.src
   }
 
   isImageHovered(imageId: string): boolean {
-    return this.hoveredImage == imageId
+    return this.hoveredImageId == imageId
   }
 
   isImageSelected(imageId: string): boolean {
-    return this.isFolderSelected() ? true : this.selectedImages.has(imageId)
+    return this.isFolderSelected() ? true : this.selectedImagesIds.has(imageId)
   }
 
   toggleFolderSelect() {
-    this.isFolderSelected() ? this.selectedImages.clear() : this.images.forEach(img => this.selectedImages.add(img.name))
+    this.isFolderSelected() ? this.deselectAll() : this.imageIdToImageMap.forEach(img => this.selectedImagesIds.add(img.name))
     this.isSelectAll = !this.isSelectAll
     this.selectionChanged()
+  }
+
+  deselectAll() {
+    this.selectedImagesIds.clear()
   }
 
   isFolderSelected() {
@@ -137,6 +162,6 @@ export class FolderComponent implements AfterViewInit {
   }
 
   selectionChanged() {
-    this.onSelectedImagesChange.emit(this.selectedImages)
+    this.onSelectedImagesChange.emit(this.selectedImagesIds)
   }
 }

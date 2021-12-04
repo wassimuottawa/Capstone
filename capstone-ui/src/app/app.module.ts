@@ -41,13 +41,17 @@ import {SideMenuComponent} from './side-menu/side-menu.component';
 import {FolderComponent} from './folder/folder.component';
 import {DragScrollModule} from "ngx-drag-scroll";
 import {HttpClientModule} from "@angular/common/http";
+import { ActionMenuComponent } from './action-menu/action-menu.component';
+import {HttpService} from "./service/HttpService";
+import {DatePipe} from "@angular/common";
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     SideMenuComponent,
-    FolderComponent
+    FolderComponent,
+    ActionMenuComponent,
   ],
   imports: [
     BrowserModule,
@@ -92,7 +96,7 @@ import {HttpClientModule} from "@angular/common/http";
     DragScrollModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [HttpService, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule {

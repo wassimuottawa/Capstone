@@ -72,6 +72,17 @@
   display: none;
 }
 
+.image-time {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 90%;
+  width: 130px;
+  height: 20px;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  color: white;
+}
+
 .selected-check-button {
   display: block;
   color: #1a73e8;

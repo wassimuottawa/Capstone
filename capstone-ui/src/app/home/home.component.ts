@@ -1,5 +1,9 @@
-import {Component, ViewEncapsulation} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Component, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {ActionMenuComponent} from "../action-menu/action-menu.component";
+import {FolderComponent} from "../folder/folder.component";
+import {HttpService} from "../service/HttpService";
+import {log} from "util";
 
 @Component({
   selector: 'app-home',
@@ -9,16 +13,19 @@ import {HttpClient} from "@angular/common/http";
 })
 export class HomeComponent {
 
+  @ViewChildren('folderComponent') folders: QueryList<FolderComponent> = new QueryList<FolderComponent>()
+
   invisibleFolders: Set<string> = new Set()
   folderToSelectedImagesMap: Map<string, Set<string>> = new Map();
   endOfItems: boolean = false
-  scrollThreshold: number = 0.9 //to load more items if user beyond (x*100)% of the screen
+  scrollThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the screen
   lastLoadDate: Date = new Date()
   waitBetweenLoadMore = 500 //0.5s
   visibleFolders: Set<string> = new Set()
+  actionMenuOpen: boolean = false
 
-  constructor(private http: HttpClient) {
-    http.get("http://127.0.0.1:5000/folders").subscribe((foldersToFileNames: any) => {
+  constructor(private _snackBar: MatSnackBar, private service: HttpService) {
+    service.getFolders().subscribe((foldersToFileNames: any) => {
       foldersToFileNames.forEach((folder: any) => {
         this.invisibleFolders.add(folder)
       })
@@ -28,6 +35,26 @@ export class HomeComponent {
 
   getFolders(): string[] {
     return [...this.visibleFolders]
+  }
+
+  openActionMenu() {
+    if (!this.actionMenuOpen) {
+      let matRef = this._snackBar.openFromComponent(ActionMenuComponent, {}).instance
+      this.actionMenuOpen = true
+      matRef.onDeselectAll.subscribe(() => {
+        this.deselectAll()
+        this.closeActionMenu()
+      });
+      matRef.onDelete.subscribe(() => {
+        this.deleteSelected();
+        this.closeActionMenu();
+      })
+    }
+  }
+
+  closeActionMenu() {
+    this._snackBar.dismiss()
+    this.actionMenuOpen = false
   }
 
   loadMore(count: number = 2) {
@@ -47,6 +74,14 @@ export class HomeComponent {
     }
   }
 
+  deleteSelected() {
+    this.service.delete(this.folderToSelectedImagesMap)
+    //this.folderToSelectedImagesMap.forEach((images, folder) => {
+    //  images.forEach(img => this.service.deleteOne(folder, img))
+    //})
+    this.folders.filter(folder => this.folderToSelectedImagesMap.has(folder.folder)).forEach(folder => folder.deleteSelected())
+  }
+
   onScroll(event: any) {
     if (!this.endOfItems) {
       const scrolledBeyondThreshold = event.target.offsetHeight + event.target.scrollTop >= this.scrollThreshold * event.target.scrollHeight
@@ -59,7 +94,20 @@ export class HomeComponent {
     }
   }
 
+  deselectAll() {
+    this.folders.forEach(folder => {
+      folder.deselectAll()
+    })
+    this.folderToSelectedImagesMap.clear()
+  }
+
   onSelectionChange(selectedImages: Set<string>, folder: string) {
-    selectedImages.size ? this.folderToSelectedImagesMap.set(folder, selectedImages) : this.folderToSelectedImagesMap.delete(folder)
+    if (selectedImages.size) {
+      this.folderToSelectedImagesMap.set(folder, selectedImages)
+      this.openActionMenu()
+    } else {
+      this.folderToSelectedImagesMap.delete(folder)
+      this.closeActionMenu()
+    }
   }
 }

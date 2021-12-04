@@ -22,6 +22,7 @@
     "@angular/router": "~12.0.1",
     "ngx-drag-scroll": "^12.0.0-beta.2",
     "ngx-infinite-scroll": "^10.0.1",
+    "ngx-material-timepicker": "^5.5.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
