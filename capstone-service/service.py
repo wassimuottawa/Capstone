@@ -1,6 +1,7 @@
 import os
 import shutil
 from datetime import datetime
+from enum import Enum
 
 from flask import *
 
@@ -8,14 +9,17 @@ ROOT_PATH = 'root'
 IMAGE_EXTENSION = '.png'
 ARCHIVE_FOLDER = 'archive'
 ARCHIVE_PATH = os.path.join(ROOT_PATH, ARCHIVE_FOLDER)
+TIME_FILTER_FORMAT = '%H:%M'
+
 
 # JSON keys from UI
-RUN_PARAM = 'run'
-FOLDER_PARAM = 'folder'
-START_TIME_PARAM = 'start'
-END_TIME_PARAM = 'end'
-DESTINATION_PARAM = 'destination'
-MAPPING_PARAM = 'mapping'
+class Params(Enum):
+    RUN = 'run'
+    FOLDER = 'folder'
+    START_TIME = 'start'
+    END_TIME = 'end'
+    DESTINATION = 'destination'
+    MAPPING = 'mapping'
 
 
 def get_folders_in_path(path):
@@ -57,10 +61,10 @@ def not_empty(run, cam, folder):
 
 
 def get_image_names(body):
-    run = body.get(RUN_PARAM)
-    folder = body.get(FOLDER_PARAM)
-    start = str_to_time(body.get(START_TIME_PARAM))
-    end = str_to_time(body.get(END_TIME_PARAM))
+    run = body.get(Params.RUN.value)
+    folder = body.get(Params.FOLDER.value)
+    start = str_to_time(body.get(Params.START_TIME.value))
+    end = str_to_time(body.get(Params.END_TIME.value))
     images = set()
     for cam in list(filter(lambda c: folder_exists(run, c, folder), get_cams(run))):
         for img in os.listdir(os.path.join(ROOT_PATH, run, cam, folder)):
@@ -80,13 +84,13 @@ def get_runs():
 
 
 def delete_files(body: dict):
-    move_files(body.get(RUN_PARAM), body.get(MAPPING_PARAM), ARCHIVE_PATH)
+    move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
 
 def move(body: dict):
-    run = body.get(RUN_PARAM)
-    destination = os.path.join(ROOT_PATH, run, get_cams(run)[0], body.get(DESTINATION_PARAM))
-    move_files(run, body.get(MAPPING_PARAM), destination)
+    run = body.get(Params.RUN.value)
+    destination = os.path.join(ROOT_PATH, run, get_cams(run)[0], body.get(Params.DESTINATION.value))
+    move_files(run, body.get(Params.DESTINATION.value), destination)
 
 
 def move_files(run, files_mapping, destination, overwrite=True):
@@ -112,7 +116,7 @@ def is_in_time_range(image_name, start, end):
 
 def str_to_time(time_string):
     if time_string is not None:
-        return datetime.strptime(time_string, '%H:%M').time()
+        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
 
 
 if __name__ == '__main__':
