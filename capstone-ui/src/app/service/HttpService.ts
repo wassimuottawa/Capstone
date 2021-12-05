@@ -55,20 +55,4 @@ export class HttpService {
     });
     return this.http.post(HttpService.SERVICE_URL + "delete", request)
   }
-
-  createHttpRequest(body: any) {
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': '*'
-      }),
-      body: body,
-    };
-  }
-
-  deleteOne(folder: string, imageId: string): Observable<any> {
-    return this.http.delete(`${HttpService.SERVICE_URL}delete/${folder}/${imageId}`)
-  }
 }
