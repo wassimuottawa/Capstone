@@ -89,12 +89,13 @@ def move(body: dict):
     move_files(run, body.get(MAPPING_PARAM), destination)
 
 
-def move_files(run, files_mapping, destination):
+def move_files(run, files_mapping, destination, overwrite=True):
     for folder, files in files_mapping.items():
         for file in files:
             for cam in get_cams(run):
                 if file_exists(run, cam, folder, file):
-                    shutil.move(os.path.join(ROOT_PATH, run, cam, folder, file), destination)
+                    shutil.move(os.path.join(ROOT_PATH, run, cam, folder, file),
+                                os.path.join(destination, file) if overwrite else destination)
                     break
 
 

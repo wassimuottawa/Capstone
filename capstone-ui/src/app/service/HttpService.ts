@@ -27,7 +27,7 @@ export class HttpService {
   }
 
   getFolders(run: string): Observable<any> {
-    return this.http.get(HttpService.SERVICE_URL + `folder/${run}`)
+    return this.http.get<string[]>(HttpService.SERVICE_URL + `folder/${run}`)
   }
 
   getRuns(): Observable<string[]> {
@@ -39,7 +39,7 @@ export class HttpService {
     request.run = run
     request.folder = folder
     request.setStartEnd(start_h, start_m, end_h, end_m)
-    return this.http.post(HttpService.SERVICE_URL + "images", request)
+    return this.http.post<string[]>(HttpService.SERVICE_URL + "images", request)
   }
 
   getImageSrc(run: string, folder: string, imageId: string): string {
@@ -53,6 +53,6 @@ export class HttpService {
     folderToImages.forEach((value, key) => {
       request.mapping[key] = [...value]
     });
-    return this.http.post(HttpService.SERVICE_URL + "delete", request)
+    return this.http.post<any>(HttpService.SERVICE_URL + "delete", request)
   }
 }
