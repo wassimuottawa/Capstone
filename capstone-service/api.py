@@ -1,9 +1,10 @@
 from flask import *
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 
 import service
 
 app = Flask(__name__)
+cors = CORS(app)
 
 
 @app.route("/image/<string:run>/<string:folder>/<string:image>")
@@ -12,11 +13,11 @@ def get_image(run, folder, image):
     return service.get_file(run, folder, image)
 
 
-@app.route("/delete", methods=['DELETE'])
+@app.route("/delete", methods=['POST'])
 @cross_origin()
 def delete_images():
     service.delete_files(request.json)
-    return Response(status=200)
+    return jsonify("Deleted")
 
 
 @app.route("/runs")
@@ -28,10 +29,10 @@ def get_runs():
 @app.route("/folder/<string:run>")
 @cross_origin()
 def get_folders_by_run(run):
-    return jsonify(service.get_folders_by_run(run))
+    return jsonify(list(service.get_folders_by_run(run)))
 
 
-@app.route("/images")
+@app.route("/images", methods=['POST'])
 @cross_origin()
 def get_image_names():
     return jsonify(list(service.get_image_names(request.json)))

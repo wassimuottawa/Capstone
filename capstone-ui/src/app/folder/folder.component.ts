@@ -11,7 +11,7 @@ import {
 import {DragScrollComponent} from "ngx-drag-scroll";
 import {Utils} from "../utils/utils";
 import {HttpService} from "../service/HttpService";
-import { DatePipe } from '@angular/common'
+import {DatePipe} from '@angular/common'
 
 @Component({
   selector: 'app-folder',
@@ -28,6 +28,7 @@ export class FolderComponent implements AfterViewInit {
 
   @Output() onSelectedImagesChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
   @Input() folder: string = ""
+  @Input() run: string = ""
   @Input() selectionMode: boolean = false
   @ViewChild('nav', {read: DragScrollComponent}) ds: DragScrollComponent | undefined
   @ViewChild('title') title: ElementRef | undefined
@@ -44,7 +45,7 @@ export class FolderComponent implements AfterViewInit {
   imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
 
-  constructor(private service: HttpService, private datePipe : DatePipe) {
+  constructor(private service: HttpService, private datePipe: DatePipe) {
   }
 
   onScroll() {
@@ -56,7 +57,7 @@ export class FolderComponent implements AfterViewInit {
   }
 
   initialLoad() {
-    this.service.getFolderContents(this.folder).subscribe((files: any) => {
+    this.service.getFolderContents(this.run, this.folder).subscribe((files: any) => {
       files.forEach((file: any) => {
           this.unloadedImages.add(file)
         }
@@ -65,16 +66,9 @@ export class FolderComponent implements AfterViewInit {
     })
   }
 
-  refreshContent() {
-    console.log("refreshing" + this.folder)
-    this.selectedImagesIds.clear()
-    this.imageIdToImageMap.clear()
-    this.unloadedImages.clear()
-    this.initialLoad()
-  }
-
-  getDate(imageId : string) : string {
-    return this.datePipe.transform(new Date(parseInt(imageId.split(".")[0])*1000), 'hh:mm:ss') ?? ""
+  getDate(imageId: string): string {
+    let d: Date = new Date(parseInt(imageId.split(".")[0]) * 1000)
+    return isNaN(d.getTime()) ? "" : this.datePipe.transform(d, 'hh:mm:ss') ?? ""
   }
 
   deleteSelected() {
@@ -97,7 +91,7 @@ export class FolderComponent implements AfterViewInit {
   getImageFromService(imageId: string) {
     this.isLoading = true
     let imageFile = new Image()
-    imageFile.src = this.service.getImageSrc(this.folder, imageId)
+    imageFile.src = this.service.getImageSrc(this.run, this.folder, imageId)
     this.unloadedImages.delete(imageId)
     this.imageIdToImageMap.set(imageId, imageFile)
     imageFile.onload = (() => {

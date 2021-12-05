@@ -2,6 +2,22 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
 
+export class Request {
+  run: string | undefined
+  folder: string | undefined
+  start: string | undefined
+  end: string | undefined
+  destination: string | undefined
+  mapping: any
+
+  setStartEnd(start_h: string, start_m: string, end_h: string, end_m: string) {
+    if (start_h && start_m && end_h && end_m) {
+      this.start = start_h + ":" + start_m
+      this.end = end_h + ":" + end_m
+    }
+  }
+}
+
 @Injectable()
 export class HttpService {
 
@@ -10,33 +26,46 @@ export class HttpService {
   constructor(private http: HttpClient) {
   }
 
-  getFolders(): Observable<any> {
-    return this.http.get(HttpService.SERVICE_URL + "folders")
+  getFolders(run: string): Observable<any> {
+    return this.http.get(HttpService.SERVICE_URL + `folder/${run}`)
   }
 
-  getFolderContents(folder: string): Observable<any> {
-    return this.http.get(HttpService.SERVICE_URL + "folder/" + folder)
+  getRuns(): Observable<string[]> {
+    return this.http.get<string[]>(HttpService.SERVICE_URL + "runs")
   }
 
-  getImageSrc(folder: string, imageId: string): string {
-    return `${HttpService.SERVICE_URL}image/${folder}/${imageId}`
+  getFolderContents(run: string, folder: string, start_h: string = '', start_m: string = '', end_h: string = '', end_m: string = ''): Observable<any> {
+    let request = new Request();
+    request.run = run
+    request.folder = folder
+    request.setStartEnd(start_h, start_m, end_h, end_m)
+    return this.http.post(HttpService.SERVICE_URL + "images", request)
   }
 
-  delete(folderToImages: Map<string, any>) {
-    const options = {
+  getImageSrc(run: string, folder: string, imageId: string): string {
+    return HttpService.SERVICE_URL + `image/${run}/${folder}/${imageId}`
+  }
+
+  delete(run:string, folderToImages: Map<string, any>) : Observable<any> {
+    let request = new Request();
+    request.run = run
+    request.mapping = {}
+    folderToImages.forEach((value, key) => {
+      request.mapping[key] = [...value]
+    });
+    return this.http.post(HttpService.SERVICE_URL + "delete", request)
+  }
+
+  createHttpRequest(body: any) {
+    return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin':'*',
-        'Access-Control-Allow-Methods' : '*',
-        'Access-Control-Allow-Headers' : '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Headers': '*'
       }),
-      body: folderToImages,
+      body: body,
     };
-    this.http
-      .post(`${HttpService.SERVICE_URL}delete`, options)
-      .subscribe((s) => {
-        console.log(s);
-      });
   }
 
   deleteOne(folder: string, imageId: string): Observable<any> {

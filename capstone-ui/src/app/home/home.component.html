@@ -1,8 +1,12 @@
 <mat-toolbar class="toolbar">
-  <button mat-icon-button aria-label="menu">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span style="margin-left: 10px">Person Re-identification Annotator</span>
+  <mat-form-field style="position: absolute">
+    <mat-select [(value)]="run" (valueChange)="runChanged()">
+      <mat-option *ngFor="let run of runs" [value]="run">
+        {{run}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <span class="title">Person Re-identification Annotator</span>
   <span class="spacer"></span>
   <button [matMenuTriggerFor]="menu" mat-icon-button class="action_button">
     <mat-icon>more_vert</mat-icon>
@@ -13,9 +17,8 @@
 </mat-toolbar>
 
 
-
 <div class="main-container" (scroll)="onScroll($event)">
-  <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder"
+  <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [run]="run"
               (onSelectedImagesChange)="onSelectionChange($event, folder)"
               [selectionMode]="this.folderToSelectedImagesMap.size > 0"></app-folder>
   <div class="loading-spinner">

@@ -3,7 +3,6 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActionMenuComponent} from "../action-menu/action-menu.component";
 import {FolderComponent} from "../folder/folder.component";
 import {HttpService} from "../service/HttpService";
-import {log} from "util";
 
 @Component({
   selector: 'app-home',
@@ -23,9 +22,29 @@ export class HomeComponent {
   waitBetweenLoadMore = 500 //0.5s
   visibleFolders: Set<string> = new Set()
   actionMenuOpen: boolean = false
+  runs: string[] = []
+  run = ""
 
   constructor(private _snackBar: MatSnackBar, private service: HttpService) {
-    service.getFolders().subscribe((foldersToFileNames: any) => {
+    service.getRuns().subscribe(runs => {
+      this.runs = runs
+      this.run = runs[0] ?? ""
+      this.loadFolders()
+    })
+  }
+
+  runChanged() {
+    this.invisibleFolders.clear()
+    this.folderToSelectedImagesMap.clear()
+    this.endOfItems = false
+    this.lastLoadDate = new Date()
+    this.visibleFolders.clear()
+    this.closeActionMenu()
+    this.loadFolders()
+  }
+
+  loadFolders() {
+    this.service.getFolders(this.run).subscribe((foldersToFileNames: any) => {
       foldersToFileNames.forEach((folder: any) => {
         this.invisibleFolders.add(folder)
       })
@@ -75,11 +94,11 @@ export class HomeComponent {
   }
 
   deleteSelected() {
-    this.service.delete(this.folderToSelectedImagesMap)
-    //this.folderToSelectedImagesMap.forEach((images, folder) => {
-    //  images.forEach(img => this.service.deleteOne(folder, img))
-    //})
-    this.folders.filter(folder => this.folderToSelectedImagesMap.has(folder.folder)).forEach(folder => folder.deleteSelected())
+    this.service.delete(this.run, this.folderToSelectedImagesMap).subscribe(() =>
+      this.folders.filter(folder => this.folderToSelectedImagesMap.has(folder.folder)).forEach(
+        folder => folder.deleteSelected()
+      )
+    )
   }
 
   onScroll(event: any) {

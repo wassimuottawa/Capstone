@@ -26,7 +26,8 @@ def get_folders_by_run(run):
     folders = set()
     for cam in get_cams(run):
         for folder in get_folders_in_path(os.path.join(ROOT_PATH, run, cam)):
-            folders.add(folder)
+            if not_empty(run, cam, folder):
+                folders.add(folder)
     return folders
 
 
@@ -38,10 +39,21 @@ def file_exists(run, cam, folder, file):
     return os.path.isfile(os.path.join(ROOT_PATH, run, cam, folder, file))
 
 
+def folder_exists(run, cam, folder):
+    return os.path.isdir(os.path.join(ROOT_PATH, run, cam, folder))
+
+
 def get_file(run, folder, file):
     for cam in get_cams(run):
         if file_exists(run, cam, folder, file):
             return send_from_directory(os.path.join(ROOT_PATH, run, cam, folder), file)
+
+
+def not_empty(run, cam, folder):
+    for file in os.listdir(os.path.join(ROOT_PATH, run, cam, folder)):
+        if is_image(file):
+            return True
+    return False
 
 
 def get_image_names(body):
@@ -50,11 +62,15 @@ def get_image_names(body):
     start = str_to_time(body.get(START_TIME_PARAM))
     end = str_to_time(body.get(END_TIME_PARAM))
     images = set()
-    for cam in get_cams(run):
+    for cam in list(filter(lambda c: folder_exists(run, c, folder), get_cams(run))):
         for img in os.listdir(os.path.join(ROOT_PATH, run, cam, folder)):
-            if str(img).endswith(IMAGE_EXTENSION) and is_in_time_range(img, start, end):
+            if is_image(img) and is_in_time_range(img, start, end):
                 images.add(img)
     return images
+
+
+def is_image(file_name):
+    return str(file_name).endswith(IMAGE_EXTENSION)
 
 
 def get_runs():
@@ -94,7 +110,8 @@ def is_in_time_range(image_name, start, end):
 
 
 def str_to_time(time_string):
-    return datetime.strptime(time_string, '%H:%M').time()
+    if time_string is not None:
+        return datetime.strptime(time_string, '%H:%M').time()
 
 
 if __name__ == '__main__':
