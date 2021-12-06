@@ -14,8 +14,15 @@ Shahzaib Sahibzada: ssahi017@uottawa.ca
 ## Getting Started
 For a full environment setup, see the wiki documentation [here](https://github.com/AndreMarieKabeya/Capstone/wiki/Environment-Setup)
 
-#### RUN PROJECT
+#### RUN PROJECT LOCALLY
 1. Clone repo `git clone https://github.com/AndreMarieKabeya/Capstone` 
 1. RUN `start-backend.sh` 
 2. RUN `start-ui.sh`
+
+#### RUN PROJECT VIA NGROK
+1. Clone repo `git clone https://github.com/AndreMarieKabeya/Capstone` 
+1. RUN `start-backend.sh`
+2. Access the application via the following link: https://f413-142-120-138-223.ngrok.io/
+     - Application link is only accessible when we have the machine and front-end running
+
 
