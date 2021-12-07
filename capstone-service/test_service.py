@@ -1,5 +1,6 @@
 import unittest
 from unittest import result
+from datetime import time
 import service
 
 class TestService(unittest.TestCase):
@@ -101,11 +102,28 @@ class TestService(unittest.TestCase):
 
     # def test_move_files(self):
 
-    # def test_get_time_from_file_name(self):
+    def test_get_time_from_file_name(self): 
+        try:
+            service.get_time_from_file_name()
+        except TypeError:
+            pass
+        self.assertEqual(service.get_time_from_file_name("1629264807.622246.png"),time(1,33,27,622246))
+        self.assertEqual(service.get_time_from_file_name("1629264810.0094361.png"),time(1,33,30,9436))
 
-    # def test_is_in_time_range(self):
+    def test_is_in_time_range(self):
+        try:
+            service.is_in_time_range()
+        except TypeError:
+            pass
+        self.assertEqual(service.is_in_time_range("1629264807.622246.png",time(1,0),time(2,0)),True)
+        self.assertEqual(service.is_in_time_range("1629264810.0094361.png",time(2,0),time(3,0)),False)
 
-    # def test_str_to_time(self):
+    def test_str_to_time(self):
+        try:
+            service.str_to_time()
+        except TypeError:
+            pass
+        self.assertEqual(service.str_to_time('12:00'),time(12,0))
 
 if __name__ == '__main__':
     unittest.main()
