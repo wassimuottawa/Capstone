@@ -8,8 +8,7 @@ class TestService(unittest.TestCase):
             service.get_folders_in_path()
         except TypeError:
             pass
-        # self.assertAlmostEqual(service.get_folders_in_path('root/run 1/cam1'),['9', '7', '6', '1', '10', '8', '3', '2', '5'])
-        self.assertEqual(service.get_folders_in_path('root/run3'),['cam1', 'cam0'])
+        self.assertEqual(service.get_folders_in_path('root/run3'),['cam0', 'cam1'])
 
     def test_get_folders_by_run(self):
         try:
@@ -25,8 +24,7 @@ class TestService(unittest.TestCase):
             service.get_cams()
         except TypeError:
             pass
-        #self.assertAlmostEqual(service.get_cams('run3'),['cam1', 'cam0'])
-        self.assertEqual(service.get_cams('run 1'),['cam1', 'cam0'])
+        self.assertEqual(service.get_cams('run 1'),['cam0', 'cam1'])
 
     def test_file_exists(self):
         try:
