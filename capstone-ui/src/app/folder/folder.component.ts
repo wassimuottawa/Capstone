@@ -153,7 +153,7 @@ export class FolderComponent implements AfterViewInit {
   }
 
   toggleFolderSelect() {
-    this.isFolderSelected() ? this.deselectAll() : this.imageIdToImageMap.forEach(img => this.selectedImagesIds.add(img.name))
+    this.isFolderSelected() ? this.deselectAll() : [...this.imageIdToImageMap.keys(), ...this.unloadedImages].forEach(img => this.selectedImagesIds.add(img))
     this.isSelectAll = !this.isSelectAll
     this.selectionChanged()
   }
