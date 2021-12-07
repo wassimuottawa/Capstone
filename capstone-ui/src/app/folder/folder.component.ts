@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {DragScrollComponent} from "ngx-drag-scroll";
 import {Utils} from "../utils/utils";
-import {HttpService} from "../service/HttpService";
+import {BackendService} from "../service/backend.service";
 import {DatePipe} from '@angular/common'
 
 @Component({
@@ -21,15 +21,13 @@ import {DatePipe} from '@angular/common'
 })
 export class FolderComponent implements AfterViewInit {
 
-  ngAfterViewInit() {
-    this.imagesPerRow = Math.ceil(this.title?.nativeElement.offsetWidth / this.imageWidth) + 1
-    this.initialLoad()
-  }
-
   @Output() onSelectedImagesChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
+  @Output() isEmpty: EventEmitter<void> = new EventEmitter<void>()
   @Input() folder: string = ""
   @Input() run: string = ""
   @Input() selectionMode: boolean = false
+  @Input() start: string = ""
+  @Input() end: string = ""
   @ViewChild('nav', {read: DragScrollComponent}) ds: DragScrollComponent | undefined
   @ViewChild('title') title: ElementRef | undefined
 
@@ -45,7 +43,12 @@ export class FolderComponent implements AfterViewInit {
   imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
 
-  constructor(private service: HttpService, private datePipe: DatePipe) {
+  constructor(private service: BackendService, private datePipe: DatePipe) {
+  }
+
+  ngAfterViewInit() {
+    this.imagesPerRow = Math.ceil(this.title?.nativeElement.offsetWidth / this.imageWidth) + 1
+    this.initialLoad()
   }
 
   onScroll() {
@@ -57,11 +60,12 @@ export class FolderComponent implements AfterViewInit {
   }
 
   initialLoad() {
-    this.service.getFolderContents(this.run, this.folder).subscribe((files: any) => {
+    this.service.getFolderContents(this.run, this.folder, this.start, this.end).subscribe((files: any) => {
       files.forEach((file: any) => {
           this.unloadedImages.add(file)
         }
       )
+      this.checkIfEmpty()
       this.loadFiles()
     })
   }
@@ -77,6 +81,7 @@ export class FolderComponent implements AfterViewInit {
       this.unloadedImages.delete(img)
     })
     this.selectedImagesIds.clear()
+    this.checkIfEmpty()
   }
 
   loadFiles() {
@@ -102,6 +107,12 @@ export class FolderComponent implements AfterViewInit {
   isWideImage(image: string) {
     let img: HTMLImageElement = this.imageIdToImageMap.get(image)
     return img.width > img.height
+  }
+
+  checkIfEmpty() {
+    if (!(this.imageIdToImageMap.size || this.unloadedImages.size)) {
+      this.isEmpty.emit()
+    }
   }
 
   toggleImageSelect(imageId: string) {

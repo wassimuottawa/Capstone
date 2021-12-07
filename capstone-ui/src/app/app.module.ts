@@ -42,7 +42,7 @@ import {FolderComponent} from './folder/folder.component';
 import {DragScrollModule} from "ngx-drag-scroll";
 import {HttpClientModule} from "@angular/common/http";
 import { ActionMenuComponent } from './action-menu/action-menu.component';
-import {HttpService} from "./service/HttpService";
+import {BackendService} from "./service/backend.service";
 import {DatePipe} from "@angular/common";
 
 @NgModule({
@@ -96,7 +96,7 @@ import {DatePipe} from "@angular/common";
     DragScrollModule,
     HttpClientModule,
   ],
-  providers: [HttpService, DatePipe],
+  providers: [BackendService, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule {

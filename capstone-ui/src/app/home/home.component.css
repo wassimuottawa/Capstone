@@ -14,12 +14,23 @@
   margin-left: 20px;
 }
 
+.menu {
+  padding: 10px 10px 0;
+}
+
+.filter-menu-button {
+  margin-top: 5px;
+  border-radius: 4px;
+  text-align: center !important;
+  background-color: #42424214;
+}
+
 .toolbar {
   height: 6%;
   background-color: #58a0ff70;
 }
 
-.loading-spinner {
+.end-of-items {
   padding: 30px;
   display: flex;
   justify-content: center;

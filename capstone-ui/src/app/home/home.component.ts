@@ -2,7 +2,8 @@ import {Component, QueryList, ViewChildren, ViewEncapsulation} from '@angular/co
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActionMenuComponent} from "../action-menu/action-menu.component";
 import {FolderComponent} from "../folder/folder.component";
-import {HttpService} from "../service/HttpService";
+import {BackendService} from "../service/backend.service";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-home',
@@ -24,8 +25,13 @@ export class HomeComponent {
   actionMenuOpen: boolean = false
   runs: string[] = []
   run = ""
+  defaultStartTime = '00:00'
+  defaultEndTime = '23:59'
+  startTime: FormControl = new FormControl(this.defaultStartTime)
+  endTime: FormControl = new FormControl(this.defaultEndTime)
+  timeFilterEnabled = false
 
-  constructor(private _snackBar: MatSnackBar, private service: HttpService) {
+  constructor(private _snackBar: MatSnackBar, private service: BackendService) {
     service.getRuns().subscribe(runs => {
       this.runs = runs
       this.run = runs[0] ?? ""
@@ -76,6 +82,40 @@ export class HomeComponent {
     this.actionMenuOpen = false
   }
 
+  removeEmptyFolder(folder: string) {
+    this.visibleFolders.delete(folder)
+    this.loadMore(1)
+  }
+
+  checkIfItemsLeft() {
+    if (this.invisibleFolders.size == 0) {
+      this.endOfItems = true
+    }
+  }
+
+  applyTimeFilter() {
+    this.timeFilterEnabled = true
+    this.folderToSelectedImagesMap.clear()
+    this.invisibleFolders.clear()
+    this.visibleFolders.clear()
+    this.loadFolders()
+
+  }
+
+  resetTimeFiler() {
+    this.startTime.setValue(this.defaultStartTime)
+    this.endTime.setValue(this.defaultEndTime)
+    this.timeFilterEnabled = false
+    this.applyTimeFilter()
+  }
+
+  filterMenuOpened() {
+    if (!this.timeFilterEnabled) {
+      this.startTime.setValue(this.defaultStartTime)
+      this.endTime.setValue(this.defaultEndTime)
+    }
+  }
+
   loadMore(count: number = 2) {
     let curr = 0
     let newFolders = []
@@ -88,9 +128,7 @@ export class HomeComponent {
       this.invisibleFolders.delete(folder)
       this.visibleFolders.add(folder)
     })
-    if (this.invisibleFolders.size == 0) {
-      this.endOfItems = true
-    }
+    this.checkIfItemsLeft()
   }
 
   deleteSelected() {
