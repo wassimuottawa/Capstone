@@ -42,6 +42,7 @@ export class FolderComponent implements AfterViewInit {
   imageWidth = 150
   imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
+  timeStampFormat : string = 'HH:mm:ss'
 
   constructor(private service: BackendService, private datePipe: DatePipe) {
   }
@@ -72,7 +73,7 @@ export class FolderComponent implements AfterViewInit {
 
   getDate(imageId: string): string {
     let d: Date = new Date(parseInt(imageId.split(".")[0]) * 1000)
-    return isNaN(d.getTime()) ? "" : this.datePipe.transform(d, 'hh:mm:ss') ?? ""
+    return isNaN(d.getTime()) ? "" : this.datePipe.transform(d, this.timeStampFormat) ?? ""
   }
 
   deleteSelected() {

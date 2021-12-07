@@ -54,7 +54,7 @@ export class HomeComponent {
       foldersToFileNames.forEach((folder: any) => {
         this.invisibleFolders.add(folder)
       })
-      this.loadMore(5)
+      this.addFoldersToViewport(5)
     })
   }
 
@@ -84,7 +84,7 @@ export class HomeComponent {
 
   removeEmptyFolder(folder: string) {
     this.visibleFolders.delete(folder)
-    this.loadMore(1)
+    this.addFoldersToViewport(1)
   }
 
   checkIfItemsLeft() {
@@ -116,7 +116,7 @@ export class HomeComponent {
     }
   }
 
-  loadMore(count: number = 2) {
+  addFoldersToViewport(count: number = 2) {
     let curr = 0
     let newFolders = []
     for (let fld of this.invisibleFolders) {
@@ -145,7 +145,7 @@ export class HomeComponent {
       if (scrolledBeyondThreshold) {
         let timeFromLastLoad = new Date().getTime() - this.lastLoadDate.getTime()
         if (timeFromLastLoad > this.waitBetweenLoadMore) {
-          this.loadMore()
+          this.addFoldersToViewport()
         }
       }
     }
