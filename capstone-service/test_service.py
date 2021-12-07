@@ -120,9 +120,19 @@ class TestService(unittest.TestCase):
             pass
         self.assertEqual(service.str_to_time('12:00'),time(12,0))
 
-    # def test_delete_files(self):
+    def test_delete_files(self):
+        payload = {
+            "run": "tests",
+            "mapping": {
+                "1": ["1629264806.7533052.png"]
+            }
+        }
+        service.delete_files(payload)
+        self.assertEqual(os.path.isfile('root/archive/1629264806.7533052.png'), True)
+        os.rename('root/archive/1629264806.7533052.png', 'root/tests/cam0/1/1629264806.7533052.png')
+        self.assertEqual(service.file_exists('tests', 'cam0', '1', '1629264806.7533052.png'), True)
 
-    # def test_move(self):
+    #def test_move(self):
 
     def test_move_files(self):
         run = 'tests'
