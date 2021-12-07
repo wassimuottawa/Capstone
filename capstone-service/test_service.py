@@ -2,6 +2,7 @@ import unittest
 from unittest import result
 from datetime import time
 import service
+import os
 
 class TestService(unittest.TestCase):
     def test_get_folders_in_path(self):
@@ -123,7 +124,34 @@ class TestService(unittest.TestCase):
 
     # def test_move(self):
 
-    # def test_move_files(self):
+    def test_move_files(self):
+        run = 'tests'
+        mapping = {
+            "1": ["1629264806.7533052.png", "1629264806.9078102.png"],
+            "2": ["1629264809.516625.png", "1629264809.931977.png"]
+        }
+        destination = os.path.join('root', run, 'cam0', '15')
+        service.move_files(run, mapping, destination)
+        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264806.7533052.png'), True)
+        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264806.9078102.png'), True)
+        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264809.516625.png'), True)
+        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264809.931977.png'), True)
+        
+        mapping = {
+            "15": ["1629264806.7533052.png", "1629264806.9078102.png"]
+        }
+        destination = os.path.join('root', run, 'cam0', '1')
+        service.move_files(run, mapping, destination)
+        self.assertEqual(service.file_exists(run, 'cam0', '1', '1629264806.7533052.png'), True)
+        self.assertEqual(service.file_exists(run, 'cam0', '1', '1629264806.9078102.png'), True)
+
+        mapping = {
+            "15": ["1629264809.516625.png", "1629264809.931977.png"]
+        }
+        destination = os.path.join('root', run, 'cam0', '2')
+        service.move_files(run, mapping, destination)
+        self.assertEqual(service.file_exists(run, 'cam0', '2', '1629264809.516625.png'), True)
+        self.assertEqual(service.file_exists(run, 'cam0', '2', '1629264809.931977.png'), True)
 
 if __name__ == '__main__':
     unittest.main()
