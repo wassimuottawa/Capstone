@@ -16,7 +16,7 @@
       </span>
   </div>
 
-  <drag-scroll #nav [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()">
+  <drag-scroll #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()">
     <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()"
          (mouseenter)="hoveredImageId = image" (mouseleave)="hoveredImageId = ''">
       <div class="imageDivContainer" (click)="selectionMode ? toggleImageSelect(image) : ''" [ngClass]="{

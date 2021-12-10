@@ -17,7 +17,6 @@ export class HomeComponent {
 
   invisibleFolders: Set<string> = new Set()
   folderToSelectedImagesMap: Map<string, Set<string>> = new Map();
-  endOfItems: boolean = false
   scrollThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the screen
   lastLoadDate: Date = new Date()
   waitBetweenLoadMore = 500 //0.5s
@@ -27,9 +26,10 @@ export class HomeComponent {
   run = ""
   defaultStartTime = '00:00'
   defaultEndTime = '23:59'
-  startTime: FormControl = new FormControl(this.defaultStartTime)
-  endTime: FormControl = new FormControl(this.defaultEndTime)
-  timeFilterEnabled = false
+  appliedStartTime : string = this.defaultStartTime //keep track of the last filter when user clicks "apply", reset to this value if form is modified without clicking apply
+  appliedEndTime: string = this.defaultEndTime
+  startTimeForm: FormControl = new FormControl(this.defaultStartTime)
+  endTimeForm: FormControl = new FormControl(this.defaultEndTime)
 
   constructor(private snackBar: MatSnackBar, private service: BackendService) {
     service.getRuns().subscribe(runs => {
@@ -39,11 +39,11 @@ export class HomeComponent {
     })
   }
 
-  runChanged() {
+  refreshContent() {
+    this.clearSelection()
     this.invisibleFolders.clear()
-    this.folderToSelectedImagesMap.clear()
-    this.lastLoadDate = new Date()
     this.visibleFolders.clear()
+    this.lastLoadDate = new Date()
     this.closeActionMenu()
     this.loadFolders()
   }
@@ -53,7 +53,6 @@ export class HomeComponent {
       foldersToFileNames.forEach((folder: any) => {
         this.invisibleFolders.add(folder)
       })
-      this.endOfItems = false
       this.addFoldersToViewport(5)
     })
   }
@@ -87,63 +86,51 @@ export class HomeComponent {
     this.addFoldersToViewport(1)
   }
 
-  checkIfItemsLeft() {
-    if (this.invisibleFolders.size == 0) {
-      this.endOfItems = true
-    }
-  }
-
   applyTimeFilter() {
-    this.timeFilterEnabled = true
-    this.folderToSelectedImagesMap.clear()
-    this.invisibleFolders.clear()
-    this.visibleFolders.clear()
-    this.loadFolders()
+    this.appliedStartTime = this.startTimeForm.value
+    this.appliedEndTime = this.endTimeForm.value
+    this.refreshContent()
   }
 
   resetTimeFiler() {
-    this.startTime.setValue(this.defaultStartTime)
-    this.endTime.setValue(this.defaultEndTime)
-    this.timeFilterEnabled = false
-    this.applyTimeFilter()
+    this.appliedStartTime = this.defaultStartTime
+    this.appliedEndTime = this.defaultEndTime
+    this.refreshContent()
   }
 
   filterMenuOpened() {
-    if (!this.timeFilterEnabled) {
-      this.startTime.setValue(this.defaultStartTime)
-      this.endTime.setValue(this.defaultEndTime)
-    }
+    this.startTimeForm.setValue(this.appliedStartTime)
+    this.endTimeForm.setValue(this.appliedEndTime)
   }
 
   addFoldersToViewport(count: number = 2) {
     let curr = 0
     let newFolders = []
-    for (let fld of this.invisibleFolders) {
+    for (let folder of this.invisibleFolders) {
       if (curr >= count) break
-      newFolders.push(fld)
+      newFolders.push(folder)
       curr++
     }
     newFolders.forEach(folder => {
       this.invisibleFolders.delete(folder)
       this.visibleFolders.add(folder)
     })
-    this.checkIfItemsLeft()
   }
 
   deleteSelected() {
-    this.service.delete(this.run, this.folderToSelectedImagesMap).subscribe(() =>
-      this.folders.filter(folder => this.folderToSelectedImagesMap.has(folder.folder)).forEach(
-        folder => folder.deleteSelected()
-      )
+    this.service.delete(this.run, this.folderToSelectedImagesMap).subscribe(() => {
+        this.folders.filter(folder => this.folderToSelectedImagesMap.has(folder.folder)).forEach(folder => folder.deleteSelected())
+        this.clearSelection()
+      }
     )
   }
 
   onScroll(event: any) {
-    if (!this.endOfItems) {
+    if (this.invisibleFolders.size) {
       const scrolledBeyondThreshold = event.target.offsetHeight + event.target.scrollTop >= this.scrollThreshold * event.target.scrollHeight
       if (scrolledBeyondThreshold) {
-        let timeFromLastLoad = new Date().getTime() - this.lastLoadDate.getTime()
-        if (timeFromLastLoad > this.waitBetweenLoadMore) {
+        let timeElapsedAfterLastLoad = new Date().getTime() - this.lastLoadDate.getTime()
+        if (timeElapsedAfterLastLoad > this.waitBetweenLoadMore) {
           this.addFoldersToViewport()
         }
       }
@@ -151,9 +138,11 @@ export class HomeComponent {
   }
 
   deselectAll() {
-    this.folders.forEach(folder => {
-      folder.deselectAll()
-    })
+    this.folders.forEach(folder => folder.deselectAll())
+    this.clearSelection()
+  }
+
+  clearSelection() {
     this.folderToSelectedImagesMap.clear()
   }
 

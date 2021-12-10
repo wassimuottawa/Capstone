@@ -28,18 +28,17 @@ export class FolderComponent implements AfterViewInit {
   @Input() selectionMode: boolean = false
   @Input() start: string = ""
   @Input() end: string = ""
-  @ViewChild('nav', {read: DragScrollComponent}) ds: DragScrollComponent | undefined
+  @ViewChild('images', {read: DragScrollComponent}) dragScrollComponent: DragScrollComponent | undefined
   @ViewChild('title') title: ElementRef | undefined
 
   selectedImagesIds: Set<string> = new Set<string>();
-  imageIdToImageMap: Map<string, any> = new Map<string, any>()
+  imageIdToImageMap: Map<string, any> = new Map<string, any>() //imageId to image file map
   hoveredCheckButtonId: string = ''
-  isHoveredFolder: boolean = false
+  isHoveredFolder: boolean = false //if this folder component is hovered, will be used to show/hide the select check buttons
   hoveredImageId: string = ''
-  isSelectAll: boolean = false
   isLoading: boolean = false
   dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
-  imageWidth = 150
+  imageWidth = 150 //px
   imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
   timeStampFormat: string = 'HH:mm:ss'
@@ -52,14 +51,17 @@ export class FolderComponent implements AfterViewInit {
     this.initialLoad()
   }
 
+  //Checks if horizontal scroll threshold has been reached, if so load more files
   onScroll() {
-    let ref: any = this.ds?._contentRef
+    let ref: any = this.dragScrollComponent?._contentRef
     const reachedScrollThreshold = ref.nativeElement.scrollLeft + ref.nativeElement.offsetWidth >= this.dragThreshold * ref.nativeElement.scrollWidth;
     if (reachedScrollThreshold) {
       this.loadFiles()
     }
   }
 
+
+  //Loads all image names in the folder, then calls load files to load as much images as the screen can fit
   initialLoad() {
     this.service.getFolderContents(this.run, this.folder, this.start, this.end).subscribe((files: any) => {
       files.forEach((file: any) => {
@@ -81,7 +83,7 @@ export class FolderComponent implements AfterViewInit {
       this.imageIdToImageMap.delete(img)
       this.unloadedImages.delete(img)
     })
-    this.selectedImagesIds.clear()
+    this.deselectAll()
     this.checkIfEmpty()
   }
 
@@ -127,14 +129,10 @@ export class FolderComponent implements AfterViewInit {
 
   deselectImage(imageId: string) {
     this.selectedImagesIds.delete(imageId)
-    this.isSelectAll = false
   }
 
   selectImage(imageId: string) {
     this.selectedImagesIds.add(imageId)
-    if (this.selectedImagesIds.size == this.imageIdToImageMap.size) {
-      this.isSelectAll = true
-    }
   }
 
   getImageNames(): string[] {
@@ -160,16 +158,14 @@ export class FolderComponent implements AfterViewInit {
 
   deselectAll() {
     this.selectedImagesIds.clear()
-    this.isSelectAll = false
   }
 
   selectAll() {
     [...this.imageIdToImageMap.keys(), ...this.unloadedImages].forEach(img => this.selectedImagesIds.add(img))
-    this.isSelectAll = true
   }
 
   isFolderSelected() {
-    return this.isSelectAll
+    return this.imageIdToImageMap.size && this.selectedImagesIds.size == this.unloadedImages.size + this.imageIdToImageMap.size
   }
 
   selectionChanged() {
