@@ -33,7 +33,7 @@
               [selectionMode]="this.folderToSelectedImagesMap.size > 0" [start]="appliedStartTime"
               [end]="appliedEndTime"></app-folder>
   <div class="end-of-items">
-    <span>END OF ITEMS</span>
+    <span *ngIf="!invisibleFolders.size">END OF ITEMS</span>
   </div>
 </div>
 
