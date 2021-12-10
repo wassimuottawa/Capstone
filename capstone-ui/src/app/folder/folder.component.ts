@@ -42,7 +42,7 @@ export class FolderComponent implements AfterViewInit {
   imageWidth = 150
   imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
-  timeStampFormat : string = 'HH:mm:ss'
+  timeStampFormat: string = 'HH:mm:ss'
 
   constructor(private service: BackendService, private datePipe: DatePipe) {
   }
@@ -154,13 +154,18 @@ export class FolderComponent implements AfterViewInit {
   }
 
   toggleFolderSelect() {
-    this.isFolderSelected() ? this.deselectAll() : [...this.imageIdToImageMap.keys(), ...this.unloadedImages].forEach(img => this.selectedImagesIds.add(img))
-    this.isSelectAll = !this.isSelectAll
+    this.isFolderSelected() ? this.deselectAll() : this.selectAll()
     this.selectionChanged()
   }
 
   deselectAll() {
     this.selectedImagesIds.clear()
+    this.isSelectAll = false
+  }
+
+  selectAll() {
+    [...this.imageIdToImageMap.keys(), ...this.unloadedImages].forEach(img => this.selectedImagesIds.add(img))
+    this.isSelectAll = true
   }
 
   isFolderSelected() {

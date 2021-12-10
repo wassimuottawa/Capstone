@@ -30,7 +30,7 @@ def get_folders_by_run(run):
     folders = set()
     for cam in get_cams(run):
         for folder in get_folders_in_path(os.path.join(ROOT_PATH, run, cam)):
-            if not_empty(run, cam, folder):
+            if folder_contains_image(run, cam, folder):
                 folders.add(folder)
     return folders
 
@@ -53,28 +53,35 @@ def get_file(run, folder, file):
             return send_from_directory(os.path.join(ROOT_PATH, run, cam, folder), file)
 
 
-def not_empty(run, cam, folder):
+def folder_contains_image(run, cam, folder):
     for file in os.listdir(os.path.join(ROOT_PATH, run, cam, folder)):
         if is_image(file):
             return True
     return False
 
 
+# If one image in the folder is in the time range, include entire folder
 def get_image_names(body):
     run = body.get(Params.RUN.value)
     folder = body.get(Params.FOLDER.value)
     start = str_to_time(body.get(Params.START_TIME.value))
     end = str_to_time(body.get(Params.END_TIME.value))
     images = set()
+    one_image_in_range = False
     for cam in list(filter(lambda c: folder_exists(run, c, folder), get_cams(run))):
-        for img in os.listdir(os.path.join(ROOT_PATH, run, cam, folder)):
-            if is_image(img) and is_in_time_range(img, start, end):
-                images.add(img)
-    return images
+        for img in get_image_names_in_path(run, cam, folder):
+            images.add(img)
+            if not one_image_in_range and is_in_time_range(img, start, end):
+                one_image_in_range = True
+    return images if one_image_in_range else {}
 
 
 def is_image(file_name):
     return str(file_name).endswith(IMAGE_EXTENSION)
+
+
+def get_image_names_in_path(run, cam, folder):
+    return list(filter(lambda f: is_image(f), os.listdir(os.path.join(ROOT_PATH, run, cam, folder))))
 
 
 def get_runs():

@@ -31,7 +31,7 @@ export class HomeComponent {
   endTime: FormControl = new FormControl(this.defaultEndTime)
   timeFilterEnabled = false
 
-  constructor(private _snackBar: MatSnackBar, private service: BackendService) {
+  constructor(private snackBar: MatSnackBar, private service: BackendService) {
     service.getRuns().subscribe(runs => {
       this.runs = runs
       this.run = runs[0] ?? ""
@@ -42,7 +42,6 @@ export class HomeComponent {
   runChanged() {
     this.invisibleFolders.clear()
     this.folderToSelectedImagesMap.clear()
-    this.endOfItems = false
     this.lastLoadDate = new Date()
     this.visibleFolders.clear()
     this.closeActionMenu()
@@ -54,6 +53,7 @@ export class HomeComponent {
       foldersToFileNames.forEach((folder: any) => {
         this.invisibleFolders.add(folder)
       })
+      this.endOfItems = false
       this.addFoldersToViewport(5)
     })
   }
@@ -64,7 +64,7 @@ export class HomeComponent {
 
   openActionMenu() {
     if (!this.actionMenuOpen) {
-      let matRef = this._snackBar.openFromComponent(ActionMenuComponent, {}).instance
+      let matRef = this.snackBar.openFromComponent(ActionMenuComponent, {}).instance
       this.actionMenuOpen = true
       matRef.onDeselectAll.subscribe(() => {
         this.deselectAll()
@@ -78,7 +78,7 @@ export class HomeComponent {
   }
 
   closeActionMenu() {
-    this._snackBar.dismiss()
+    this.snackBar.dismiss()
     this.actionMenuOpen = false
   }
 
@@ -99,7 +99,6 @@ export class HomeComponent {
     this.invisibleFolders.clear()
     this.visibleFolders.clear()
     this.loadFolders()
-
   }
 
   resetTimeFiler() {
@@ -159,12 +158,7 @@ export class HomeComponent {
   }
 
   onSelectionChange(selectedImages: Set<string>, folder: string) {
-    if (selectedImages.size) {
-      this.folderToSelectedImagesMap.set(folder, selectedImages)
-      this.openActionMenu()
-    } else {
-      this.folderToSelectedImagesMap.delete(folder)
-      this.closeActionMenu()
-    }
+    selectedImages.size ? this.folderToSelectedImagesMap.set(folder, selectedImages) : this.folderToSelectedImagesMap.delete(folder)
+    this.folderToSelectedImagesMap.size ? this.openActionMenu() : this.closeActionMenu()
   }
 }
