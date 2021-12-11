@@ -14,11 +14,11 @@
   <mat-menu #menu="matMenu" class="menu">
     <mat-form-field style="width: 100px" (click)="$event.stopPropagation()">
       <mat-label>From</mat-label>
-      <input [formControl]="startTimeForm" placeholder="hh:mm" style="text-align: center" matInput>
+      <input class="time-filter" [formControl]="startTimeForm" placeholder="hh:mm"  matInput>
     </mat-form-field>
     <mat-form-field style="width: 100px" (click)="$event.stopPropagation()">
       <mat-label>To</mat-label>
-      <input [formControl]="endTimeForm" placeholder="hh:mm" style="text-align: center" matInput>
+      <input class="time-filter" [formControl]="endTimeForm" placeholder="hh:mm" matInput>
     </mat-form-field>
     <button mat-menu-item class="filter-menu-button" (click)="applyTimeFilter()" style="margin-top: 15px">Apply</button>
     <button mat-menu-item class="filter-menu-button" (click)="resetTimeFiler()">Reset</button>
