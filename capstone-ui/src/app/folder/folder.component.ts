@@ -75,7 +75,7 @@ export class FolderComponent implements AfterViewInit {
 
   getDate(imageId: string): string {
     let d: Date = new Date(parseInt(imageId.split(".")[0]) * 1000)
-    return isNaN(d.getTime()) ? "" : this.datePipe.transform(d, this.timeStampFormat) ?? ""
+    return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.timeStampFormat) ?? ""
   }
 
   deleteSelected() {
