@@ -12,13 +12,13 @@
     <mat-icon>tune</mat-icon>
   </button>
   <mat-menu #menu="matMenu" class="menu">
-    <mat-form-field style="width: 100px" (click)="$event.stopPropagation()">
+    <mat-form-field class="time-form" (click)="$event.stopPropagation()">
       <mat-label>From</mat-label>
-      <input class="time-filter" [formControl]="startTimeForm" placeholder="hh:mm"  matInput>
+      <input class="time-input" [formControl]="startTimeForm" placeholder="hh:mm"  matInput>
     </mat-form-field>
-    <mat-form-field style="width: 100px" (click)="$event.stopPropagation()">
+    <mat-form-field class="time-form" (click)="$event.stopPropagation()">
       <mat-label>To</mat-label>
-      <input class="time-filter" [formControl]="endTimeForm" placeholder="hh:mm" matInput>
+      <input class="time-input" [formControl]="endTimeForm" placeholder="hh:mm" matInput>
     </mat-form-field>
     <button mat-menu-item class="filter-menu-button" (click)="applyTimeFilter()" style="margin-top: 15px">Apply</button>
     <button mat-menu-item class="filter-menu-button" (click)="resetTimeFiler()">Reset</button>
@@ -29,7 +29,7 @@
 <div class="main-container" (scroll)="onScroll($event)">
   <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [run]="run"
               (isEmpty)="removeEmptyFolder(folder)"
-              (onSelectedImagesChange)="onSelectionChange($event, folder)"
+              (onSelectionChange)="onSelectionChange($event, folder)"
               [selectionMode]="this.folderToSelectedImagesMap.size > 0" [start]="appliedStartTime"
               [end]="appliedEndTime"></app-folder>
   <div class="end-of-items">

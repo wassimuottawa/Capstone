@@ -12,6 +12,7 @@ import {DragScrollComponent} from "ngx-drag-scroll";
 import {Utils} from "../utils/utils";
 import {BackendService} from "../service/backend.service";
 import {DatePipe} from '@angular/common'
+import {cache} from "../decorators/cache-decorator";
 
 @Component({
   selector: 'app-folder',
@@ -20,11 +21,12 @@ import {DatePipe} from '@angular/common'
   encapsulation: ViewEncapsulation.None
 })
 export class FolderComponent implements AfterViewInit {
-
-  @Output() onSelectedImagesChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
+  @Output() onSelectionChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
   @Output() isEmpty: EventEmitter<void> = new EventEmitter<void>()
   @Input() folder: string = ""
   @Input() run: string = ""
+  /*to make multi-selection easier and faster, if this is set to true clicking anywhere in the image will select it, instead of clicking the checkmark,
+  selection mode is enabled when at least one image is selected anywhere in the application*/
   @Input() selectionMode: boolean = false
   @Input() start: string = ""
   @Input() end: string = ""
@@ -64,15 +66,13 @@ export class FolderComponent implements AfterViewInit {
   //Loads all image names in the folder, then calls load files to load as much images as the screen can fit
   initialLoad() {
     this.service.getFolderContents(this.run, this.folder, this.start, this.end).subscribe((files: any) => {
-      files.forEach((file: any) => {
-          this.unloadedImages.add(file)
-        }
-      )
+      files.forEach((file: any) => this.unloadedImages.add(file))
       this.checkIfEmpty()
       this.loadFiles()
     })
   }
 
+  @cache()
   getDate(imageId: string): string {
     let d: Date = new Date(parseInt(imageId.split(".")[0]) * 1000)
     return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.timeStampFormat) ?? ""
@@ -102,11 +102,11 @@ export class FolderComponent implements AfterViewInit {
     imageFile.src = this.service.getImageSrc(this.run, this.folder, imageId)
     this.unloadedImages.delete(imageId)
     this.imageIdToImageMap.set(imageId, imageFile)
-    imageFile.onload = (() => {
-      this.isLoading = false
-    })
+    imageFile.onload = (() => this.isLoading = false)
   }
 
+  //some images got width>length, since backend isn't resizing the images, this flag will be used to apply the appropriate css class to make it fit the square without cropping
+  @cache()
   isWideImage(image: string) {
     let img: HTMLImageElement = this.imageIdToImageMap.get(image)
     return img.width > img.height
@@ -139,6 +139,7 @@ export class FolderComponent implements AfterViewInit {
     return Utils.getKeysFromMap(this.imageIdToImageMap)
   }
 
+  @cache()
   getImageFile(image: string) {
     return this.imageIdToImageMap.get(image)?.src
   }
@@ -148,7 +149,7 @@ export class FolderComponent implements AfterViewInit {
   }
 
   isImageSelected(imageId: string): boolean {
-    return this.isFolderSelected() ? true : this.selectedImagesIds.has(imageId)
+    return this.selectedImagesIds.has(imageId)
   }
 
   toggleFolderSelect() {
@@ -168,7 +169,8 @@ export class FolderComponent implements AfterViewInit {
     return this.imageIdToImageMap.size && this.selectedImagesIds.size == this.unloadedImages.size + this.imageIdToImageMap.size
   }
 
+  //cloning the emitted Set to prevent it from being passed as a reference and make sure all changes go through the event emitter
   selectionChanged() {
-    this.onSelectedImagesChange.emit(this.selectedImagesIds)
+    this.onSelectionChange.emit(new Set([...this.selectedImagesIds]))
   }
 }
