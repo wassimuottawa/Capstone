@@ -10,7 +10,7 @@ cors = CORS(app)
 @app.route("/image/<string:run>/<string:folder>/<string:image>")
 @cross_origin()
 def get_image(run, folder, image):
-    return service.get_file(run, folder, image)
+    return service.get_image_file(run, folder, image)
 
 
 @app.route("/delete", methods=['POST'])

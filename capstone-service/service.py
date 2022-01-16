@@ -18,7 +18,7 @@ class Params(Enum):
     FOLDER = 'folder'
     START_TIME = 'start'
     END_TIME = 'end'
-    DESTINATION = 'destination'
+    DESTINATION_FOLDER = 'destinationFolder'
     MAPPING = 'mapping'
 
 
@@ -28,33 +28,26 @@ def get_folders_in_path(path):
 
 def get_folders_by_run(run):
     folders = set()
-    for cam in get_cams(run):
-        for folder in get_folders_in_path(os.path.join(ROOT_PATH, run, cam)):
-            if folder_contains_image(run, cam, folder):
-                folders.add(folder)
+    for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
+        if folder_contains_image(run, folder):
+            folders.add(folder)
     return folders
 
 
-def get_cams(run):
-    return get_folders_in_path(os.path.join(ROOT_PATH, run))
+def file_exists(run, folder, file):
+    return os.path.isfile(os.path.join(ROOT_PATH, run, folder, file))
 
 
-def file_exists(run, cam, folder, file):
-    return os.path.isfile(os.path.join(ROOT_PATH, run, cam, folder, file))
+def folder_exists(run, folder):
+    return os.path.isdir(os.path.join(ROOT_PATH, run, folder))
 
 
-def folder_exists(run, cam, folder):
-    return os.path.isdir(os.path.join(ROOT_PATH, run, cam, folder))
+def get_image_file(run, folder, file_name):
+    return send_from_directory(os.path.join(ROOT_PATH, run, folder), file_name)
 
 
-def get_file(run, folder, file):
-    for cam in get_cams(run):
-        if file_exists(run, cam, folder, file):
-            return send_from_directory(os.path.join(ROOT_PATH, run, cam, folder), file)
-
-
-def folder_contains_image(run, cam, folder):
-    for file in os.listdir(os.path.join(ROOT_PATH, run, cam, folder)):
+def folder_contains_image(run, folder):
+    for file in os.listdir(os.path.join(ROOT_PATH, run, folder)):
         if is_image(file):
             return True
     return False
@@ -67,21 +60,17 @@ def get_image_names(body):
     start = str_to_time(body.get(Params.START_TIME.value))
     end = str_to_time(body.get(Params.END_TIME.value))
     images = set()
-    one_image_in_range = False
-    for cam in list(filter(lambda c: folder_exists(run, c, folder), get_cams(run))):
-        for img in get_image_names_in_path(run, cam, folder):
-            images.add(img)
-            if not one_image_in_range and is_in_time_range(img, start, end):
-                one_image_in_range = True
-    return images if one_image_in_range else {}
+    for img in get_image_names_in_path(run, folder):
+        images.add(img)
+    return images if any(is_in_time_range(img, start, end) for img in images) else {}
 
 
 def is_image(file_name):
     return str(file_name).endswith(IMAGE_EXTENSION)
 
 
-def get_image_names_in_path(run, cam, folder):
-    return list(filter(lambda f: is_image(f), os.listdir(os.path.join(ROOT_PATH, run, cam, folder))))
+def get_image_names_in_path(run, folder):
+    return list(filter(lambda f: is_image(f), os.listdir(os.path.join(ROOT_PATH, run, folder))))
 
 
 def get_runs():
@@ -96,18 +85,17 @@ def delete_files(body: dict):
 
 def move(body: dict):
     run = body.get(Params.RUN.value)
-    destination = os.path.join(ROOT_PATH, run, get_cams(run)[0], body.get(Params.DESTINATION.value))
-    move_files(run, body.get(Params.DESTINATION.value), destination)
+    destination_path = os.path.join(ROOT_PATH, run, body.get(Params.DESTINATION_FOLDER.value))
+    move_files(run, body.get(Params.MAPPING.value), destination_path)
 
 
 def move_files(run, files_mapping, destination, overwrite=True):
     for folder, files in files_mapping.items():
         for file in files:
-            for cam in get_cams(run):
-                if file_exists(run, cam, folder, file):
-                    shutil.move(os.path.join(ROOT_PATH, run, cam, folder, file),
-                                os.path.join(destination, file) if overwrite else destination)
-                    break
+            if file_exists(run, folder, file):
+                shutil.move(os.path.join(ROOT_PATH, run, folder, file),
+                            os.path.join(destination, file) if overwrite else destination)
+                break
 
 
 def get_time_from_file_name(file_name):
@@ -121,7 +109,8 @@ def is_in_time_range(image_name, start, end):
         time = get_time_from_file_name(image_name)
         return start <= time <= end
     except ValueError:
-        print("ValueError caught while filtering by time for image={0}, start={1}, end={2}".format(image_name, start, end))
+        print("ValueError caught while filtering by time for image={0}, start={1}, end={2}".format(image_name, start,
+                                                                                                 end))
         return False
 
 
