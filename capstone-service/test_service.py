@@ -30,6 +30,7 @@ class TestService(unittest.TestCase):
             pass
         self.assertEqual(service.get_cams('run 1'), ['cam0', 'cam1'])
 
+    # service.file_exists() has been removed as its not needed after removing cams, pls update
     def test_file_exists(self):
         try:
             service.file_exists()

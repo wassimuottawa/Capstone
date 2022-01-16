@@ -34,10 +34,6 @@ def get_folders_by_run(run):
     return folders
 
 
-def file_exists(run, folder, file):
-    return os.path.isfile(os.path.join(ROOT_PATH, run, folder, file))
-
-
 def folder_exists(run, folder):
     return os.path.isdir(os.path.join(ROOT_PATH, run, folder))
 
@@ -92,10 +88,8 @@ def move(body: dict):
 def move_files(run, files_mapping, destination, overwrite=True):
     for folder, files in files_mapping.items():
         for file in files:
-            if file_exists(run, folder, file):
-                shutil.move(os.path.join(ROOT_PATH, run, folder, file),
-                            os.path.join(destination, file) if overwrite else destination)
-                break
+            shutil.move(os.path.join(ROOT_PATH, run, folder, file),
+                        os.path.join(destination, file) if overwrite else destination)
 
 
 def get_time_from_file_name(file_name):
@@ -110,7 +104,7 @@ def is_in_time_range(image_name, start, end):
         return start <= time <= end
     except ValueError:
         print("ValueError caught while filtering by time for image={0}, start={1}, end={2}".format(image_name, start,
-                                                                                                 end))
+                                                                                                   end))
         return False
 
 
