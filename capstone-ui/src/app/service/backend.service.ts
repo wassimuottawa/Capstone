@@ -7,7 +7,7 @@ export class Request {
   folder: string | undefined
   start: string | undefined
   end: string | undefined
-  destination: string | undefined
+  destinationFolder: string | undefined
   mapping: any
 
   setStartEnd(start: string, end: string) {

@@ -26,11 +26,11 @@ export class FolderComponent implements AfterViewInit {
   @Input() folder: string = ""
   @Input() run: string = ""
   /*to make multi-selection easier and faster, if this is set to true clicking anywhere in the image will select it, instead of clicking the checkmark,
-  selection mode is enabled when at least one image is selected anywhere in the application*/
+  @selectionMode is enabled when at least one image is selected anywhere in the application*/
   @Input() selectionMode: boolean = false
   @Input() start: string = ""
   @Input() end: string = ""
-  @ViewChild('images', {read: DragScrollComponent}) dragScrollComponent: DragScrollComponent | undefined
+  @ViewChild('images') dragScrollComponent: DragScrollComponent | undefined
   @ViewChild('title') title: ElementRef | undefined
 
   selectedImagesIds: Set<string> = new Set<string>();
@@ -43,7 +43,7 @@ export class FolderComponent implements AfterViewInit {
   imageWidth = 150 //px
   imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
-  timeStampFormat: string = 'HH:mm:ss'
+  timeStampFormat: string = 'HH:mm:ss ss'
 
   constructor(private service: BackendService, private datePipe: DatePipe) {
   }
@@ -136,7 +136,7 @@ export class FolderComponent implements AfterViewInit {
   }
 
   getImageNames(): string[] {
-    return Utils.getKeysFromMap(this.imageIdToImageMap)
+    return Utils.getKeysFromMap(this.imageIdToImageMap).sort()
   }
 
   @cache()

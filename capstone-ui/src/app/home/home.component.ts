@@ -30,6 +30,7 @@ export class HomeComponent {
   appliedEndTime: string = this.defaultEndTime
   startTimeForm: FormControl = new FormControl(this.defaultStartTime)
   endTimeForm: FormControl = new FormControl(this.defaultEndTime)
+  foldersPerScreen: number = 5
 
   constructor(private snackBar: MatSnackBar, private service: BackendService) {
     service.getRuns().subscribe(runs => {
@@ -53,7 +54,7 @@ export class HomeComponent {
       foldersToFileNames.forEach((folder: any) => {
         this.invisibleFolders.add(folder)
       })
-      this.addFoldersToViewport(5)
+      this.addFoldersToViewport(this.foldersPerScreen)
     })
   }
 
