@@ -50,9 +50,7 @@ export class BackendService {
     let request = new Request();
     request.run = run
     request.mapping = {}
-    folderToImages.forEach((value, key) => {
-      request.mapping[key] = [...value]
-    });
+    folderToImages.forEach((value, key) => request.mapping[key] = [...value]);
     return this.http.post<any>(BackendService.SERVICE_URL + "delete", request)
   }
 }
