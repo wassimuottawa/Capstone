@@ -7,17 +7,20 @@ app = Flask(__name__)
 cors = CORS(app)
 
 
-@app.route("/image/<string:run>/<string:folder>/<string:image>")
+@app.route("/image/<string:run>/<string:folder>/<string:tracklet>/<string:image>")
 @cross_origin()
-def get_image(run, folder, image):
-    return service.get_image_file(run, folder, image)
+def get_image(run, folder, tracklet, image):
+    return service.get_image_file(run, folder, tracklet, image)
 
 
 @app.route("/delete", methods=['POST'])
 @cross_origin()
 def delete_images():
-    service.delete_files(request.json)
-    return jsonify("Deleted")
+    success = service.delete_files(request.json)
+    if success:
+        return Response(status=200)
+    else:
+        return Response(status=400)
 
 
 @app.route("/runs")
@@ -29,20 +32,23 @@ def get_runs():
 @app.route("/folder/<string:run>")
 @cross_origin()
 def get_folders_by_run(run):
-    return jsonify(list(service.get_folders_by_run(run)))
+    return jsonify(service.get_folders_by_run(run))
 
 
 @app.route("/images", methods=['POST'])
 @cross_origin()
 def get_image_names():
-    return jsonify(list(service.get_image_names(request.json)))
+    return jsonify(service.get_image_names(request.json))
 
 
 @app.route("/move", methods=['POST'])
 @cross_origin()
 def move():
-    service.move(request.json)
-    return Response(status=200)
+    success = service.move(request.json)
+    if success:
+        return Response(status=200)
+    else:
+        return Response(status=400)
 
 
 if __name__ == '__main__':

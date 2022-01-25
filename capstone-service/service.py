@@ -27,10 +27,12 @@ def get_folders_in_path(path):
 
 
 def get_folders_by_run(run):
-    folders = set()
+    folders = dict()
     for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
-        if folder_contains_image(run, folder):
-            folders.add(folder)
+        folders[folder] = []
+        for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
+            if folder_contains_image(run, folder, tracklet):
+                folders[folder].append(tracklet)
     return folders
 
 
@@ -38,12 +40,12 @@ def folder_exists(run, folder):
     return os.path.isdir(os.path.join(ROOT_PATH, run, folder))
 
 
-def get_image_file(run, folder, file_name):
-    return send_from_directory(os.path.join(ROOT_PATH, run, folder), file_name)
+def get_image_file(run, folder, tracklet, file_name):
+    return send_from_directory(os.path.join(ROOT_PATH, run, folder, tracklet), file_name)
 
 
-def folder_contains_image(run, folder):
-    for file in os.listdir(os.path.join(ROOT_PATH, run, folder)):
+def folder_contains_image(run, folder, tracklet):
+    for file in os.listdir(os.path.join(ROOT_PATH, run, folder, tracklet)):
         if is_image(file):
             return True
     return False
@@ -55,18 +57,24 @@ def get_image_names(body):
     folder = body.get(Params.FOLDER.value)
     start = str_to_time(body.get(Params.START_TIME.value))
     end = str_to_time(body.get(Params.END_TIME.value))
-    images = set()
-    for img in get_image_names_in_path(run, folder):
-        images.add(img)
-    return images if any(is_in_time_range(img, start, end) for img in images) else {}
+
+    images = {}
+    has_images_in_range = False
+    for tracklet in os.listdir(os.path.join(ROOT_PATH, run, folder)):
+        image_names = get_image_names_in_path(run, folder, tracklet)
+        images[tracklet] = image_names
+        if any(is_in_time_range(img, start, end) for img in image_names):
+            has_images_in_range = True
+
+    return images if has_images_in_range else {}
 
 
 def is_image(file_name):
     return str(file_name).endswith(IMAGE_EXTENSION)
 
 
-def get_image_names_in_path(run, folder):
-    return list(filter(lambda f: is_image(f), os.listdir(os.path.join(ROOT_PATH, run, folder))))
+def get_image_names_in_path(run, folder, tracklet):
+    return list(filter(lambda f: is_image(f), os.listdir(os.path.join(ROOT_PATH, run, folder, tracklet))))
 
 
 def get_runs():
@@ -76,20 +84,24 @@ def get_runs():
 
 
 def delete_files(body: dict):
-    move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
+    return move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
 
 def move(body: dict):
     run = body.get(Params.RUN.value)
     destination_path = os.path.join(ROOT_PATH, run, body.get(Params.DESTINATION_FOLDER.value))
-    move_files(run, body.get(Params.MAPPING.value), destination_path)
+    return move_files(run, body.get(Params.MAPPING.value), destination_path)
 
 
-def move_files(run, files_mapping, destination, overwrite=True):
-    for folder, files in files_mapping.items():
-        for file in files:
-            shutil.move(os.path.join(ROOT_PATH, run, folder, file),
-                        os.path.join(destination, file) if overwrite else destination)
+# Returns false if destination path already exists, or another error occurs while moving
+def move_files(run, files_mapping, destination):
+    for folder, tracklets in files_mapping.items():
+        for tracklet in tracklets:
+            try:
+                shutil.move(os.path.join(ROOT_PATH, run, folder, tracklet), destination)
+            except shutil.Error:
+                return False
+    return True
 
 
 def get_time_from_file_name(file_name):
