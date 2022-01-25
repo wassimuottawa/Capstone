@@ -27,7 +27,9 @@
 
 .toolbar {
   height: 6%;
-  background-color: #58a0ff70;
+  display: flex;
+  justify-content: space-between;
+  background-color:rgb(36, 43, 45);
 }
 
 .end-of-items {
@@ -37,9 +39,9 @@
 }
 
 .title {
+  color: white;
   display: flex;
-  justify-content: center;
-  width: 100%;
+  justify-content: left;
 }
 
 .time-input {
@@ -47,5 +49,39 @@
 }
 
 .time-form {
-  width: 100px;
+  width: 100%;
 }
+
+.actionMenuButton {
+  width:20%;
+  margin:10px;
+  color: white;
+  background-color:#387da7;
+}
+
+.actionMenuButton:hover {
+  background-color:rgb(63,63,63);
+}
+
+.runFolderList {
+  width:20%;
+  color: white;
+}
+
+.actionButtonContainer {
+  text-align:center;
+  width:100%;
+}
+
+@media only screen and (max-width: 1050px) {
+  .title {
+    display:none;
+  }
+  .actionMenuButton {
+    width:20%;
+    margin:10px;
+    color: white;
+    background-color:#387da7;
+  }
+}
+

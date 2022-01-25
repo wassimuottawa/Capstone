@@ -1,30 +1,47 @@
 <mat-toolbar class="toolbar">
-  <mat-form-field style="position: absolute">
+  <!--TITLE-->
+  <span class="title">Person Re-Identification Annotator</span>
+  <div class="actionButtonContainer">
+  <!--EXTRACT BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="click()">
+      <mat-icon>call_split</mat-icon>
+    </button>
+  <!--DELETE BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="click()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  <!--TIME CONSTRAINT BUTTON-->
+    <button mat-raised-button style="margin:10px;" [matMenuTriggerFor]="menu" (onMenuOpen)="filterMenuOpened()" class="actionMenuButton">
+      <mat-icon>tune</mat-icon>
+    </button>
+    <!--TIME CONSTRAINT FORM-->
+      <mat-menu #menu="matMenu" class="menu">
+      <mat-form-field class="time-form" (click)="$event.stopPropagation()">
+        <mat-label>From</mat-label>
+        <input class="time-input" [formControl]="startTimeForm" placeholder="hh:mm"  matInput>
+      </mat-form-field>
+      <mat-form-field class="time-form" (click)="$event.stopPropagation()">
+        <mat-label>To</mat-label>
+        <input class="time-input" [formControl]="endTimeForm" placeholder="hh:mm" matInput>
+      </mat-form-field>
+      <button mat-menu-item class="filter-menu-button" (click)="applyTimeFilter()" style="margin-top: 15px">Apply</button>
+      <button mat-menu-item class="filter-menu-button" (click)="resetTimeFiler()">Reset</button>
+    </mat-menu>
+  <!--DESELECT ALL BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="click()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!--RUN FOLDER LIST-->
+  <mat-form-field class="runFolderList" >
     <mat-select [(value)]="run" (valueChange)="refreshContent()">
       <mat-option *ngFor="let run of runs" [value]="run">
         {{run}}
       </mat-option>
     </mat-select>
   </mat-form-field>
-  <span class="title">Person Re-identification Annotator</span>
-  <span class="spacer"></span>
-  <button [matMenuTriggerFor]="menu" (onMenuOpen)="filterMenuOpened()" mat-icon-button class="action_button">
-    <mat-icon>tune</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu" class="menu">
-    <mat-form-field class="time-form" (click)="$event.stopPropagation()">
-      <mat-label>From</mat-label>
-      <input class="time-input" [formControl]="startTimeForm" placeholder="hh:mm"  matInput>
-    </mat-form-field>
-    <mat-form-field class="time-form" (click)="$event.stopPropagation()">
-      <mat-label>To</mat-label>
-      <input class="time-input" [formControl]="endTimeForm" placeholder="hh:mm" matInput>
-    </mat-form-field>
-    <button mat-menu-item class="filter-menu-button" (click)="applyTimeFilter()" style="margin-top: 15px">Apply</button>
-    <button mat-menu-item class="filter-menu-button" (click)="resetTimeFiler()">Reset</button>
-  </mat-menu>
 </mat-toolbar>
-
 
 <div class="main-container" (scroll)="onScroll($event)">
   <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [run]="run"

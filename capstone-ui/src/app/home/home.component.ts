@@ -1,9 +1,15 @@
-import {Component, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {Component, QueryList, ViewChildren, ViewEncapsulation, HostListener} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActionMenuComponent} from "../action-menu/action-menu.component";
 import {FolderComponent} from "../folder/folder.component";
 import {BackendService} from "../service/backend.service";
 import {FormControl} from "@angular/forms";
+
+export enum KEY_CODE {
+  EXTRACT = 88,     //X
+  DELETE = 46,    //DELETE
+  DESELECT = 27,  //ESC
+}
 
 @Component({
   selector: 'app-home',
@@ -31,6 +37,21 @@ export class HomeComponent {
   startTimeForm: FormControl = new FormControl(this.defaultStartTime)
   endTimeForm: FormControl = new FormControl(this.defaultEndTime)
   foldersPerScreen: number = 5
+
+  @HostListener('window:keyup', ['$event'])
+    keyEvent(event: KeyboardEvent) {
+      console.log(event);
+
+      if (event.keyCode === KEY_CODE.EXTRACT) {
+        this.click();
+      }
+      if (event.keyCode === KEY_CODE.DELETE) {
+        this.click();
+      }
+      if (event.keyCode === KEY_CODE.DESELECT) {
+        this.click();
+      }
+    }
 
   constructor(private snackBar: MatSnackBar, private service: BackendService) {
     service.getRuns().subscribe(runs => {
@@ -150,5 +171,9 @@ export class HomeComponent {
   onSelectionChange(selectedImages: Set<string>, folder: string) {
     selectedImages.size ? this.folderToSelectedImagesMap.set(folder, selectedImages) : this.folderToSelectedImagesMap.delete(folder)
     this.folderToSelectedImagesMap.size ? this.openActionMenu() : this.closeActionMenu()
+  }
+
+  click(){
+    console.log("Hit")
   }
 }
