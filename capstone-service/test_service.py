@@ -1,126 +1,170 @@
 import os
 import unittest
 from datetime import time
+import shutil
 
 import service
 
+from unittest.mock import patch
+
 
 class TestService(unittest.TestCase):
+
     def test_get_folders_in_path(self):
         try:
             service.get_folders_in_path()
         except TypeError:
             pass
-        self.assertEqual(service.get_folders_in_path('root/run3'), ['cam0', 'cam1'])
+        self.assertEqual(service.get_folders_in_path('root'), ['archive', 'run 1', 'run3', 'tests'])
+        self.assertNotEqual(service.get_folders_in_path('root'), ['random'])
 
     def test_get_folders_by_run(self):
         try:
             service.get_folders_by_run()
         except TypeError:
             pass
-        self.assertEqual(service.get_folders_by_run('run3'), set(['1']))
-        self.assertNotEqual(service.get_folders_by_run('run3'), set(['1', '2']))
-        self.assertEqual(service.get_folders_by_run('run 1'),
-                         set(['11', '10', '13', '12', '15', '14', '1', '3', '2', '5', '4', '7', '6', '9', '8']))
-
-    def test_get_cams(self):
-        try:
-            service.get_cams()
-        except TypeError:
-            pass
-        self.assertEqual(service.get_cams('run 1'), ['cam0', 'cam1'])
-
-    # service.file_exists() has been removed as its not needed after removing cams, pls update
-    def test_file_exists(self):
-        try:
-            service.file_exists()
-            service.file_exists('run3', 'cam0', '1')
-            service.file_exists('run3', 'cam0', 'test1.png')
-            service.file_exists('run3', '1', 'test1.png')
-            service.file_exists('cam0', '1', 'test1.png')
-        except TypeError:
-            pass
-        self.assertEqual(service.file_exists('run3', 'cam0', '1', 'test1.png'), True)
-        self.assertEqual(service.file_exists('run2', 'cam0', '1', 'test1.png'), False)
-        self.assertEqual(service.file_exists('run3', 'cam2', '1', 'test1.png'), False)
-        self.assertEqual(service.file_exists('run3', 'cam0', '2', 'test2.png'), False)
+        self.assertEqual(service.get_folders_by_run('run 1'), {'1': ['0001', '0004'], '2': ['0001', '0003'],
+                                                               '3': ['0005', '0012', '0015'], '5': ['0003'],
+                                                               '6': ['0007'], '7': ['0001', '0009'],
+                                                               '8': ['0005', '0006'], '9': ['0007']})
 
     def test_folder_exists(self):
         try:
             service.folder_exists()
-            service.folder_exists('run5', 'cam1')
-            service.folder_exists('run3', 'test1.png')
-            service.folder_exists('cam1', 'test1.png')
         except TypeError:
             pass
-        self.assertEqual(service.folder_exists('run3', 'cam0', '1'), True)
-        self.assertEqual(service.folder_exists('run2', 'cam0', '1'), False)
-        self.assertEqual(service.folder_exists('run3', 'cam2', '1'), False)
-        self.assertEqual(service.folder_exists('run3', 'cam0', '2'), False)
+        self.assertEqual(service.folder_exists('run 1', '1'), True)
+        self.assertNotEqual(service.folder_exists('run 1', '10'), True)
 
-    def test_get_file(self):
+    @patch('service.get_image_file')
+    def test_get_image_file(self, mock_get):
+        run = 'run 1'
+        folder = '2'
+        tracklet = '0003'
+        file_name = '1629264814.4908354.png'
+        mock_get.return_value = None
+        self.assertEqual(service.get_image_file(run, folder, tracklet, file_name), None)
+
+    def test_folder_contains_image(self):
         try:
-            service.get_image_file()
-            service.get_image_file('run5', 'cam1', 'test1.png')
-            service.get_image_file('run3', 'cam2', 'test1.png')
-            service.get_image_file('run3', 'cam1', 'test4.png')
+            service.folder_contains_image()
         except TypeError:
             pass
-        self.assertEqual(service.get_image_file('run3', 'cam1', 'test1.png'), None)
-
-    def test_not_empty(self):
-        try:
-            self.assertEqual(service.not_empty('run3', 'cam0', '2'))
-        except OSError:
-            pass
-        self.assertEqual(service.not_empty('run3', 'cam1', '1'), True)
-        self.assertEqual(service.not_empty('run3', 'cam0', '1'), True)
+        self.assertEqual(service.folder_contains_image('run 1', '1', '0001'), True)
+        self.assertNotEqual(service.folder_contains_image('run 1', '9', '0007'), False)
+        self.assertEqual(service.folder_contains_image('run 1', '7', '0009'), True)
 
     def test_get_image_names(self):
         try:
             service.get_image_names()
         except TypeError:
             pass
-        self.assertEqual(service.get_image_names({'run': 'run3', 'folder': '1'}), {'test1.png', 'test2.png'})
-        self.assertEqual(service.get_image_names({'run': 'run 1', 'folder': '8'}),
-                         {'1629264810.0094361.png', '1629264809.516625.png', '1629264811.702891.png',
-                          '1629264810.39205.png', '1629264809.931977.png', '1629264810.159293.png',
-                          '1629264809.4852278.png', '1629264810.0450258.png', '1629264809.2087257.png',
-                          '1629264811.767846.png', '1629264811.7347393.png', '1629264810.0793295.png',
-                          '1629264809.5972645.png', '1629264810.4277048.png', '1629264810.1243467.png',
-                          '1629264809.5645351.png'})
-        self.assertNotEqual(service.get_image_names({'run': 'run 1', 'folder': '7'}),
-                            service.get_image_names({'run': 'run 1', 'folder': '8'}))
+        self.assertEqual(service.get_image_names({'run': 'run 1', 'folder': '1'}), {'0001': ['1629264807.9152288.png',
+                                                                                             '1629264807.9463031.png',
+                                                                                             '1629264807.9777446.png',
+                                                                                             '1629264809.97505.png'],
+                                                                                    '0004': ['1629264809.2087257.png',
+                                                                                             '1629264809.388927.png',
+                                                                                             '1629264809.4852278.png',
+                                                                                             '1629264809.516625.png',
+                                                                                             '1629264809.5645351.png',
+                                                                                             '1629264809.5972645.png',
+                                                                                             '1629264809.931977.png',
+                                                                                             '1629264810.0094361.png',
+                                                                                             '1629264810.39205.png']})
 
     def test_is_image(self):
         try:
             service.is_image()
         except TypeError:
             pass
-        self.assertIsNotNone(service.is_image("root/run3/cam0/test1.png"))
-        self.assertEqual(service.is_image("root/run3/cam0/test1.png"), True)
-        self.assertEqual(service.is_image("root/run3/cam0/test1"), False)
+        self.assertEqual(service.is_image("123.456.png"), True)
+        self.assertEqual(service.is_image("123.456.jpg"), False)
+        self.assertNotEqual(service.is_image("an_image"), True)
+
+    def test_get_image_names_in_path(self):
+        try:
+            service.get_image_names_in_path()
+        except TypeError:
+            pass
+        self.assertEqual(service.get_image_names_in_path('run 1', '8', '0005'), ['1629264809.2087257.png',
+                                                                                 '1629264809.4852278.png',
+                                                                                 '1629264809.516625.png',
+                                                                                 '1629264809.5645351.png',
+                                                                                 '1629264809.5972645.png',
+                                                                                 '1629264809.931977.png',
+                                                                                 '1629264810.0094361.png',
+                                                                                 '1629264810.0450258.png',
+                                                                                 '1629264810.0793295.png',
+                                                                                 '1629264810.1243467.png',
+                                                                                 '1629264810.159293.png',
+                                                                                 '1629264810.39205.png',
+                                                                                 '1629264810.4277048.png'])
+
+        self.assertNotEqual(service.get_image_names_in_path('run 1', '3', '0012'), ['1629264810.0094361.png',
+                                                                                    '1629264810.0450258.png',
+                                                                                    '1629264810.0793295.png',
+                                                                                    '1629264810.159293.png',
+                                                                                    '1629264811.123456.png'])
 
     def test_get_runs(self):
         try:
-            service.get_runs()  # Common to get ValueError is no 'archive' folder exists in root directory
-        except ValueError:
+            service.get_runs()
+        except TypeError:
             pass
+        self.assertEqual(service.get_runs(), ['run 1', 'run3', 'tests'])
+
+    @patch('service.delete_files')
+    def test_delete_files(self, mock_del):
+        payload = {
+            "run": "run 1",
+            "mapping": {
+                "1/0001": ["1629264809.97505.png"]}
+        }
+        mock_del.return_value = 'root/archive/1629264809.97505.png'
+        self.assertEqual((service.delete_files(payload)), 'root/archive/1629264809.97505.png')
+
+    @patch('service.move')
+    def test_move(self, mock_move):
+        values = {
+            "run": "run 1",
+            "mapping": {
+                "1/0004": ["1629264809.388927.png"]
+            },
+            "destination_path": "file_moved"
+        }
+        mock_move.return_value = True
+        self.assertEqual(service.move(values), True)
+
+    @patch('service.move_files')
+    def test_move_files(self, mock_files_moved):
+        run = 'run 1'
+        mapping = {
+            "5/0003": ["1629264811.767846.png", "1629264811.7347393.png", "1629264813.1253777.png",
+                       "1629264813.1591573.png", "1629264814.5563.png", "1629264814.2895732.png",
+                       "1629264814.3458185.png", "1629264814.4908354.png", "1629264814.5914614.png",
+                       "1629264816.65119.png", "1629264816.548322.png", "1629264816.684646.png",
+                       "1629264816.778424.png"]
+        }
+        destination = "root/run 1/10"
+        mock_files_moved.return_value = True
+        self.assertEqual(service.move_files(run, mapping, destination), True)
 
     def test_get_time_from_file_name(self):
         try:
             service.get_time_from_file_name()
         except TypeError:
             pass
-        self.assertEqual(service.get_time_from_file_name("1629264807.622246.png"), time(5, 33, 27, 622246))
-        self.assertEqual(service.get_time_from_file_name("1629264810.0094361.png"), time(5, 33, 30, 9436))
+        self.assertEqual(service.get_time_from_file_name("1629264807.9777446.png"), time(5, 33, 27, 977745))  # GMT +4
+        self.assertEqual(service.get_time_from_file_name("1629264807.9463031.png"), time(5, 33, 27, 946303))  # GMT +4
+        self.assertEqual(service.get_time_from_file_name("1629264813.1253777.png"), time(5, 33, 33, 125378))  # GMT +4
 
     def test_is_in_time_range(self):
         try:
             service.is_in_time_range()
         except TypeError:
             pass
-        self.assertEqual(service.is_in_time_range("1629264807.622246.png", time(5, 0), time(6, 0)), True)
+        self.assertEqual(service.is_in_time_range("1629264807.622246.png", time(5, 0), time(6, 0)), True)  # GMT +4
         self.assertEqual(service.is_in_time_range("1629264810.0094361.png", time(2, 0), time(3, 0)), False)
 
     def test_str_to_time(self):
@@ -129,49 +173,7 @@ class TestService(unittest.TestCase):
         except TypeError:
             pass
         self.assertEqual(service.str_to_time('12:00'), time(12, 0))
-
-    def test_delete_files(self):
-        payload = {
-            "run": "tests",
-            "mapping": {
-                "1": ["1629264806.7533052.png"]
-            }
-        }
-        service.delete_files(payload)
-        self.assertEqual(os.path.isfile('root/archive/1629264806.7533052.png'), True)
-        os.rename('root/archive/1629264806.7533052.png', 'root/tests/cam0/1/1629264806.7533052.png')
-        self.assertEqual(service.file_exists('tests', 'cam0', '1', '1629264806.7533052.png'), True)
-
-    # def test_move(self):
-
-    def test_move_files(self):
-        run = 'tests'
-        mapping = {
-            "1": ["1629264806.7533052.png", "1629264806.9078102.png"],
-            "2": ["1629264809.516625.png", "1629264809.931977.png"]
-        }
-        destination = os.path.join('root', run, 'cam0', '15')
-        service.move_files(run, mapping, destination)
-        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264806.7533052.png'), True)
-        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264806.9078102.png'), True)
-        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264809.516625.png'), True)
-        self.assertEqual(service.file_exists(run, 'cam0', '15', '1629264809.931977.png'), True)
-
-        mapping = {
-            "15": ["1629264806.7533052.png", "1629264806.9078102.png"]
-        }
-        destination = os.path.join('root', run, 'cam0', '1')
-        service.move_files(run, mapping, destination)
-        self.assertEqual(service.file_exists(run, 'cam0', '1', '1629264806.7533052.png'), True)
-        self.assertEqual(service.file_exists(run, 'cam0', '1', '1629264806.9078102.png'), True)
-
-        mapping = {
-            "15": ["1629264809.516625.png", "1629264809.931977.png"]
-        }
-        destination = os.path.join('root', run, 'cam0', '2')
-        service.move_files(run, mapping, destination)
-        self.assertEqual(service.file_exists(run, 'cam0', '2', '1629264809.516625.png'), True)
-        self.assertEqual(service.file_exists(run, 'cam0', '2', '1629264809.931977.png'), True)
+        self.assertNotEqual(service.str_to_time('11:50'), time(10, 50))
 
 
 if __name__ == '__main__':
