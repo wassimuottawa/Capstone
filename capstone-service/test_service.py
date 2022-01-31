@@ -10,13 +10,14 @@ from unittest.mock import patch
 
 class TestService(unittest.TestCase):
 
-    def test_get_folders_in_path(self):
+    @patch('service.get_folders_in_path')
+    def test_get_folders_in_path(self, mock_path):
+        mock_path.return_value = ['archive', 'run 1', 'run3', 'tests']
         try:
             service.get_folders_in_path()
         except TypeError:
             pass
         self.assertEqual(service.get_folders_in_path('root'), ['archive', 'run 1', 'run3', 'tests'])
-        self.assertNotEqual(service.get_folders_in_path('root'), ['random'])
 
     def test_get_folders_by_run(self):
         try:
@@ -54,7 +55,21 @@ class TestService(unittest.TestCase):
         self.assertNotEqual(service.folder_contains_image('run 1', '9', '0007'), False)
         self.assertEqual(service.folder_contains_image('run 1', '7', '0009'), True)
 
-    def test_get_image_names(self):
+    @patch('service.get_image_names')
+    def test_get_image_names(self, mock_images):
+        mock_images.return_value = {'0001': ['1629264807.9152288.png',
+                                             '1629264807.9463031.png',
+                                             '1629264807.9777446.png',
+                                             '1629264809.97505.png'],
+                                    '0004': ['1629264809.2087257.png',
+                                             '1629264809.388927.png',
+                                             '1629264809.4852278.png',
+                                             '1629264809.516625.png',
+                                             '1629264809.5645351.png',
+                                             '1629264809.5972645.png',
+                                             '1629264809.931977.png',
+                                             '1629264810.0094361.png',
+                                             '1629264810.39205.png']}
         try:
             service.get_image_names()
         except TypeError:
@@ -82,7 +97,21 @@ class TestService(unittest.TestCase):
         self.assertEqual(service.is_image("123.456.jpg"), False)
         self.assertNotEqual(service.is_image("an_image"), True)
 
-    def test_get_image_names_in_path(self):
+    @patch('service.get_image_names_in_path')
+    def test_get_image_names_in_path(self, mocked_images_in_path):
+        mocked_images_in_path.return_value = ['1629264809.2087257.png',
+                                              '1629264809.4852278.png',
+                                              '1629264809.516625.png',
+                                              '1629264809.5645351.png',
+                                              '1629264809.5972645.png',
+                                              '1629264809.931977.png',
+                                              '1629264810.0094361.png',
+                                              '1629264810.0450258.png',
+                                              '1629264810.0793295.png',
+                                              '1629264810.1243467.png',
+                                              '1629264810.159293.png',
+                                              '1629264810.39205.png',
+                                              '1629264810.4277048.png']
         try:
             service.get_image_names_in_path()
         except TypeError:
@@ -107,7 +136,9 @@ class TestService(unittest.TestCase):
                                                                                     '1629264810.159293.png',
                                                                                     '1629264811.123456.png'])
 
-    def test_get_runs(self):
+    @patch('service.get_runs')
+    def test_get_runs(self, mock_result):
+        mock_result.return_value = ['run 1', 'run3', 'tests']
         try:
             service.get_runs()
         except TypeError:
