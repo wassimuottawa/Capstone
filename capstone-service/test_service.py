@@ -191,16 +191,16 @@ class TestService(unittest.TestCase):
             service.get_time_from_file_name()
         except TypeError:
             pass
-        self.assertEqual(service.get_time_from_file_name("1629264807.9777446.png"), time(1, 33, 27, 977745))  # GMT +4
-        self.assertEqual(service.get_time_from_file_name("1629264807.9463031.png"), time(1, 33, 27, 946303))  # GMT +4
-        self.assertEqual(service.get_time_from_file_name("1629264813.1253777.png"), time(1, 33, 33, 125378))  # GMT +4
+        self.assertEqual(service.get_time_from_file_name("1629264807.9777446.png"), time(5, 33, 27, 977745))  # GMT +4
+        self.assertEqual(service.get_time_from_file_name("1629264807.9463031.png"), time(5, 33, 27, 946303))  # GMT +4
+        self.assertEqual(service.get_time_from_file_name("1629264813.1253777.png"), time(5, 33, 33, 125378))  # GMT +4
 
     def test_is_in_time_range(self):
         try:
             service.is_in_time_range()
         except TypeError:
             pass
-        self.assertEqual(service.is_in_time_range("1629264807.622246.png", time(1, 0), time(2, 0)), True)  # GMT +4
+        self.assertEqual(service.is_in_time_range("1629264807.622246.png", time(5, 0), time(6, 0)), True)  # GMT +4
         self.assertEqual(service.is_in_time_range("1629264810.0094361.png", time(2, 0), time(3, 0)), False)
 
     def test_str_to_time(self):
