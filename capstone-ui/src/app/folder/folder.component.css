@@ -37,15 +37,15 @@
 
 .selected-check-button {
   display: block;
-  color: #1a73e8;
+  color: #387da7;
 }
 
 .deselected-expansion-panel-header {
-  background: #cfcfcf !important;
+  background: #dddcdc !important;
 }
 
 .selected-expansion-panel-header {
-  background: #bfdbff !important;
+  background: #c5e5f9 !important;
 }
 
 .mat-expansion-panel-header.mat-expanded {
@@ -57,7 +57,7 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 }
 
 .tracklets-container {
-  margin: 5px 5px 0 2px !important;
+  margin: 10px 5px 0 2px !important;
 }
 
 .select-folder-visible {
