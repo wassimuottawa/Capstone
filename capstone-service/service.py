@@ -1,15 +1,13 @@
-import os
 import shutil
-from datetime import datetime
 from enum import Enum
 
 from flask import *
 
+from utils import *
+
 ROOT_PATH = 'root'
-IMAGE_EXTENSION = '.png'
-ARCHIVE_FOLDER = 'archive'
-ARCHIVE_PATH = os.path.join(ROOT_PATH, ARCHIVE_FOLDER)
-TIME_FILTER_FORMAT = '%H:%M'
+ARCHIVE_FOLDER_NAME = 'archive'
+ARCHIVE_PATH = os.path.join(ROOT_PATH, ARCHIVE_FOLDER_NAME)
 
 
 # JSON keys from UI
@@ -26,33 +24,25 @@ def get_folders_in_path(path):
     return list(filter(lambda f: os.path.isdir(os.path.join(path, f)), os.listdir(path)))
 
 
-def get_folders_by_run(run):
-    folders = dict()
-    for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
-        folders[folder] = []
-        for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
-            if folder_contains_image(run, folder, tracklet):
-                folders[folder].append(tracklet)
-    return folders
-
-
-def folder_exists(run, folder):
-    return os.path.isdir(os.path.join(ROOT_PATH, run, folder))
-
-
 def get_image_file(run, folder, tracklet, file_name):
     return send_from_directory(os.path.join(ROOT_PATH, run, folder, tracklet), file_name)
 
 
-def folder_contains_image(run, folder, tracklet):
-    for file in os.listdir(os.path.join(ROOT_PATH, run, folder, tracklet)):
-        if is_image(file):
-            return True
-    return False
+def get_folders_by_run(run):
+    """ :returns: a folder to tracklets map"""
+    folders = dict()
+    for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
+        folders[folder] = []
+        for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
+            if folder_contains_image(os.path.join(ROOT_PATH, run, folder, tracklet)):
+                folders[folder].append(tracklet)
+    return folders
 
 
-# If one image in the folder is in the time range, include entire folder
 def get_image_names(body):
+    """ If one image in the folder is in the time range, include entire folder
+        :returns: tracklet to image names map
+    """
     run = body.get(Params.RUN.value)
     folder = body.get(Params.FOLDER.value)
     start = str_to_time(body.get(Params.START_TIME.value))
@@ -61,68 +51,47 @@ def get_image_names(body):
     images = {}
     has_images_in_range = False
     for tracklet in os.listdir(os.path.join(ROOT_PATH, run, folder)):
-        image_names = get_image_names_in_path(run, folder, tracklet)
-        images[tracklet] = image_names
-        if any(is_in_time_range(img, start, end) for img in image_names):
+        images[tracklet] = get_image_names_in_path(os.path.join(ROOT_PATH, run, folder, tracklet))
+        if any(is_in_time_range(img, start, end) for img in images[tracklet]):
             has_images_in_range = True
-
     return images if has_images_in_range else {}
-
-
-def is_image(file_name):
-    return str(file_name).endswith(IMAGE_EXTENSION)
-
-
-def get_image_names_in_path(run, folder, tracklet):
-    return list(filter(lambda f: is_image(f), os.listdir(os.path.join(ROOT_PATH, run, folder, tracklet))))
 
 
 def get_runs():
     runs = get_folders_in_path(ROOT_PATH)
-    runs.remove(ARCHIVE_FOLDER)
+    runs.remove(ARCHIVE_FOLDER_NAME)
     return runs
 
 
-def delete_files(body: dict):
+def delete_tracklets(body: dict):
+    """ :param body: folder to tracklets map """
     return move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
 
-def move(body: dict):
+def extract_into_new_folder(body: dict):
+    """ :param body: folder to tracklets map """
     run = body.get(Params.RUN.value)
-    destination_path = os.path.join(ROOT_PATH, run, body.get(Params.DESTINATION_FOLDER.value))
-    return move_files(run, body.get(Params.MAPPING.value), destination_path)
+    last_index = get_folders_in_path(os.path.join(ROOT_PATH, run))[-1]
+    new_folder_name = str(int(last_index) + 1).zfill(len(last_index))
+    new_folder_path = os.path.join(ROOT_PATH, run, new_folder_name)
+    os.mkdir(new_folder_path)
+    move_files(run, body.get(Params.MAPPING.value), new_folder_path)
+    return new_folder_name
 
 
-# Returns false if destination path already exists, or another error occurs while moving
 def move_files(run, files_mapping, destination):
+    """
+    :param files_mapping: folder to tracklets map
+    :return: false if destination path already exists, or another error occurs while moving
+    """
     for folder, tracklets in files_mapping.items():
         for tracklet in tracklets:
             try:
                 shutil.move(os.path.join(ROOT_PATH, run, folder, tracklet), destination)
-            except shutil.Error:
+            except shutil.Error as e:
+                print(e)
                 return False
     return True
-
-
-def get_time_from_file_name(file_name):
-    return datetime.fromtimestamp(float(os.path.splitext(file_name)[0])).time()
-
-
-def is_in_time_range(image_name, start, end):
-    try:
-        if start is None or end is None:
-            return True
-        time = get_time_from_file_name(image_name)
-        return start <= time <= end
-    except ValueError:
-        print("ValueError caught while filtering by time for image={0}, start={1}, end={2}".format(image_name, start,
-                                                                                                   end))
-        return False
-
-
-def str_to_time(time_string):
-    if time_string is not None:
-        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
 
 
 if __name__ == '__main__':

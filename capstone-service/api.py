@@ -15,12 +15,8 @@ def get_image(run, folder, tracklet, image):
 
 @app.route("/delete", methods=['POST'])
 @cross_origin()
-def delete_images():
-    success = service.delete_files(request.json)
-    if success:
-        return Response(status=200)
-    else:
-        return Response(status=400)
+def delete_tracklets():
+    return Response(status=200) if service.delete_tracklets(request.json) else Response(status=400)
 
 
 @app.route("/runs")
@@ -32,23 +28,21 @@ def get_runs():
 @app.route("/folder/<string:run>")
 @cross_origin()
 def get_folders_by_run(run):
+    """ :returns: a folder to tracklets map"""
     return jsonify(service.get_folders_by_run(run))
 
 
-@app.route("/images", methods=['POST'])
+@app.route("/trackletsToImages", methods=['POST'])
 @cross_origin()
-def get_image_names():
+def get_tracklets_to_image_names_map():
+    """ :returns: tracklet to image names map """
     return jsonify(service.get_image_names(request.json))
 
 
-@app.route("/move", methods=['POST'])
+@app.route("/extract", methods=['POST'])
 @cross_origin()
-def move():
-    success = service.move(request.json)
-    if success:
-        return Response(status=200)
-    else:
-        return Response(status=400)
+def extract():
+    return jsonify(service.extract_into_new_folder(request.json))
 
 
 if __name__ == '__main__':

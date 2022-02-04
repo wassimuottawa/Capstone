@@ -170,7 +170,7 @@ class TestService(unittest.TestCase):
             "destination_path": "file_moved"
         }
         mock_move.return_value = True
-        self.assertEqual(service.move(values), True)
+        self.assertEqual(service.move_tracklets(values), True)
 
     @patch('service.move_files')
     def test_move_files(self, mock_files_moved):
