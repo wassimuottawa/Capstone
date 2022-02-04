@@ -37,7 +37,7 @@ export class FolderComponent implements AfterViewInit {
 
   trackletsToImageNames: Map<string, Set<string>> = new Map<string, Set<string>>()
   selectedTracklets: Set<string> = new Set<string>();
-  isHoveredFolder: boolean = false //if this folder component is hovered, will be used to show/hide the select check buttons
+  isHoveredFolder: boolean = false //will be used to show/hide the select check buttons
   imagesPerRow = 0
   imageWidth = 150 //px
 
@@ -52,11 +52,15 @@ export class FolderComponent implements AfterViewInit {
   loadImageNames() {
     this.service.getTrackletsToImageNamesMap(this.run, this.folder, this.start, this.end)
       .subscribe((trackletsToImages) => {
-        Object.entries(trackletsToImages).forEach(([tracklet, images]) => {
-          this.trackletsToImageNames.set(tracklet, new Set(images))
+          Object.entries(trackletsToImages).forEach(([tracklet, images]) => {
+            this.trackletsToImageNames.set(tracklet, new Set(images))
+          })
+          this.checkIfEmpty()
+        },
+        () => {
+          console.log("Error loading folder " + this.folder)
+          this.isEmpty.emit()
         })
-        this.checkIfEmpty()
-      })
   }
 
   deleteSelectedTracklets() {
@@ -96,7 +100,7 @@ export class FolderComponent implements AfterViewInit {
     return this.trackletsToImageNames.size && this.selectedTracklets.size === this.trackletsToImageNames.size
   }
 
-  onTrackletSelectToggle(tracklet : string, selected:boolean) {
+  onTrackletSelectToggle(tracklet: string, selected: boolean) {
     selected ? this.selectedTracklets.add(tracklet) : this.selectedTracklets.delete(tracklet)
     this.selectionChanged()
   }

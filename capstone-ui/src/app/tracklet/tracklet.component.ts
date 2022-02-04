@@ -1,4 +1,14 @@
-import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Host, Input, Output, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Host,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {BackendService} from "../service/backend.service";
 import {DatePipe} from "@angular/common";
 import {DragScrollComponent} from "ngx-drag-scroll";
@@ -11,7 +21,7 @@ import {Utils} from "../utils/utils";
   templateUrl: './tracklet.component.html',
   styleUrls: ['./tracklet.component.css']
 })
-export class TrackletComponent implements AfterViewInit {
+export class TrackletComponent implements AfterViewInit, AfterViewChecked {
 
   @Input() imagesPerRow: number = 0
   @Input() tracklet: string = ''
