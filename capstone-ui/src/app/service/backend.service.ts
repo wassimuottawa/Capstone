@@ -26,31 +26,39 @@ export class BackendService {
   constructor(private http: HttpClient) {
   }
 
-  getFolders(run: string): Observable<any> {
-    return this.http.get<string[]>(BackendService.SERVICE_URL + `folder/${run}`)
+  getFoldersToTrackletsMap(run: string): Observable<Object> {
+    return this.http.get<Map<string, string[]>>(BackendService.SERVICE_URL + `folder/${run}`)
   }
 
   getRuns(): Observable<string[]> {
     return this.http.get<string[]>(BackendService.SERVICE_URL + "runs")
   }
 
-  getFolderContents(run: string, folder: string, start: string = '', end: string = ''): Observable<any> {
+  getTrackletsToImageNamesMap(run: string, folder: string, start: string = '', end: string = ''): Observable<Object> {
     let request = new Request();
     request.run = run
     request.folder = folder
     request.setStartEnd(start, end)
-    return this.http.post<string[]>(BackendService.SERVICE_URL + "images", request)
+    return this.http.post<Object>(BackendService.SERVICE_URL + "trackletsToImages", request)
   }
 
-  getImageSrc(run: string, folder: string, imageId: string): string {
-    return BackendService.SERVICE_URL + `image/${run}/${folder}/${imageId}`
+  getImageSrc(run: string, folder: string, tracklet: string, imageId: string): string {
+    return BackendService.SERVICE_URL + `image/${run}/${folder}/${tracklet}/${imageId}`
+  }
+
+  extractIntoNewFolder(run: string, folderToImages: Map<string, any>): Observable<any> {
+    return this.http.post<string>(BackendService.SERVICE_URL + "extract", this.getMoveRequest(run, folderToImages))
   }
 
   delete(run: string, folderToImages: Map<string, any>): Observable<any> {
+    return this.http.post<any>(BackendService.SERVICE_URL + "delete", this.getMoveRequest(run, folderToImages))
+  }
+
+  private getMoveRequest(run: string, folderToImages: Map<string, any>) : Request {
     let request = new Request();
     request.run = run
     request.mapping = {}
     folderToImages.forEach((value, key) => request.mapping[key] = [...value]);
-    return this.http.post<any>(BackendService.SERVICE_URL + "delete", request)
+    return request
   }
 }

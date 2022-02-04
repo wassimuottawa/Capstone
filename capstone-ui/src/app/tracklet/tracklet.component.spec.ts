@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ActionMenuComponent } from './action-menu.component';
+import { TrackletComponent } from './tracklet.component';
 
-describe('ActionMenuComponent', () => {
-  let component: ActionMenuComponent;
-  let fixture: ComponentFixture<ActionMenuComponent>;
+describe('TrackletComponent', () => {
+  let component: TrackletComponent;
+  let fixture: ComponentFixture<TrackletComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ActionMenuComponent ]
+      declarations: [ TrackletComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ActionMenuComponent);
+    fixture = TestBed.createComponent(TrackletComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

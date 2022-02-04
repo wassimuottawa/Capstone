@@ -2,39 +2,41 @@
   <!--TITLE-->
   <span class="title">Person Re-Identification Annotator</span>
   <div class="actionButtonContainer">
-  <!--EXTRACT BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="click()">
+    <!--DESELECT ALL BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deselectAll()" [disabled]="selectionEmpty()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <!--EXTRACT BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="extractSelectedTracklets()" [disabled]="selectionEmpty()">
       <mat-icon>call_merge</mat-icon>
     </button>
-  <!--DELETE BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="click()">
+    <!--DELETE BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deleteSelected()" [disabled]="selectionEmpty()">
       <mat-icon>delete</mat-icon>
     </button>
-  <!--TIME CONSTRAINT BUTTON-->
-    <button mat-raised-button style="margin:10px;" [matMenuTriggerFor]="menu" (onMenuOpen)="filterMenuOpened()" class="actionMenuButton">
+    <!--TIME CONSTRAINT BUTTON-->
+    <button mat-raised-button style="margin:10px;" [matMenuTriggerFor]="menu" (onMenuOpen)="filterMenuOpened()"
+            class="actionMenuButton">
       <mat-icon>tune</mat-icon>
     </button>
     <!--TIME CONSTRAINT FORM-->
-      <mat-menu #menu="matMenu" class="menu">
+    <mat-menu #menu="matMenu" class="menu">
       <mat-form-field class="time-form" (click)="$event.stopPropagation()">
         <mat-label>From</mat-label>
-        <input class="time-input" [formControl]="startTimeForm" placeholder="hh:mm"  matInput>
+        <input class="time-input" [formControl]="startTimeForm" placeholder="hh:mm" matInput>
       </mat-form-field>
       <mat-form-field class="time-form" (click)="$event.stopPropagation()">
         <mat-label>To</mat-label>
         <input class="time-input" [formControl]="endTimeForm" placeholder="hh:mm" matInput>
       </mat-form-field>
-      <button mat-menu-item class="filter-menu-button" (click)="applyTimeFilter()" style="margin-top: 15px">Apply</button>
+      <button mat-menu-item class="filter-menu-button" (click)="applyTimeFilter()" style="margin-top: 15px">Apply
+      </button>
       <button mat-menu-item class="filter-menu-button" (click)="resetTimeFiler()">Reset</button>
     </mat-menu>
-  <!--DESELECT ALL BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="click()">
-      <mat-icon>close</mat-icon>
-    </button>
   </div>
 
   <!--RUN FOLDER LIST-->
-  <mat-form-field class="runFolderList" >
+  <mat-form-field class="runFolderList">
     <mat-select [(value)]="run" (valueChange)="refreshContent()">
       <mat-option *ngFor="let run of runs" [value]="run">
         {{run}}
@@ -43,14 +45,16 @@
   </mat-form-field>
 </mat-toolbar>
 
-<div class="main-container" (scroll)="onScroll($event)">
+<div id="main-container" class="main-container" (scroll)="onScroll($event)">
   <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [run]="run"
+              [tracklets]="getTrackletsByFolder(folder)"
               (isEmpty)="removeEmptyFolder(folder)"
               (onSelectionChange)="onSelectionChange($event, folder)"
-              [selectionMode]="this.folderToSelectedImagesMap.size > 0" [start]="appliedStartTime"
-              [end]="appliedEndTime"></app-folder>
+              [selectionMode]="this.folderToSelectedTrackletsMap.size > 0" [start]="appliedStartTime"
+              [end]="appliedEndTime"
+              (folderCollapsed)="onFolderCollapse()"></app-folder>
   <div class="end-of-items">
-    <span *ngIf="!invisibleFolders.size">END OF ITEMS</span>
+    <span *ngIf="!hiddenFolders.size">END OF ITEMS</span>
   </div>
 </div>
 

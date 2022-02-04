@@ -5,14 +5,14 @@ import {
   EventEmitter,
   Input,
   Output,
+  QueryList,
   ViewChild,
+  ViewChildren,
   ViewEncapsulation
 } from '@angular/core';
-import {DragScrollComponent} from "ngx-drag-scroll";
-import {Utils} from "../utils/utils";
 import {BackendService} from "../service/backend.service";
-import {DatePipe} from '@angular/common'
-import {cache} from "../decorators/cache-decorator";
+import {TrackletComponent} from "../tracklet/tracklet.component";
+import {Utils} from "../utils/utils";
 
 @Component({
   selector: 'app-folder',
@@ -23,154 +23,87 @@ import {cache} from "../decorators/cache-decorator";
 export class FolderComponent implements AfterViewInit {
   @Output() onSelectionChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
   @Output() isEmpty: EventEmitter<void> = new EventEmitter<void>()
+  @Output() folderCollapsed: EventEmitter<void> = new EventEmitter<void>()
   @Input() folder: string = ""
+  @Input() tracklets: string[] = []
   @Input() run: string = ""
   /*to make multi-selection easier and faster, if this is set to true clicking anywhere in the image will select it, instead of clicking the checkmark,
   @selectionMode is enabled when at least one image is selected anywhere in the application*/
   @Input() selectionMode: boolean = false
   @Input() start: string = ""
   @Input() end: string = ""
-  @ViewChild('images') dragScrollComponent: DragScrollComponent | undefined
   @ViewChild('title') title: ElementRef | undefined
+  @ViewChildren('trackletComponent') trackletComponent: QueryList<TrackletComponent> = new QueryList<TrackletComponent>()
 
-  selectedImagesIds: Set<string> = new Set<string>();
-  imageIdToImageMap: Map<string, any> = new Map<string, any>() //imageId to image file map
-  hoveredCheckButtonId: string = ''
+  trackletsToImageNames: Map<string, Set<string>> = new Map<string, Set<string>>()
+  selectedTracklets: Set<string> = new Set<string>();
   isHoveredFolder: boolean = false //if this folder component is hovered, will be used to show/hide the select check buttons
-  hoveredImageId: string = ''
-  isLoading: boolean = false
-  dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
+  imagesPerRow = 0
   imageWidth = 150 //px
-  imagesPerRow = 0 //Will be calculated based on the width of the screen, this is used to know how many images to preload, when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
-  unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
-  timeStampFormat: string = 'HH:mm:ss ss'
 
-  constructor(private service: BackendService, private datePipe: DatePipe) {
+  constructor(private service: BackendService) {
   }
 
   ngAfterViewInit() {
-    this.imagesPerRow = Math.ceil(this.title?.nativeElement.offsetWidth / this.imageWidth) + 1
-    this.initialLoad()
+    this.imagesPerRow = Math.ceil(window.innerWidth / this.imageWidth) + 2
+    this.loadImageNames()
   }
 
-  //Checks if horizontal scroll threshold has been reached, if so load more files
-  onScroll() {
-    let ref: any = this.dragScrollComponent?._contentRef
-    const reachedScrollThreshold = ref.nativeElement.scrollLeft + ref.nativeElement.offsetWidth >= this.dragThreshold * ref.nativeElement.scrollWidth;
-    if (reachedScrollThreshold) {
-      this.loadFiles()
-    }
+  loadImageNames() {
+    this.service.getTrackletsToImageNamesMap(this.run, this.folder, this.start, this.end)
+      .subscribe((trackletsToImages) => {
+        Object.entries(trackletsToImages).forEach(([tracklet, images]) => {
+          this.trackletsToImageNames.set(tracklet, new Set(images))
+        })
+        this.checkIfEmpty()
+      })
   }
 
-
-  //Loads all image names in the folder, then calls load files to load as much images as the screen can fit
-  initialLoad() {
-    this.service.getFolderContents(this.run, this.folder, this.start, this.end).subscribe((files: any) => {
-      files.forEach((file: any) => this.unloadedImages.add(file))
-      this.checkIfEmpty()
-      this.loadFiles()
-    })
-  }
-
-  @cache()
-  getDate(imageId: string): string {
-    let d: Date = new Date(parseInt(imageId.split(".")[0]) * 1000)
-    return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.timeStampFormat) ?? ""
-  }
-
-  deleteSelected() {
-    this.selectedImagesIds.forEach(img => {
-      this.imageIdToImageMap.delete(img)
-      this.unloadedImages.delete(img)
-    })
-    this.deselectAll()
+  deleteSelectedTracklets() {
+    this.selectedTracklets.forEach(tracklet => this.trackletsToImageNames.delete(tracklet))
+    this.deselectAllTracklets()
     this.checkIfEmpty()
   }
 
-  loadFiles() {
-    let loaded = 0
-    for (let imageId of this.unloadedImages) {
-      if (loaded >= this.imagesPerRow) break
-      this.getImageFromService(imageId)
-      loaded++
-    }
+  toggleFolderSelect() {
+    this.isAllTrackletsSelected() ? this.deselectAllTracklets() : this.selectAllTracklets()
+    this.selectionChanged()
   }
 
-  getImageFromService(imageId: string) {
-    this.isLoading = true
-    let imageFile = new Image()
-    imageFile.src = this.service.getImageSrc(this.run, this.folder, imageId)
-    this.unloadedImages.delete(imageId)
-    this.imageIdToImageMap.set(imageId, imageFile)
-    imageFile.onload = (() => this.isLoading = false)
+  deselectAllTracklets() {
+    this.trackletComponent.forEach(tracklet => tracklet.deselectTracklet())
+    this.selectedTracklets.clear()
   }
 
-  //some images got width>length, since backend isn't resizing the images, this flag will be used to apply the appropriate css class to make it fit the square without cropping
-  @cache()
-  isWideImage(image: string) {
-    let img: HTMLImageElement = this.imageIdToImageMap.get(image)
-    return img.width > img.height
+  selectAllTracklets() {
+    this.trackletsToImageNames.forEach((images, tracklet) => this.selectedTracklets.add(tracklet))
+    this.trackletComponent.forEach(tracklet => tracklet.selectTracklet())
   }
 
   checkIfEmpty() {
-    if (!(this.imageIdToImageMap.size || this.unloadedImages.size)) {
-      this.isEmpty.emit()
-    }
+    if (!this.trackletsToImageNames.size) this.isEmpty.emit()
   }
 
-  toggleImageSelect(imageId: string) {
-    this.selectedImagesIds.has(imageId) ? this.deselectImage(imageId) : this.selectImage(imageId)
+  getTracklets(): string[] {
+    return Utils.getKeysFromMap(this.trackletsToImageNames)
+  }
+
+  getImagesByTracklet(tracklet: string): Set<string> {
+    return this.trackletsToImageNames.get(tracklet) ?? new Set()
+  }
+
+  isAllTrackletsSelected() {
+    return this.trackletsToImageNames.size && this.selectedTracklets.size === this.trackletsToImageNames.size
+  }
+
+  onTrackletSelectToggle(tracklet : string, selected:boolean) {
+    selected ? this.selectedTracklets.add(tracklet) : this.selectedTracklets.delete(tracklet)
     this.selectionChanged()
   }
 
-  isCheckButtonHovered(imageId: string): boolean {
-    return this.hoveredCheckButtonId == imageId
-  }
-
-  deselectImage(imageId: string) {
-    this.selectedImagesIds.delete(imageId)
-  }
-
-  selectImage(imageId: string) {
-    this.selectedImagesIds.add(imageId)
-  }
-
-  getImageNames(): string[] {
-    return Utils.getKeysFromMap(this.imageIdToImageMap).sort()
-  }
-
-  @cache()
-  getImageFile(image: string) {
-    return this.imageIdToImageMap.get(image)?.src
-  }
-
-  isImageHovered(imageId: string): boolean {
-    return this.hoveredImageId == imageId
-  }
-
-  isImageSelected(imageId: string): boolean {
-    return this.selectedImagesIds.has(imageId)
-  }
-
-  toggleFolderSelect() {
-    this.isFolderSelected() ? this.deselectAll() : this.selectAll()
-    this.selectionChanged()
-  }
-
-  deselectAll() {
-    this.selectedImagesIds.clear()
-  }
-
-  selectAll() {
-    [...this.imageIdToImageMap.keys(), ...this.unloadedImages].forEach(img => this.selectedImagesIds.add(img))
-  }
-
-  isFolderSelected() {
-    return this.imageIdToImageMap.size && this.selectedImagesIds.size == this.unloadedImages.size + this.imageIdToImageMap.size
-  }
-
-  //cloning the emitted Set to prevent it from being passed as a reference and make sure all changes go through the event emitter
+  //cloning the emitted Set to prevent it from being passed as a reference
+  // and make sure all changes go through the event emitter
   selectionChanged() {
-    this.onSelectionChange.emit(new Set([...this.selectedImagesIds]))
+    this.onSelectionChange.emit(new Set([...this.selectedTracklets]))
   }
 }

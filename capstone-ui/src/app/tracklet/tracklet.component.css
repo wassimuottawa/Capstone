@@ -1,0 +1,67 @@
+.title {
+  height: 35px;
+}
+
+.imageDivContainer {
+  height: 100%;
+  background-color: #fafafa;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.image {
+  height: 100%;
+}
+
+.resizedImage {
+  width: 100%;
+}
+
+.image-container {
+  width: 150px;
+  position: relative;
+  height: 150px;
+  background-color: #d5e0ff;
+  margin-right: 2px;
+  text-align: center;
+}
+
+.image-time {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 90%;
+  width: 130px;
+  height: 20px;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  color: white;
+}
+
+.folder-buttons {
+  display: flex;
+  color: #3c4043;
+}
+
+.spinner {
+  align-self: center;
+  margin-right: 10px;
+}
+
+.check-button-on-image-container-hover {
+  display: block;
+}
+
+.image-row {
+  margin-right: 15px;
+}
+
+.selected-image {
+  transform: scale(0.8, 0.8);
+  animation: scale-anim 0.3s ease-in-out;
+}
+
+
+
+.drag-scroll-content {
+  overflow: hidden !important;
+}

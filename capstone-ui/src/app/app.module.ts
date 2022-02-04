@@ -41,9 +41,9 @@ import {SideMenuComponent} from './side-menu/side-menu.component';
 import {FolderComponent} from './folder/folder.component';
 import {DragScrollModule} from "ngx-drag-scroll";
 import {HttpClientModule} from "@angular/common/http";
-import { ActionMenuComponent } from './action-menu/action-menu.component';
 import {BackendService} from "./service/backend.service";
 import {DatePipe} from "@angular/common";
+import {TrackletComponent} from './tracklet/tracklet.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +51,7 @@ import {DatePipe} from "@angular/common";
     HomeComponent,
     SideMenuComponent,
     FolderComponent,
-    ActionMenuComponent,
+    TrackletComponent,
   ],
   imports: [
     BrowserModule,

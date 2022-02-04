@@ -24,11 +24,6 @@
   white-space: nowrap;
 }
 
-.folder-buttons {
-  display: flex;
-  color: #3c4043;
-}
-
 .title-text-translateX {
   transform: translateX(5px);
   transition: transform 0.3s ease;
@@ -40,94 +35,29 @@
   opacity: 0;
 }
 
-.imageDivContainer {
-  height: 100%;
-  background-color: #fafafa;
-  opacity: 1 !important;
-  filter: none !important;
-}
-
-.image {
-  height: 100%;
-}
-
-.resizedImage {
-  width: 100%;
-}
-
-.image-container {
-  width: 150px;
-  position: relative;
-  height: 150px;
-  background-color: #d5e0ff;
-  margin-right: 2px;
-  text-align: center;
-}
-
-.check-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: rgba(121, 121, 121, 0.57);
-  display: none;
-}
-
-.image-time {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
-  top: 90%;
-  width: 130px;
-  height: 20px;
-  left: 50%;
-  transform: translate(-50%, -60%);
-  color: white;
-}
-
 .selected-check-button {
   display: block;
   color: #1a73e8;
 }
 
-.check-button-on-image-container-hover {
-  display: block;
+.deselected-expansion-panel-header {
+  background: #cfcfcf !important;
 }
 
-.check-button-hover {
-  color: #797979;
-  transition: color 0.5s ease;
+.selected-expansion-panel-header {
+  background: #bfdbff !important;
 }
 
-button.check-button.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
-  display: none;
+.mat-expansion-panel-header.mat-expanded {
+  height: 48px !important;
 }
 
 button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button .mat-button-focus-overlay {
   display: none;
 }
 
-.image-row {
-  margin-right: 15px;
-}
-
-.drag-scroll-content {
-  overflow: hidden !important;
-}
-
-.folder-container {
-}
-
-.selected-image {
-  transform: scale(0.8, 0.8);
-  animation: scale-anim 0.3s ease-in-out;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.spinner {
-  align-self: center;
-  margin-right: 10px;
+.tracklets-container {
+  margin: 5px 5px 0 2px !important;
 }
 
 .select-folder-visible {
@@ -140,6 +70,15 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 .folder-container:hover .drag-scroll-content {
   /*noinspection CssInvalidPropertyValue*/
   overflow: overlay !important;
+}
+
+.mat-expansion-panel-body {
+  padding: 0 0 5px 5px !important;
+}
+
+
+.mat-expansion-panel {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), -2px 0 2px 0px rgba(0, 0, 0, 0.14), 1px -1px 2px 0px rgba(0, 0, 0, 0.28) !important;
 }
 
 

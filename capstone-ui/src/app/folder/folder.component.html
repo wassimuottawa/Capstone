@@ -1,42 +1,26 @@
-<div class="folder-container"
-     (mouseenter)="isHoveredFolder = true" (mouseleave)="isHoveredFolder = false">
-  <div #title class="title">
-    <button (click)="toggleFolderSelect()"
-            [ngClass]="{
-              'select-folder-visible' : isFolderSelected() || isHoveredFolder,
-              'selected-check-button' : isFolderSelected()}"
-            class="select-folder-hidden" mat-icon-button>
-      <mat-icon>check_circle</mat-icon>
-    </button>
-    <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isFolderSelected()}"
-        class="title-text">{{folder}}</h2>
-    <span class="folder-buttons">
-      <span *ngIf="isLoading" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
-        <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
-      </span>
-  </div>
-
-  <drag-scroll #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()">
-    <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()"
-         (mouseenter)="hoveredImageId = image" (mouseleave)="hoveredImageId = ''">
-      <div class="imageDivContainer" (click)="selectionMode ? toggleImageSelect(image) : ''" [ngClass]="{
-        'selected-image' : isImageSelected(image)}">
-        <img
-          class="image"
-          [ngClass]="{'resizedImage' : isWideImage(image)}"
-          [src]="getImageFile(image)"
-          alt="detection">
+<mat-expansion-panel class="tracklets-container" (mouseenter)="isHoveredFolder = true"
+                     (mouseleave)="isHoveredFolder = false" (closed)="folderCollapsed.emit()" expanded>
+  <mat-expansion-panel-header class="deselected-expansion-panel-header"
+                              [ngClass]="{'selected-expansion-panel-header' : isAllTrackletsSelected()}">
+    <mat-panel-title>
+      <div class="title">
+        <button (click)="toggleFolderSelect(); $event.stopPropagation()"
+                [ngClass]="{
+              'select-folder-visible' : isAllTrackletsSelected() || isHoveredFolder,
+              'selected-check-button' : isAllTrackletsSelected()}"
+                class="select-folder-hidden" mat-icon-button>
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isAllTrackletsSelected()}"
+            class="title-text">{{folder}}</h2>
       </div>
-      <button class="check-button"
-              (mouseenter)="hoveredCheckButtonId = image" (mouseleave)="hoveredCheckButtonId = ''"
-              [ngClass]="{
-                'selected-check-button' : isImageSelected(image),
-                'check-button-hover' : (isCheckButtonHovered(image) && !isImageSelected(image)),
-                'check-button-on-image-container-hover' : isImageHovered(image)}"
-              (click)="toggleImageSelect(image)" mat-icon-button>
-        <mat-icon>check_circle</mat-icon>
-      </button>
-      <div class="image-time">{{getDate(image)}}</div>
-    </div>
-  </drag-scroll>
-</div>
+    </mat-panel-title>
+    <mat-panel-description>
+
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <app-tracklet #trackletComponent *ngFor="let tracklet of getTracklets()"
+                (onSelectionChange)="onTrackletSelectToggle(tracklet, $event)"
+                [tracklet]="tracklet" [imagesPerRow]="imagesPerRow"
+                [unloadedImages]="getImagesByTracklet(tracklet)"></app-tracklet>
+</mat-expansion-panel>
