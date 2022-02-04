@@ -73,14 +73,6 @@ export class TrackletComponent implements AfterViewInit {
     this.selectionChanged()
   }
 
-  //some images got width>length, since backend isn't resizing the images,
-  //this flag will be used to apply the appropriate css class to make it fit the square without cropping
-  @cache()
-  isWideImage(image: string) {
-    let img: HTMLImageElement = this.imageIdToImageMap.get(image)
-    return img.width > img.height
-  }
-
   deselectTracklet() {
     this.isSelected = false
   }

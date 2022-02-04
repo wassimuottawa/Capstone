@@ -10,7 +10,7 @@ cors = CORS(app)
 @app.route("/image/<string:run>/<string:folder>/<string:tracklet>/<string:image>")
 @cross_origin()
 def get_image(run, folder, tracklet, image):
-    return service.get_image_file(run, folder, tracklet, image)
+    return service.get_compressed_image_file(run, folder, tracklet, image)
 
 
 @app.route("/delete", methods=['POST'])
@@ -42,6 +42,7 @@ def get_tracklets_to_image_names_map():
 @app.route("/extract", methods=['POST'])
 @cross_origin()
 def extract():
+    """ :returns: the new folder name """
     return jsonify(service.extract_into_new_folder(request.json))
 
 

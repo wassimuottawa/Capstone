@@ -1,30 +1,22 @@
-<div class="tracklet-container"
-     (mouseenter)="isHoveredTracklet = true" (mouseleave)="isHoveredTracklet = false" >
+<div class="tracklet-container" (mouseenter)="isHoveredTracklet = true" (mouseleave)="isHoveredTracklet = false">
   <div class="title" (click)="toggleTrackletSelect()">
-    <button
-      [ngClass]="{
-              'select-folder-visible' : isSelected || isHoveredTracklet,
-              'selected-check-button' : isSelected}"
-      class="select-folder-hidden" mat-icon-button>
+    <button class="select-folder-hidden"
+            [ngClass]="{'select-folder-visible' : isSelected || isHoveredTracklet,
+              'selected-check-button' : isSelected}" mat-icon-button>
       <mat-icon>check_circle</mat-icon>
     </button>
     <h2 [ngClass]="{'title-text-translateX' : isHoveredTracklet || isSelected}"
         class="title-text">{{tracklet}}</h2>
     <span class="folder-buttons">
       <span *ngIf="isLoading" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
-        <!--<button mat-icon-button><mat-icon>more_vert</mat-icon></button>-->
-      </span>
+    </span>
   </div>
 
   <drag-scroll #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()"
                (click)="toggleTrackletSelect()">
     <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()">
       <div class="imageDivContainer" [ngClass]="{'selected-image' : isSelected}">
-        <img
-          class="image"
-          [ngClass]="{'resizedImage' : isWideImage(image)}"
-          [src]="getImageFile(image)"
-          alt="detection">
+        <img class="image" [src]="getImageFile(image)" alt="detection">
       </div>
       <div class="image-time">{{getDate(image)}}</div>
     </div>

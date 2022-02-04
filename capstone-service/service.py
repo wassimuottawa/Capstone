@@ -20,12 +20,9 @@ class Params(Enum):
     MAPPING = 'mapping'
 
 
-def get_folders_in_path(path):
-    return list(filter(lambda f: os.path.isdir(os.path.join(path, f)), os.listdir(path)))
-
-
-def get_image_file(run, folder, tracklet, file_name):
-    return send_from_directory(os.path.join(ROOT_PATH, run, folder, tracklet), file_name)
+def get_compressed_image_file(run, folder, tracklet, file_name):
+    image, extension = compress_image(os.path.join(ROOT_PATH, run, folder, tracklet, file_name))
+    return send_file(image, mimetype=f'image/{extension}')
 
 
 def get_folders_by_run(run):
@@ -47,14 +44,10 @@ def get_image_names(body):
     folder = body.get(Params.FOLDER.value)
     start = str_to_time(body.get(Params.START_TIME.value))
     end = str_to_time(body.get(Params.END_TIME.value))
-
     images = {}
-    has_images_in_range = False
     for tracklet in os.listdir(os.path.join(ROOT_PATH, run, folder)):
         images[tracklet] = get_image_names_in_path(os.path.join(ROOT_PATH, run, folder, tracklet))
-        if any(is_in_time_range(img, start, end) for img in images[tracklet]):
-            has_images_in_range = True
-    return images if has_images_in_range else {}
+    return images if any(is_in_time_range(img, start, end) for tracklet in images.values() for img in tracklet) else {}
 
 
 def get_runs():
