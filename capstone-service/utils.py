@@ -26,10 +26,7 @@ def get_time_from_file_name(file_name):
 
 def is_in_time_range(image_name, start, end):
     try:
-        if start is None or end is None:
-            return True
-        time = get_time_from_file_name(image_name)
-        return start <= time <= end
+        return True if start is None or end is None else start <= get_time_from_file_name(image_name) <= end
     except ValueError:
         print("ValueError caught while filtering by time for image={0}, start={1}, end={2}".format(image_name, start,
                                                                                                    end))

@@ -1,6 +1,6 @@
 <div class="tracklet-container"
-     (mouseenter)="isHoveredTracklet = true" (mouseleave)="isHoveredTracklet = false" (click)="toggleTrackletSelect()">
-  <div class="title">
+     (mouseenter)="isHoveredTracklet = true" (mouseleave)="isHoveredTracklet = false" >
+  <div class="title" (click)="toggleTrackletSelect()">
     <button
       [ngClass]="{
               'select-folder-visible' : isSelected || isHoveredTracklet,
@@ -16,7 +16,8 @@
       </span>
   </div>
 
-  <drag-scroll #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()">
+  <drag-scroll #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()"
+               (click)="toggleTrackletSelect()">
     <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()">
       <div class="imageDivContainer" [ngClass]="{'selected-image' : isSelected}">
         <img
