@@ -16,7 +16,6 @@ class Params(Enum):
     FOLDER = 'folder'
     START_TIME = 'start'
     END_TIME = 'end'
-    DESTINATION_FOLDER = 'destinationFolder'
     MAPPING = 'mapping'
 
 
