@@ -48,3 +48,7 @@ def compress_image(image_path):
     image.save(img_io, IMAGE_EXTENSION, quality=1, optimize=True)
     img_io.seek(0)
     return img_io, IMAGE_EXTENSION
+
+
+if __name__ == '__main__':
+    pass
