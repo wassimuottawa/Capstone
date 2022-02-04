@@ -2,10 +2,9 @@
                      (mouseleave)="isHoveredFolder = false" (closed)="folderCollapsed.emit()" expanded>
   <mat-expansion-panel-header class="deselected-expansion-panel-header"
                               [ngClass]="{'selected-expansion-panel-header' : isAllTrackletsSelected()}">
-    <mat-panel-title>
+    <mat-panel-title (click)="toggleFolderSelect(); $event.stopPropagation()">
       <div class="title">
-        <button (click)="toggleFolderSelect(); $event.stopPropagation()"
-                [ngClass]="{
+        <button [ngClass]="{
               'select-folder-visible' : isAllTrackletsSelected() || isHoveredFolder,
               'selected-check-button' : isAllTrackletsSelected()}"
                 class="select-folder-hidden" mat-icon-button>
@@ -15,9 +14,6 @@
             class="title-text">{{folder}}</h2>
       </div>
     </mat-panel-title>
-    <mat-panel-description>
-
-    </mat-panel-description>
   </mat-expansion-panel-header>
   <app-tracklet #trackletComponent *ngFor="let tracklet of getTracklets()"
                 (onSelectionChange)="onTrackletSelectToggle(tracklet, $event)"
