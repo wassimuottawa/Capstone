@@ -77,12 +77,11 @@ def move_files(run, files_mapping, destination):
     :return: false if destination path already exists, or another error occurs while moving
     """
     for folder, tracklets in files_mapping.items():
+        source_folder_path = os.path.join(ROOT_PATH, run, folder)
         for tracklet in tracklets:
-            try:
-                shutil.move(os.path.join(ROOT_PATH, run, folder, tracklet), destination)
-            except shutil.Error as e:
-                print(e)
-                return False
+            shutil.move(os.path.join(source_folder_path, tracklet), destination)
+        if not get_folders_in_path(source_folder_path):
+            os.remove(source_folder_path)
     return True
 
 
