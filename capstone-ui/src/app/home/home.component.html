@@ -1,17 +1,19 @@
 <mat-toolbar class="toolbar">
-  <!--TITLE-->
-  <span class="title">Person Re-Identification Annotator</span>
+  <span class="main-title">Re-Identification Annotator</span>
   <div class="actionButtonContainer">
     <!--DESELECT ALL BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deselectAll()" [disabled]="selectionEmpty()">
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deselectAll()"
+            [disabled]="selectionEmpty()">
       <mat-icon>close</mat-icon>
     </button>
     <!--EXTRACT BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="extractSelectedTracklets()" [disabled]="selectionEmpty()">
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="extractSelectedTracklets()"
+            [disabled]="selectionEmpty()">
       <mat-icon>call_merge</mat-icon>
     </button>
     <!--DELETE BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deleteSelected()" [disabled]="selectionEmpty()">
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deleteSelected()"
+            [disabled]="selectionEmpty()">
       <mat-icon>delete</mat-icon>
     </button>
     <!--TIME CONSTRAINT BUTTON-->
@@ -36,13 +38,15 @@
   </div>
 
   <!--RUN FOLDER LIST-->
-  <mat-form-field class="runFolderList">
-    <mat-select [(value)]="run" (valueChange)="refreshContent()">
-      <mat-option *ngFor="let run of runs" [value]="run">
-        {{run}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="runs-container">
+    <mat-form-field class="runFolderList">
+      <mat-select [(value)]="run" (valueChange)="refreshContent()">
+        <mat-option *ngFor="let run of runs" [value]="run">
+          {{run}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 </mat-toolbar>
 
 <div id="main-container" class="main-container" (scroll)="onScroll($event)">
@@ -50,8 +54,7 @@
               [tracklets]="getTrackletsByFolder(folder)"
               (isEmpty)="removeEmptyFolder(folder)"
               (onSelectionChange)="onSelectionChange($event, folder)"
-              [selectionMode]="this.folderToSelectedTrackletsMap.size > 0" [start]="appliedStartTime"
-              [end]="appliedEndTime"
+              [start]="appliedStartTime" [end]="appliedEndTime"
               (folderCollapsed)="onFolderCollapse()"></app-folder>
   <div class="end-of-items">
     <span *ngIf="!hiddenFolders.size">END OF ITEMS</span>

@@ -35,9 +35,6 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
   isSelected: boolean = false
   isHoveredTracklet: boolean = false
-
-  //Will be calculated based on the width of the screen, this is used to know how many images to preload,
-  // when user scrolls beyond @dragThreshold a count of @imagesPerRow will be loaded more
   timeStampFormat: string = 'HH:mm:ss ss'
 
   constructor(@Host() private parent: FolderComponent,

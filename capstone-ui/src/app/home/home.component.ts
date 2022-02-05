@@ -133,8 +133,7 @@ export class HomeComponent {
   }
 
   deleteSelected() {
-    this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => this.removeSelectedTrackletsFromUI()
-    )
+    this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => this.removeSelectedTrackletsFromUI())
   }
 
   removeSelectedTrackletsFromUI() {

@@ -48,6 +48,10 @@
   background: #c5e5f9 !important;
 }
 
+.mat-expansion-panel-content {
+  background: #ededed;
+}
+
 .mat-expansion-panel-header.mat-expanded {
   height: 48px !important;
 }
@@ -57,7 +61,7 @@ button.select-folder-hidden.mat-button-base.mat-focus-indicator.mat-icon-button 
 }
 
 .tracklets-container {
-  margin: 10px 5px 0 2px !important;
+  margin: 15px 5px 0 2px !important;
 }
 
 .select-folder-visible {

@@ -27,9 +27,6 @@ export class FolderComponent implements AfterViewInit {
   @Input() folder: string = ""
   @Input() tracklets: string[] = []
   @Input() run: string = ""
-  /*to make multi-selection easier and faster, if this is set to true clicking anywhere in the image will select it, instead of clicking the checkmark,
-  @selectionMode is enabled when at least one image is selected anywhere in the application*/
-  @Input() selectionMode: boolean = false
   @Input() start: string = ""
   @Input() end: string = ""
   @ViewChild('title') title: ElementRef | undefined
@@ -38,6 +35,10 @@ export class FolderComponent implements AfterViewInit {
   trackletsToImageNames: Map<string, Set<string>> = new Map<string, Set<string>>()
   selectedTracklets: Set<string> = new Set<string>();
   isHoveredFolder: boolean = false //will be used to show/hide the select check buttons
+  /**
+   * Will be calculated based on the width of the screen, this is used to know how many images to preload,
+   * when user scrolls beyond {@link dragThreshold}, a count of {@link imagesPerRow} will be loaded more
+   **/
   imagesPerRow = 0
   imageWidth = 150 //px
 
@@ -64,9 +65,12 @@ export class FolderComponent implements AfterViewInit {
   }
 
   deleteSelectedTracklets() {
-    this.selectedTracklets.forEach(tracklet => this.trackletsToImageNames.delete(tracklet))
-    this.deselectAllTracklets()
-    this.checkIfEmpty()
+    if (this.isAllTrackletsSelected()) this.isEmpty.emit()
+    else {
+      this.selectedTracklets.forEach(tracklet => this.trackletsToImageNames.delete(tracklet))
+      this.deselectAllTracklets()
+      this.checkIfEmpty()
+    }
   }
 
   toggleFolderSelect() {
@@ -106,7 +110,7 @@ export class FolderComponent implements AfterViewInit {
   }
 
   //cloning the emitted Set to prevent it from being passed as a reference
-  // and make sure all changes go through the event emitter
+  //and make sure all changes go through the event emitter
   selectionChanged() {
     this.onSelectionChange.emit(new Set([...this.selectedTracklets]))
   }
