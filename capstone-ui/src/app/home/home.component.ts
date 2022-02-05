@@ -1,4 +1,4 @@
-import {Component, HostListener, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, HostListener, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {FolderComponent} from "../folder/folder.component";
 import {BackendService} from "../service/backend.service";
 import {FormControl} from "@angular/forms";
@@ -16,7 +16,7 @@ export enum KEYBOARD_SHORTCUTS {
   styleUrls: ['./home.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class HomeComponent {
+export class HomeComponent implements AfterViewInit {
 
   @ViewChildren('folderComponent') folders: QueryList<FolderComponent> = new QueryList<FolderComponent>()
 
@@ -30,11 +30,15 @@ export class HomeComponent {
   run = ""
   defaultStartTime = '00:00'
   defaultEndTime = '23:59'
-  appliedStartTime: string = this.defaultStartTime //keep track of the last filter when user clicks "apply", reset to this value if form is modified without clicking apply
+  //keep track of the last filter when user clicks "apply", reset to this value if form is modified without clicking apply
+  appliedStartTime: string = this.defaultStartTime
   appliedEndTime: string = this.defaultEndTime
   startTimeForm: FormControl = new FormControl(this.defaultStartTime)
   endTimeForm: FormControl = new FormControl(this.defaultEndTime)
   trackletsPerScreen: number = 5
+  shortcuts = KEYBOARD_SHORTCUTS
+  imageHeight = 198
+  mainContainer: HTMLElement | undefined
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -44,7 +48,12 @@ export class HomeComponent {
   }
 
   constructor(private service: BackendService) {
-    service.getRuns().subscribe(runs => {
+  }
+
+  ngAfterViewInit() {
+    this.mainContainer = document.getElementById('main-container')!
+    this.trackletsPerScreen = Math.ceil(this.mainContainer.offsetHeight / this.imageHeight)
+    this.service.getRuns().subscribe(runs => {
       this.runs = runs
       this.run = runs[0] ?? ""
       this.loadFolders()
@@ -111,10 +120,7 @@ export class HomeComponent {
   //to prevent being not able to scroll and load more folders if user collapses all folders at once once the app loaded
   onFolderCollapse() {
     setTimeout(() => {
-      if ((document.getElementById('main-container')?.scrollHeight ?? 1) <=
-        (document.getElementById('main-container')?.offsetHeight ?? 0)) {
-        this.addFoldersToViewport()
-      }
+      if ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0)) this.addFoldersToViewport()
     }, 500) //timeout to accommodate for expansion animation
   }
 
@@ -134,6 +140,10 @@ export class HomeComponent {
 
   deleteSelected() {
     this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => this.removeSelectedTrackletsFromUI())
+  }
+
+  getShortcutString(shortcut: KEYBOARD_SHORTCUTS) {
+    return shortcut.toString().toUpperCase().substr(0, 3)
   }
 
   removeSelectedTrackletsFromUI() {

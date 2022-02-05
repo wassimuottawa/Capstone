@@ -27,11 +27,10 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   @Input() tracklet: string = ''
   @Input() unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
   @Output() onSelectionChange: EventEmitter<boolean> = new EventEmitter<boolean>()
-
+  @Output() isLoading: EventEmitter<boolean> = new EventEmitter<boolean>()
   @ViewChild('images') dragScrollComponent: DragScrollComponent | undefined
 
   imageIdToImageMap: Map<string, any> = new Map<string, any>() //imageId to image file map
-  isLoading: boolean = false
   dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
   isSelected: boolean = false
   isHoveredTracklet: boolean = false
@@ -40,7 +39,11 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   constructor(@Host() private parent: FolderComponent,
               private service: BackendService,
               private datePipe: DatePipe,
-              private changeDetectorRef:ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef) {
+  }
+
+  ngAfterViewChecked() {
+    this.changeDetectorRef.detectChanges();
   }
 
   ngAfterViewInit() {
@@ -67,12 +70,12 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   }
 
   getImageFromService(imageId: string) {
-    this.isLoading = true
+    this.isLoading.emit(false)
     let imageFile = new Image()
     imageFile.src = this.service.getImageSrc(this.parent.run, this.parent.folder, this.tracklet, imageId)
     this.unloadedImages.delete(imageId)
     this.imageIdToImageMap.set(imageId, imageFile)
-    imageFile.onload = (() => this.isLoading = false)
+    imageFile.onload = (() => this.isLoading.emit(true))
   }
 
   toggleTrackletSelect() {
@@ -86,10 +89,6 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
 
   selectionChanged() {
     this.onSelectionChange.emit(this.isSelected)
-  }
-
-  ngAfterViewChecked() {
-    this.changeDetectorRef.detectChanges();
   }
 
   selectTracklet() {

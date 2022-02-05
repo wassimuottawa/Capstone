@@ -1,4 +1,5 @@
-<mat-expansion-panel class="tracklets-container" (mouseenter)="isHoveredFolder = true"
+<mat-expansion-panel *ngIf="trackletsToImageNames.size" class="tracklets-container"
+                     (mouseenter)="isHoveredFolder = true"
                      (mouseleave)="isHoveredFolder = false" (closed)="folderCollapsed.emit()" expanded>
   <mat-expansion-panel-header class="deselected-expansion-panel-header"
                               [ngClass]="{'selected-expansion-panel-header' : isAllTrackletsSelected()}">
@@ -14,9 +15,13 @@
             class="title-text">{{folder}}</h2>
       </div>
     </mat-panel-title>
+    <mat-panel-description>
+      <span *ngIf="trackletsLoading != 0" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
+    </mat-panel-description>
   </mat-expansion-panel-header>
   <app-tracklet #trackletComponent *ngFor="let tracklet of getTracklets()"
                 (onSelectionChange)="onTrackletSelectToggle(tracklet, $event)"
                 [tracklet]="tracklet" [imagesPerRow]="imagesPerRow"
+                (isLoading)="trackletLoading($event)"
                 [unloadedImages]="getImagesByTracklet(tracklet)"></app-tracklet>
 </mat-expansion-panel>

@@ -33,16 +33,6 @@
   color: white;
 }
 
-.folder-buttons {
-  display: flex;
-  color: #3c4043;
-}
-
-.spinner {
-  align-self: center;
-  margin-right: 10px;
-}
-
 .check-button-on-image-container-hover {
   display: block;
 }

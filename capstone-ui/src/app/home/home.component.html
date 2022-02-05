@@ -3,25 +3,28 @@
   <div class="actionButtonContainer">
     <!--DESELECT ALL BUTTON-->
     <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deselectAll()"
+            matTooltip="Deselect all [{{getShortcutString(shortcuts.DESELECT)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>close</mat-icon>
     </button>
     <!--EXTRACT BUTTON-->
     <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="extractSelectedTracklets()"
+            matTooltip="Extract [{{getShortcutString(shortcuts.EXTRACT)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>call_merge</mat-icon>
     </button>
     <!--DELETE BUTTON-->
     <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deleteSelected()"
+            matTooltip="Delete [{{getShortcutString(shortcuts.DELETE)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>delete</mat-icon>
     </button>
     <!--TIME CONSTRAINT BUTTON-->
     <button mat-raised-button style="margin:10px;" [matMenuTriggerFor]="menu" (onMenuOpen)="filterMenuOpened()"
+            matTooltip="Time filter"
             class="actionMenuButton">
       <mat-icon>tune</mat-icon>
     </button>
-    <!--TIME CONSTRAINT FORM-->
     <mat-menu #menu="matMenu" class="menu">
       <mat-form-field class="time-form" (click)="$event.stopPropagation()">
         <mat-label>From</mat-label>
@@ -37,7 +40,6 @@
     </mat-menu>
   </div>
 
-  <!--RUN FOLDER LIST-->
   <div class="runs-container">
     <mat-form-field class="runFolderList">
       <mat-select [(value)]="run" (valueChange)="refreshContent()">

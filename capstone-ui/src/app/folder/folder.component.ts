@@ -1,5 +1,7 @@
 import {
+  AfterViewChecked,
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -20,7 +22,7 @@ import {Utils} from "../utils/utils";
   styleUrls: ['./folder.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class FolderComponent implements AfterViewInit {
+export class FolderComponent implements AfterViewInit, AfterViewChecked {
   @Output() onSelectionChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
   @Output() isEmpty: EventEmitter<void> = new EventEmitter<void>()
   @Output() folderCollapsed: EventEmitter<void> = new EventEmitter<void>()
@@ -41,13 +43,19 @@ export class FolderComponent implements AfterViewInit {
    **/
   imagesPerRow = 0
   imageWidth = 150 //px
+  trackletsLoading = 0
 
-  constructor(private service: BackendService) {
+  constructor(private service: BackendService,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngAfterViewInit() {
     this.imagesPerRow = Math.ceil(window.innerWidth / this.imageWidth) + 2
     this.loadImageNames()
+  }
+
+  trackletLoading(loading: boolean) {
+    this.trackletsLoading += loading ? 1 : -1
   }
 
   loadImageNames() {
@@ -62,6 +70,10 @@ export class FolderComponent implements AfterViewInit {
           console.log("Error loading folder " + this.folder)
           this.isEmpty.emit()
         })
+  }
+
+  ngAfterViewChecked() {
+    this.changeDetectorRef.detectChanges();
   }
 
   deleteSelectedTracklets() {

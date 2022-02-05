@@ -65,9 +65,10 @@
   color: #00000085 !important;
 }
 
-.actionMenuButton:hover {
+/*Animation is laggy on my side, disabling for performance*/
+/*.actionMenuButton:hover {
   background-color: rgb(63, 63, 63);
-}
+}*/
 
 .runFolderList {
   width: 70%;
