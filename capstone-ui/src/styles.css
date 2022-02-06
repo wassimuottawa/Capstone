@@ -20,3 +20,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif}
 ::-webkit-scrollbar-button {
   display:none;
 }
+
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #387da7 !important;
+}

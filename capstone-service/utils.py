@@ -4,7 +4,8 @@ from io import BytesIO
 
 from PIL import Image
 
-IMAGE_EXTENSION = 'png'
+SOURCE_IMAGE_EXTENSION = 'png'
+IMAGE_COMPRESSION_FORMAT = 'webp'
 TIME_FILTER_FORMAT = '%H:%M'
 MAX_IMAGE_SIZE = 150, 150
 
@@ -18,7 +19,7 @@ def folder_contains_image(path):
 
 
 def is_image(file_name):
-    return str(file_name).endswith(IMAGE_EXTENSION)
+    return str(file_name).endswith(SOURCE_IMAGE_EXTENSION)
 
 
 def get_image_names_in_path(path):
@@ -45,9 +46,9 @@ def compress_image(image_path):
     image = Image.open(image_path)
     img_io = BytesIO()
     image.thumbnail(MAX_IMAGE_SIZE)
-    image.save(img_io, IMAGE_EXTENSION, quality=1, optimize=True)
+    image.save(img_io, format=IMAGE_COMPRESSION_FORMAT, quality=15, optimize=True)
     img_io.seek(0)
-    return img_io, IMAGE_EXTENSION
+    return img_io, IMAGE_COMPRESSION_FORMAT
 
 
 if __name__ == '__main__':

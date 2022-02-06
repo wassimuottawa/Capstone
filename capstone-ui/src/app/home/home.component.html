@@ -59,6 +59,7 @@
               [start]="appliedStartTime" [end]="appliedEndTime"
               (folderCollapsed)="onFolderCollapse()"></app-folder>
   <div class="end-of-items">
+    <mat-spinner diameter="40" *ngIf="hiddenFolders.size"></mat-spinner>
     <span *ngIf="!hiddenFolders.size">END OF ITEMS</span>
   </div>
 </div>
