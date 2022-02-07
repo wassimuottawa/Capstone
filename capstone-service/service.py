@@ -63,7 +63,7 @@ def delete_tracklets(body: dict):
 def extract_into_new_folder(body: dict):
     """ :param body: folder to tracklets map """
     run = body.get(Params.RUN.value)
-    last_index = get_folders_in_path(os.path.join(ROOT_PATH, run))[-1]
+    last_index = max(get_folders_in_path(os.path.join(ROOT_PATH, run)))
     new_folder_name = str(int(last_index) + 1).zfill(len(last_index))
     new_folder_path = os.path.join(ROOT_PATH, run, new_folder_name)
     os.mkdir(new_folder_path)
@@ -81,7 +81,7 @@ def move_files(run, files_mapping, destination):
         for tracklet in tracklets:
             shutil.move(os.path.join(source_folder_path, tracklet), destination)
         if not get_folders_in_path(source_folder_path):
-            os.remove(source_folder_path)
+            shutil.rmtree(source_folder_path)
     return True
 
 
