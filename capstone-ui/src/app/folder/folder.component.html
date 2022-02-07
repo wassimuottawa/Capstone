@@ -15,7 +15,7 @@
             class="title-text">{{folder}}</h2>
       </div>
     </mat-panel-title>
-    <mat-panel-description>
+    <mat-panel-description (click)="toggleFolderSelect(); $event.stopPropagation()">
       <span *ngIf="trackletsLoading != 0" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
     </mat-panel-description>
   </mat-expansion-panel-header>
