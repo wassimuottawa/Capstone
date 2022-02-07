@@ -34,7 +34,7 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
   isSelected: boolean = false
   isHoveredTracklet: boolean = false
-  timeStampFormat: string = 'HH:mm:ss ss'
+  timeStampFormat: string = 'HH:mm:ss SS'
 
   constructor(@Host() private parent: FolderComponent,
               private service: BackendService,
@@ -102,7 +102,7 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   }
 
   getImageNames(): string[] {
-    return Utils.getKeysFromMap(this.imageIdToImageMap).sort()
+    return Utils.getKeysFromMap(this.imageIdToImageMap)
   }
 
   @cache()

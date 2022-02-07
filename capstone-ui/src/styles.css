@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; overflow: hidden }
+html, body { height: 100%; overflow: hidden; background: #7c7c7c }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif}
 
 .mat-icon-button:hover .mat-button-focus-overlay {
@@ -22,5 +22,5 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif}
 }
 
 .mat-progress-spinner circle, .mat-spinner circle {
-  stroke: #387da7 !important;
+  stroke: white;
 }
