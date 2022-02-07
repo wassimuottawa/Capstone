@@ -16,8 +16,10 @@ For a full environment setup, see the wiki documentation [here](https://github.c
 
 #### RUN PROJECT LOCALLY
 1. Clone repo `git clone https://github.com/AndreMarieKabeya/Capstone` 
-1. RUN `start-backend.sh` 
-2. RUN `start-ui.sh`
+2. Navigate to the capstone-service directory `cd capstone-service`
+3. RUN `pip install -r requirements.txt`
+4. RUN `start-backend.sh` 
+5. RUN `start-ui.sh`
 
 #### RUN PROJECT VIA NGROK
 1. Clone repo `git clone https://github.com/AndreMarieKabeya/Capstone` 
