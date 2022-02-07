@@ -30,7 +30,7 @@ def get_time_from_file_name(image_name):
     try:
         return datetime.fromtimestamp(float(int(os.path.splitext(image_name)[0].split(";")[5]) / pow(10, 9))).time()
     except (ValueError, Exception) as e:
-        print(f"{type(e).__name__}: image={image_name} does not match the predefined filename format")
+        print(f"{get_error_name(e)}: image={image_name} does not match the predefined filename format")
         return datetime.max.time()
 
 
@@ -38,7 +38,7 @@ def is_in_time_range(image_name, start, end):
     try:
         return True if start is None or end is None else start <= get_time_from_file_name(image_name) <= end
     except (ValueError, Exception) as e:
-        print(f"{type(e).__name__}: unable to filter by time for image={image_name}, start={start}, end={end}")
+        print(f"{get_error_name(e)}: unable to filter by time for image={image_name}, start={start}, end={end}")
 
 
 def str_to_time(time_string):
@@ -57,6 +57,10 @@ def compress_image(image_path):
 
 def sort_images_by_time(image_names: list):
     return sorted(image_names, key=lambda img: get_time_from_file_name(img))
+
+
+def get_error_name(e: Exception):
+    return type(e).__name__
 
 
 if __name__ == '__main__':
