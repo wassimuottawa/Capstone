@@ -57,6 +57,7 @@ def get_runs():
 
 def delete_tracklets(body: dict):
     """ :param body: folder to tracklets map """
+    os.makedirs(ARCHIVE_PATH, exist_ok=True)
     return move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
 
@@ -73,12 +74,18 @@ def extract_into_new_folder(body: dict):
 
 def move_files(run, files_mapping, destination):
     """
+    Overwrites tracklet in destination if another one with same id is being moved
+    Deletes the source folder if empty after move
     :param files_mapping: folder to tracklets map
     :return: false if destination path already exists, or another error occurs while moving
     """
     for folder, tracklets in files_mapping.items():
         source_folder_path = os.path.join(ROOT_PATH, run, folder)
         for tracklet in tracklets:
+            new_tracklet_path = os.path.join(destination, tracklet)
+            if os.path.isdir(new_tracklet_path):
+                print(f'Tracklet {tracklet} exists in {destination}, overwriting..')
+                shutil.rmtree(new_tracklet_path)
             shutil.move(os.path.join(source_folder_path, tracklet), destination)
         if not get_folders_in_path(source_folder_path):
             shutil.rmtree(source_folder_path)

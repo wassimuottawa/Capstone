@@ -25,7 +25,6 @@ import {Utils} from "../utils/utils";
 export class FolderComponent implements AfterViewInit, AfterViewChecked {
   @Output() onSelectionChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
   @Output() isEmpty: EventEmitter<void> = new EventEmitter<void>()
-  @Output() folderCollapsed: EventEmitter<void> = new EventEmitter<void>()
   @Input() folder: string = ""
   @Input() tracklets: string[] = []
   @Input() run: string = ""

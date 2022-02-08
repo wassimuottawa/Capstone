@@ -1,6 +1,8 @@
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {tap} from "rxjs/operators";
 
 export class Request {
   run: string | undefined
@@ -23,7 +25,7 @@ export class BackendService {
 
   private static SERVICE_URL = "http://127.0.0.1:5000/"
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private _snackBar: MatSnackBar) {
   }
 
   getFoldersToTrackletsMap(run: string): Observable<Object> {
@@ -46,15 +48,19 @@ export class BackendService {
     return BackendService.SERVICE_URL + `image/${run}/${folder}/${tracklet}/${imageId}`
   }
 
-  extractIntoNewFolder(run: string, folderToImages: Map<string, any>): Observable<any> {
-    return this.http.post<string>(BackendService.SERVICE_URL + "extract", this.getMoveRequest(run, folderToImages))
+  mergeIntoNewFolder(run: string, folderToImages: Map<string, any>): Observable<any> {
+    return this.http.post<string>(BackendService.SERVICE_URL + "merge", this.getMoveRequest(run, folderToImages))
+      .pipe(tap(newFolder =>
+        this._snackBar.open(`Tracklets merged into folder ${newFolder}`, "Dismiss", {
+          duration: 3000,
+        })))
   }
 
   delete(run: string, folderToImages: Map<string, any>): Observable<any> {
     return this.http.post<any>(BackendService.SERVICE_URL + "delete", this.getMoveRequest(run, folderToImages))
   }
 
-  private getMoveRequest(run: string, folderToImages: Map<string, any>) : Request {
+  private getMoveRequest(run: string, folderToImages: Map<string, any>): Request {
     let request = new Request();
     request.run = run
     request.mapping = {}

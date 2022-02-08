@@ -1,11 +1,20 @@
-import {AfterViewInit, Component, HostListener, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  HostListener,
+  QueryList,
+  ViewChildren,
+  ViewEncapsulation
+} from '@angular/core';
 import {FolderComponent} from "../folder/folder.component";
 import {BackendService} from "../service/backend.service";
 import {FormControl} from "@angular/forms";
 import {Utils} from "../utils/utils";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 export enum KEYBOARD_SHORTCUTS {
-  EXTRACT = 'x',
+  MERGE = 'x',
   DELETE = 'delete',
   DESELECT = 'escape'
 }
@@ -16,7 +25,7 @@ export enum KEYBOARD_SHORTCUTS {
   styleUrls: ['./home.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit, AfterViewChecked {
 
   @ViewChildren('folderComponent') folders: QueryList<FolderComponent> = new QueryList<FolderComponent>()
 
@@ -42,12 +51,16 @@ export class HomeComponent implements AfterViewInit {
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.EXTRACT) this.extractSelectedTracklets()
+    if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.MERGE) this.mergeSelectedTracklets()
     if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.DELETE) this.deleteSelected()
     if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.DESELECT) this.deselectAll()
   }
 
-  constructor(private service: BackendService) {
+  constructor(private service: BackendService, private _snackBar: MatSnackBar) {
+  }
+
+  ngAfterViewChecked() {
+    this.addFoldersUntilScreenFilled()
   }
 
   ngAfterViewInit() {
@@ -87,7 +100,6 @@ export class HomeComponent implements AfterViewInit {
 
   removeEmptyFolder(folder: string) {
     this.visibleFolders.delete(folder)
-    this.addFoldersToViewport(1)
   }
 
   applyTimeFilter() {
@@ -107,8 +119,8 @@ export class HomeComponent implements AfterViewInit {
     this.endTimeForm.setValue(this.appliedEndTime)
   }
 
-  extractSelectedTracklets() {
-    this.service.extractIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(newFolder => {
+  mergeSelectedTracklets() {
+    this.service.mergeIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(newFolder => {
       this.hiddenFolders.set(newFolder,
         Array.from(this.folderToSelectedTrackletsMap.values())
           .map(set => [...set])
@@ -117,11 +129,10 @@ export class HomeComponent implements AfterViewInit {
     })
   }
 
-  //to prevent being not able to scroll and load more folders if user collapses all folders at once once the app loaded
-  onFolderCollapse() {
-    setTimeout(() => {
-      if ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0)) this.addFoldersToViewport()
-    }, 500) //timeout to accommodate for expansion animation
+  addFoldersUntilScreenFilled() {
+    if ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0) && !this.hiddenFolders.size) {
+      this.addFoldersToViewport()
+    }
   }
 
   addFoldersToViewport(count: number = 2) {

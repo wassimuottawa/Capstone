@@ -7,9 +7,9 @@
             [disabled]="selectionEmpty()">
       <mat-icon>close</mat-icon>
     </button>
-    <!--EXTRACT BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="extractSelectedTracklets()"
-            matTooltip="Extract [{{getShortcutString(shortcuts.EXTRACT)}}]"
+    <!--Merge BUTTON-->
+    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="mergeSelectedTracklets()"
+            matTooltip="Merge [{{getShortcutString(shortcuts.MERGE)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>call_merge</mat-icon>
     </button>
@@ -57,7 +57,7 @@
               (isEmpty)="removeEmptyFolder(folder)"
               (onSelectionChange)="onSelectionChange($event, folder)"
               [start]="appliedStartTime" [end]="appliedEndTime"
-              (folderCollapsed)="onFolderCollapse()"></app-folder>
+              (folderCollapsed)="addFoldersUntilScreenFilled()"></app-folder>
   <div class="end-of-items">
     <mat-spinner diameter="40" *ngIf="hiddenFolders.size"></mat-spinner>
     <span *ngIf="!hiddenFolders.size">END OF ITEMS</span>
