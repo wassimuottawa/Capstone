@@ -1,17 +1,8 @@
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  Component,
-  HostListener,
-  QueryList,
-  ViewChildren,
-  ViewEncapsulation
-} from '@angular/core';
+import {AfterViewInit, Component, HostListener, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {FolderComponent} from "../folder/folder.component";
 import {BackendService} from "../service/backend.service";
 import {FormControl} from "@angular/forms";
 import {Utils} from "../utils/utils";
-import {MatSnackBar} from "@angular/material/snack-bar";
 
 export enum KEYBOARD_SHORTCUTS {
   MERGE = 'x',
@@ -25,7 +16,7 @@ export enum KEYBOARD_SHORTCUTS {
   styleUrls: ['./home.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class HomeComponent implements AfterViewInit, AfterViewChecked {
+export class HomeComponent implements AfterViewInit {
 
   @ViewChildren('folderComponent') folders: QueryList<FolderComponent> = new QueryList<FolderComponent>()
 
@@ -56,11 +47,7 @@ export class HomeComponent implements AfterViewInit, AfterViewChecked {
     if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.DESELECT) this.deselectAll()
   }
 
-  constructor(private service: BackendService, private _snackBar: MatSnackBar) {
-  }
-
-  ngAfterViewChecked() {
-    this.addFoldersUntilScreenFilled()
+  constructor(private service: BackendService) {
   }
 
   ngAfterViewInit() {
@@ -130,9 +117,9 @@ export class HomeComponent implements AfterViewInit, AfterViewChecked {
   }
 
   addFoldersUntilScreenFilled() {
-    if ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0) && !this.hiddenFolders.size) {
-      this.addFoldersToViewport()
-    }
+    setTimeout(() => {
+      if ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0)) this.addFoldersToViewport(1)
+    }, 500)
   }
 
   addFoldersToViewport(count: number = 2) {
@@ -160,6 +147,7 @@ export class HomeComponent implements AfterViewInit, AfterViewChecked {
   removeSelectedTrackletsFromUI() {
     this.folders.filter(folder => this.folderToSelectedTrackletsMap.has(folder.folder)).forEach(folder => folder.deleteSelectedTracklets())
     this.clearSelection()
+    this.addFoldersUntilScreenFilled()
   }
 
   onScroll(event: any) {

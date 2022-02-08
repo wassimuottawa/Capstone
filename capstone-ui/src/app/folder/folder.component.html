@@ -1,6 +1,6 @@
-<mat-expansion-panel expanded *ngIf="trackletsToImageNames.size" class="tracklets-container"
+<mat-expansion-panel *ngIf="trackletsToImageNames.size" class="tracklets-container"
                      (mouseenter)="isHoveredFolder = true"
-                     (mouseleave)="isHoveredFolder = false">
+                     (mouseleave)="isHoveredFolder = false" (closed)="folderCollapsed.emit()" expanded>
   <mat-expansion-panel-header class="deselected-expansion-panel-header"
                               [ngClass]="{'selected-expansion-panel-header' : isAllTrackletsSelected()}">
     <mat-panel-title (click)="toggleFolderSelect(); $event.stopPropagation()">

@@ -50,14 +50,12 @@ export class BackendService {
 
   mergeIntoNewFolder(run: string, folderToImages: Map<string, any>): Observable<any> {
     return this.http.post<string>(BackendService.SERVICE_URL + "merge", this.getMoveRequest(run, folderToImages))
-      .pipe(tap(newFolder =>
-        this._snackBar.open(`Tracklets merged into folder ${newFolder}`, "Dismiss", {
-          duration: 3000,
-        })))
+      .pipe(tap(newFolder => this.openSnackbar(`Tracklets merged into folder ${newFolder}`)))
   }
 
   delete(run: string, folderToImages: Map<string, any>): Observable<any> {
     return this.http.post<any>(BackendService.SERVICE_URL + "delete", this.getMoveRequest(run, folderToImages))
+      .pipe(tap(newFolder => this.openSnackbar(`Tracklet${folderToImages.size > 1 ? 's' : ''} deleted`)))
   }
 
   private getMoveRequest(run: string, folderToImages: Map<string, any>): Request {
@@ -66,5 +64,11 @@ export class BackendService {
     request.mapping = {}
     folderToImages.forEach((value, key) => request.mapping[key] = [...value]);
     return request
+  }
+
+  private openSnackbar(message: string) {
+    this._snackBar.open(message, "Dismiss", {
+      duration: 3000,
+    })
   }
 }
