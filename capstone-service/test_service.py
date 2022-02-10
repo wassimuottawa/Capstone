@@ -1,6 +1,7 @@
 import os
 import shutil
 import unittest
+from unittest.mock import patch
 
 import service
 
@@ -62,7 +63,16 @@ class TestService(unittest.TestCase):
         self.assertNotEqual(service.get_folders_by_run('test run 1'),
                             {'0000000001': ['000000000001', '000000000004'], '0000000002': ['000000000004']})
 
-    def test_get_image_names(self):
+    @patch('service.get_image_names')
+    def test_get_image_names(self, mock_res):
+        mock_res.return_value = ['cam1;x_306;y_205;w_167;h_235;1636565415019736200.png',
+                                 'cam1;x_305;y_204;w_167;h_234;1636565415019736201.png',
+                                 'cam1;x_304;y_203;w_167;h_233;1636565415019736202.png',
+                                 'cam1;x_303;y_202;w_167;h_232;1636565415019736203.png',
+                                 'cam1;x_302;y_201;w_167;h_231;1636565415019736204.png',
+                                 'cam1;x_301;y_200;w_167;h_230;1636565415019736205.png',
+                                 'cam1;x_300;y_199;w_167;h_229;1636565415019736206.png',
+                                 'cam1;x_299;y_198;w_167;h_228;1636565415019736207.png']
         try:
             service.get_image_names()
 
@@ -74,12 +84,7 @@ class TestService(unittest.TestCase):
             'start': '00:00',
             'end': '23:59'
         }
-        payload_2 = {
-            'run': 'test run 1',
-            'folder': '0000000002',
-            'start': '00:00',
-            'end': '23:59'
-        }
+
         self.assertEqual(service.get_image_names(payload),
                          {'000000000001': ['cam1;x_306;y_205;w_167;h_235;1636565415019736200.png',
                                            'cam1;x_305;y_204;w_167;h_234;1636565415019736201.png',
@@ -89,15 +94,7 @@ class TestService(unittest.TestCase):
                                            'cam1;x_301;y_200;w_167;h_230;1636565415019736205.png',
                                            'cam1;x_300;y_199;w_167;h_229;1636565415019736206.png',
                                            'cam1;x_299;y_198;w_167;h_228;1636565415019736207.png']})
-        self.assertEqual(service.get_image_names(payload_2),
-                         {'000000000002': ['cam1;x_299;y_198;w_167;h_220;1636565415019736192.png',
-                                           'cam1;x_300;y_199;w_167;h_221;1636565415019736193.png',
-                                           'cam1;x_301;y_200;w_167;h_222;1636565415019736194.png',
-                                           'cam1;x_302;y_201;w_167;h_223;1636565415019736195.png',
-                                           'cam1;x_303;y_202;w_167;h_224;1636565415019736196.png',
-                                           'cam1;x_304;y_203;w_167;h_225;1636565415019736197.png',
-                                           'cam1;x_305;y_204;w_167;h_226;1636565415019736198.png',
-                                           'cam1;x_306;y_205;w_167;h_227;1636565415019736199.png']})
+
         self.assertNotEqual(service.get_image_names(payload),
                             {'000000000002': ['cam1;x_299;y_198;w_167;h_220;1636565415019736192.png',
                                               'cam1;x_300;y_199;w_167;h_221;1636565415019736193.png',

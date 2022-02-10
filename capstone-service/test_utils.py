@@ -2,6 +2,7 @@ import os
 import shutil
 import unittest
 from datetime import time
+from unittest.mock import patch
 
 import utils
 
@@ -72,7 +73,16 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.is_image('cam1;x_306;y_205;w_167;h_227;1636565415019736199.png'), True)
         self.assertNotEqual(utils.is_image('123.jpg'), True)
 
-    def test_get_image_names_in_path(self):
+    @patch('utils.get_image_names_in_path')
+    def test_get_image_names_in_path(self, mocked_result):
+        mocked_result.return_value = ['cam1;x_306;y_205;w_167;h_235;1636565415019736200.png',
+                                      'cam1;x_305;y_204;w_167;h_234;1636565415019736201.png',
+                                      'cam1;x_304;y_203;w_167;h_233;1636565415019736202.png',
+                                      'cam1;x_303;y_202;w_167;h_232;1636565415019736203.png',
+                                      'cam1;x_302;y_201;w_167;h_231;1636565415019736204.png',
+                                      'cam1;x_301;y_200;w_167;h_230;1636565415019736205.png',
+                                      'cam1;x_300;y_199;w_167;h_229;1636565415019736206.png',
+                                      'cam1;x_299;y_198;w_167;h_228;1636565415019736207.png']
         try:
             utils.get_image_names_in_path()
         except TypeError:
