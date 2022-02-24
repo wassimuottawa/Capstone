@@ -86,8 +86,8 @@
   width: 100%;
 }
 
-@media only screen and (max-width: 1050px) {
-  .title {
+@media only screen and (max-width: 1450px) {
+  .main-title {
     display: none;
   }
 

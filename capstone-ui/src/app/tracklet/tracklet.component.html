@@ -1,15 +1,15 @@
 <div class="tracklet-container" (mouseenter)="isHoveredTracklet = true" (mouseleave)="isHoveredTracklet = false">
   <div class="title" (click)="toggleTrackletSelect()">
-    <button class="select-folder-hidden"
+    <button style="padding-left:20px;" class="select-folder-hidden"
             [ngClass]="{'select-folder-visible' : isSelected || isHoveredTracklet,
               'selected-check-button' : isSelected}" mat-icon-button>
       <mat-icon>check_circle</mat-icon>
     </button>
     <h2 [ngClass]="{'title-text-translateX' : isHoveredTracklet || isSelected}"
-        class="title-text">{{tracklet}}</h2>
+        class="title-text" style="padding-left:10px;">{{tracklet}}</h2>
   </div>
 
-  <drag-scroll #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()"
+  <drag-scroll style="padding-left: 50px;" #images [snap-disabled]="true" class="image-row" (indexChanged)="onScroll()"
                (click)="toggleTrackletSelect()">
     <div drag-scroll-item class="image-container" *ngFor="let image of getImageNames()">
       <div class="imageDivContainer" [ngClass]="{'selected-image' : isSelected}">

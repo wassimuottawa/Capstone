@@ -12,12 +12,10 @@
           <mat-icon>check_circle</mat-icon>
         </button>
         <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isAllTrackletsSelected()}"
-            class="title-text">{{folder}}</h2>
+            class="folder-title">{{folder}}</h2>
       </div>
     </mat-panel-title>
-    <mat-panel-description (click)="toggleFolderSelect(); $event.stopPropagation()">
-      <span *ngIf="trackletsLoading != 0" class="spinner"><mat-spinner diameter="20"></mat-spinner></span>
-    </mat-panel-description>
+    <mat-panel-description (click)="toggleFolderSelect(); $event.stopPropagation()"></mat-panel-description>
   </mat-expansion-panel-header>
   <app-tracklet #trackletComponent *ngFor="let tracklet of getTracklets()"
                 (onSelectionChange)="onTrackletSelectToggle(tracklet, $event)"
