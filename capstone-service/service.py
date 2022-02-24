@@ -60,38 +60,34 @@ def delete_tracklets(body: dict):
     os.makedirs(ARCHIVE_PATH, exist_ok=True)
     return move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
-
 def extract_into_new_folder(body: dict):
-    """ :param body: folder to tracklets map """
+    """
+    If an entire folder is selected by the user, the remaining selected tracklets
+    are added to the folder with the lowest Id
+    If no full folder is selected, a new folder is created for the selected tracklets
+    :param body: folder to tracklets map
+    """
     run = body.get(Params.RUN.value)
-    last_index = max(get_folders_in_path(os.path.join(ROOT_PATH, run)))
-    new_folder_name = str(int(last_index) + 1).zfill(len(last_index))
-    new_folder_path = os.path.join(ROOT_PATH, run, new_folder_name)
+    mapping: dict = body.get(Params.MAPPING.value)
+    destination_folder = get_lowest_id_of_selected_folder(run, mapping)
+    if destination_folder:
+        mapping.pop(destination_folder, None)
+    else:
+        last_index = max(get_folders_in_path(os.path.join(ROOT_PATH, run)))
+        destination_folder = str(int(last_index) + 1).zfill(len(last_index))
+        os.mkdir(os.path.join(ROOT_PATH, run, destination_folder))
+    move_files(run, mapping, os.path.join(ROOT_PATH, run, destination_folder))
 
-    print(entireFolderSelected(run, body.get(Params.MAPPING.value))) # Checks if entire folder is selected and prints the lowest id of all selected folders
+    return destination_folder
 
-    os.mkdir(new_folder_path)
-    move_files(run, body.get(Params.MAPPING.value), new_folder_path)
-    return new_folder_name
-
-def entireFolderSelected(run, files_mapping):
+def get_lowest_id_of_selected_folder(run, files_mapping):
     """
     Determines if an entire folder is selected by the user
     If more than one entire folder is selected, determines the lowest folder id of them all
     :param files_mapping: folder to tracklets map
     :return: true and lowestFolderId if entire folder is selected, else false
     """
-    dictionary = get_folders_by_run(run)                                                    # full dictionary of all folders and their respective tracklets
-    lowestFolderId = 99999                                                                   # dummy value for lowestFolderId
-    for folder, tracklets in files_mapping.items():                                         # iterates through all folders and tracklets of the mapped/ user selected folders and tracklets
-        selectedTracklets = set(tracklets)                                                  # creates a set for the selected tracklets from within a folder
-        for key, value in dictionary.items():                                               # iterates through all key(folder) and values (tracklets) in the dictionary of all folders and tracklets
-                if key == folder:                                                           # Hits when a user selected folder is found in dictionary of all folders
-                    allFolderTracklets = set(value)                                         # creates set of all tracklets within dictionary folder
-                if selectedTracklets == set(value) and (int(folder) < int(lowestFolderId)): # if all tracklets in user selected folder are all the tracklets within folder, and, the id of folder is the lowest of all selected folders, hits
-                    lowestFolderId = folder                                                 # sets value for lowest folder
-                    return True,lowestFolderId                                              # returns true the lowestFolderId for the tracklets to be merged into
-    return False                                                                            # else false
+    return next((folder for (folder, tracklets) in sorted(files_mapping.items()) if len(get_folders_in_path(os.path.join(ROOT_PATH, run, folder))) == len(tracklets)), None)
 
 def move_files(run, files_mapping, destination):
     """
