@@ -1,7 +1,7 @@
 import logging as log
 
 from flask import *
-from flask_cors import cross_origin, CORS
+from flask_cors import CORS
 
 import service
 
@@ -38,7 +38,6 @@ def get_tracklets_to_image_names_map():
 
 
 @app.route("/merge", methods=['POST'])
-@cross_origin()
 def extract():
     """ :returns: the new folder name """
     return jsonify(service.extract_into_new_folder(request.json))

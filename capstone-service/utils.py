@@ -8,6 +8,7 @@ SOURCE_IMAGE_EXTENSION = 'png'
 COMPRESSED_IMAGE_FORMAT = 'webp'
 TIME_FILTER_FORMAT = '%H:%M'
 MAX_IMAGE_SIZE = 150, 150
+MAX_UNIX_DATE = datetime(2999, 12, 31, 23, 59, 59, 999999).timestamp()
 
 
 def get_folders_in_path(path):
@@ -23,15 +24,15 @@ def get_image_names_in_path(path):
 
 
 def get_time_from_file_name(file_name):
+    return datetime.fromtimestamp(get_unix_date_from_file_name(file_name)).time()
+
+
+def get_unix_date_from_file_name(file_name):
     try:
-        return datetime.fromtimestamp(get_epoch_date_from_file_name(file_name) / pow(10, 9)).time()
+        return float(int(os.path.splitext(file_name)[0].split(";")[5])) / 1e9
     except (ValueError, Exception) as e:
         print(f"{get_error_name(e)}: image={file_name} does not match the predefined filename format")
-        return time.max
-
-
-def get_epoch_date_from_file_name(file_name):
-    return float(int(os.path.splitext(file_name)[0].split(";")[5]))
+        return MAX_UNIX_DATE
 
 
 def is_in_time_range(image_name, start, end):
@@ -56,7 +57,7 @@ def compress_image(image_path):
 
 
 def sort_images_by_time(image_names: list):
-    return sorted(image_names, key=lambda img: get_epoch_date_from_file_name(img))
+    return sorted(image_names, key=lambda img: get_unix_date_from_file_name(img))
 
 
 def get_error_name(e: Exception):
