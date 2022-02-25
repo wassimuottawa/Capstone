@@ -30,8 +30,7 @@ def get_folders_by_run(run):
     for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
         folders[folder] = []
         for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
-            if folder_contains_image(os.path.join(ROOT_PATH, run, folder, tracklet)):
-                folders[folder].append(tracklet)
+            folders[folder].append(tracklet)
     return folders
 
 
@@ -60,6 +59,7 @@ def delete_tracklets(body: dict):
     os.makedirs(ARCHIVE_PATH, exist_ok=True)
     return move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
+
 def extract_into_new_folder(body: dict):
     """
     If an entire folder is selected by the user, the remaining selected tracklets
@@ -80,14 +80,17 @@ def extract_into_new_folder(body: dict):
 
     return destination_folder
 
+
 def get_lowest_id_of_selected_folder(run, files_mapping):
     """
     Determines if an entire folder is selected by the user
     If more than one entire folder is selected, determines the lowest folder id of them all
     :param files_mapping: folder to tracklets map
-    :return: true and lowestFolderId if entire folder is selected, else false
+    :return: The lowest folder ID if entire folder is selected, else None
     """
-    return next((folder for (folder, tracklets) in sorted(files_mapping.items()) if len(get_folders_in_path(os.path.join(ROOT_PATH, run, folder))) == len(tracklets)), None)
+    return next((folder for (folder, tracklets) in sorted(files_mapping.items()) if
+                 len(get_folders_in_path(os.path.join(ROOT_PATH, run, folder))) == len(tracklets)), None)
+
 
 def move_files(run, files_mapping, destination):
     """

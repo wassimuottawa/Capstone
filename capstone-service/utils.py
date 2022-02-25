@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import time, datetime
 from io import BytesIO
 
 from PIL import Image
@@ -14,10 +14,6 @@ def get_folders_in_path(path):
     return list(filter(lambda f: os.path.isdir(os.path.join(path, f)), os.listdir(path)))
 
 
-def folder_contains_image(path):
-    return any(is_image(file) for file in os.listdir(path))
-
-
 def is_image(file_name):
     return str(file_name).endswith(SOURCE_IMAGE_EXTENSION)
 
@@ -26,12 +22,16 @@ def get_image_names_in_path(path):
     return list(filter(lambda f: is_image(f), os.listdir(path)))
 
 
-def get_time_from_file_name(image_name):
+def get_time_from_file_name(file_name):
     try:
-        return datetime.fromtimestamp(float(int(os.path.splitext(image_name)[0].split(";")[5]) / pow(10, 9))).time()
+        return datetime.fromtimestamp(get_epoch_date_from_file_name(file_name) / pow(10, 9)).time()
     except (ValueError, Exception) as e:
-        print(f"{get_error_name(e)}: image={image_name} does not match the predefined filename format")
-        return datetime.max.time()
+        print(f"{get_error_name(e)}: image={file_name} does not match the predefined filename format")
+        return time.max
+
+
+def get_epoch_date_from_file_name(file_name):
+    return float(int(os.path.splitext(file_name)[0].split(";")[5]))
 
 
 def is_in_time_range(image_name, start, end):
@@ -43,7 +43,7 @@ def is_in_time_range(image_name, start, end):
 
 def str_to_time(time_string):
     if time_string is not None:
-        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
+        return time.strftime(time_string, TIME_FILTER_FORMAT)
 
 
 def compress_image(image_path):
@@ -56,7 +56,7 @@ def compress_image(image_path):
 
 
 def sort_images_by_time(image_names: list):
-    return sorted(image_names, key=lambda img: get_time_from_file_name(img))
+    return sorted(image_names, key=lambda img: get_epoch_date_from_file_name(img))
 
 
 def get_error_name(e: Exception):
