@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import time, datetime
 from io import BytesIO
 import json
 
@@ -9,14 +9,11 @@ SOURCE_IMAGE_EXTENSION = 'png'
 COMPRESSED_IMAGE_FORMAT = 'webp'
 TIME_FILTER_FORMAT = '%H:%M'
 MAX_IMAGE_SIZE = 150, 150
+MAX_UNIX_DATE = datetime(2999, 12, 31, 23, 59, 59, 999999).timestamp()
 
 
 def get_folders_in_path(path):
     return list(filter(lambda f: os.path.isdir(os.path.join(path, f)), os.listdir(path)))
-
-
-def folder_contains_image(path):
-    return any(is_image(file) for file in os.listdir(path))
 
 
 def is_image(file_name):
@@ -27,12 +24,21 @@ def get_image_names_in_path(path):
     return list(filter(lambda f: is_image(f), os.listdir(path)))
 
 
-def get_time_from_file_name(image_name):
+def get_time_from_file_name(file_name):
+    return datetime.fromtimestamp(get_unix_date_from_file_name(file_name)).time()
+
+
+def get_unix_date_from_file_name(file_name):
     try:
-        return datetime.fromtimestamp(float(int(os.path.splitext(image_name)[0].split(";")[5]) / pow(10, 9))).time()
+        return float(int(os.path.splitext(file_name)[0].split(";")[5])) / 1e9
     except (ValueError, Exception) as e:
-        print(f"{get_error_name(e)}: image={image_name} does not match the predefined filename format")
-        return datetime.max.time()
+        print(f"{get_error_name(e)}: image={file_name} does not match the predefined filename format")
+        return MAX_UNIX_DATE
+
+
+# Assume UNIX time is an integer
+def get_time_from_unix_time(unix_time):
+    return datetime.fromtimestamp(float(unix_time / 1e9)).time()
 
 
 def is_in_time_range(image_name, start, end):
@@ -44,7 +50,7 @@ def is_in_time_range(image_name, start, end):
 
 def str_to_time(time_string):
     if time_string is not None:
-        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
+        return time.strftime(time_string, TIME_FILTER_FORMAT)
 
 
 def compress_image(image_path):
@@ -57,7 +63,7 @@ def compress_image(image_path):
 
 
 def sort_images_by_time(image_names: list):
-    return sorted(image_names, key=lambda img: get_time_from_file_name(img))
+    return sorted(image_names, key=lambda img: get_unix_date_from_file_name(img))
 
 
 def read_json_file_into_dict(path):
