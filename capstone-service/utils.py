@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
 from io import BytesIO
+import json
 
-from PIL import Image
+#from PIL import Image
 
 SOURCE_IMAGE_EXTENSION = 'png'
 COMPRESSED_IMAGE_FORMAT = 'webp'
@@ -57,6 +58,13 @@ def compress_image(image_path):
 
 def sort_images_by_time(image_names: list):
     return sorted(image_names, key=lambda img: get_time_from_file_name(img))
+
+
+def read_json_file_into_dict(path):
+    f = open(path, "r")
+    result = json.loads(f.read())
+    f.close() 
+    return result
 
 
 def get_error_name(e: Exception):

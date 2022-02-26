@@ -24,14 +24,45 @@ def get_compressed_image_file(run, folder, tracklet, file_name):
     return send_file(image, mimetype=f'image/{extension}')
 
 
+# Sorts by scanning directory to find lowest detection time.
 def get_folders_by_run(run):
-    """ :returns: a folder to tracklets map"""
-    folders = dict()
+    """ :returns: a sorted folder to tracklets map"""
+    folders = []
+    folder_data = dict()
     for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
-        folders[folder] = []
+        tracklet_data = dict()
+
         for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
-            if folder_contains_image(os.path.join(ROOT_PATH, run, folder, tracklet)):
-                folders[folder].append(tracklet)
+            images = get_image_names_in_path(os.path.join(ROOT_PATH, run, folder, tracklet))
+            sorted_images = sort_images_by_time(images)
+            min_detection_time = get_time_from_file_name(sorted_images[0])
+            tracklet_data[tracklet] = min_detection_time
+
+        folders.append({ folder: list(tracklet_data.keys()) })
+        folder_data[folder] = min(tracklet_data.values())
+
+    folders = sorted(folders, key=lambda x: folder_data[list(x.keys())[0]])
+    return folders
+
+
+# Sorts by getting lowest detection time from JSON file.
+def get_folders_by_run_v2(run):
+    """ :returns: a sorted folder to tracklets map"""
+    folders = []
+    folder_data = dict()
+    for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
+        tracklet_data = dict()
+
+        for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
+            path = os.path.join(ROOT_PATH, run, folder, tracklet, f"{tracklet}.json")
+            contents = read_json_file_into_dict(path)
+            min_detection_time = float(int(contents["min_detection_time"]) / pow(10, 9))
+            tracklet_data[tracklet] = min_detection_time
+        
+        folders.append({ folder: list(tracklet_data.keys()) })
+        folder_data[folder] = min(tracklet_data.values())
+
+    folders = sorted(folders, key=lambda x: folder_data[list(x.keys())[0]])
     return folders
 
 
