@@ -44,6 +44,7 @@
 }
 
 .title-text {
+  user-select: none;
   font-size: .875rem !important;
 }
 
