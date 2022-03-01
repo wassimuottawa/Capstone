@@ -20,7 +20,7 @@ def is_image(file_name):
     return str(file_name).endswith(SOURCE_IMAGE_EXTENSION)
 
 
-def get_image_names(path):
+def get_image_names_in_path(path):
     return list(filter(lambda f: is_image(f), os.listdir(path)))
 
 

@@ -68,7 +68,7 @@ def get_image_names(body):
     end = str_to_time(body.get(Params.END_TIME.value))
     images = {}
     for tracklet in os.listdir(from_root(run, folder)):
-        images[tracklet] = sort_images_by_time(get_image_names(from_root(run, folder, tracklet)))
+        images[tracklet] = sort_images_by_time(get_image_names_in_path(from_root(run, folder, tracklet)))
     return images if any(is_in_time_range(img, start, end) for tracklet in images.values() for img in tracklet) else {}
 
 
