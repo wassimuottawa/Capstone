@@ -1,9 +1,9 @@
-import os
-from datetime import time, datetime
-from io import BytesIO
 import json
+import os
+from datetime import datetime
+from io import BytesIO
 
-#from PIL import Image
+from PIL import Image
 
 SOURCE_IMAGE_EXTENSION = 'png'
 COMPRESSED_IMAGE_FORMAT = 'webp'
@@ -36,11 +36,6 @@ def get_unix_date_from_file_name(file_name):
         return MAX_UNIX_DATE
 
 
-# Assume UNIX time is an integer
-def get_time_from_unix_time(unix_time):
-    return datetime.fromtimestamp(float(unix_time / 1e9)).time()
-
-
 def is_in_time_range(image_name, start, end):
     try:
         return True if start is None or end is None else start <= get_time_from_file_name(image_name) <= end
@@ -50,7 +45,7 @@ def is_in_time_range(image_name, start, end):
 
 def str_to_time(time_string):
     if time_string is not None:
-        return time.strftime(time_string, TIME_FILTER_FORMAT)
+        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
 
 
 def compress_image(image_path):
@@ -66,11 +61,9 @@ def sort_images_by_time(image_names: list):
     return sorted(image_names, key=lambda img: get_unix_date_from_file_name(img))
 
 
-def read_json_file_into_dict(path):
-    f = open(path, "r")
-    result = json.loads(f.read())
-    f.close() 
-    return result
+def read_file_as_dict(path):
+    with open(path, 'r') as f:
+        return json.load(f)
 
 
 def get_error_name(e: Exception):

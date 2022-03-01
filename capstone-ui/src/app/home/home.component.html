@@ -1,20 +1,20 @@
 <mat-toolbar class="toolbar">
   <span class="main-title">Re-Identification Annotator</span>
-  <div class="actionButtonContainer">
+  <div class="action-button-container">
     <!--DESELECT ALL BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deselectAll()"
+    <button mat-raised-button style="margin:10px;" class="action-menu-button" (click)="deselectAll()"
             matTooltip="Deselect all [{{getShortcutString(shortcuts.DESELECT)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>close</mat-icon>
     </button>
     <!--Merge BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="mergeSelectedTracklets()"
+    <button mat-raised-button style="margin:10px;" class="action-menu-button" (click)="mergeSelectedTracklets()"
             matTooltip="Merge [{{getShortcutString(shortcuts.MERGE)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>call_merge</mat-icon>
     </button>
     <!--DELETE BUTTON-->
-    <button mat-raised-button style="margin:10px;" class="actionMenuButton" (click)="deleteSelected()"
+    <button mat-raised-button style="margin:10px;" class="action-menu-button" (click)="deleteSelected()"
             matTooltip="Delete [{{getShortcutString(shortcuts.DELETE)}}]"
             [disabled]="selectionEmpty()">
       <mat-icon>delete</mat-icon>
@@ -22,7 +22,7 @@
     <!--TIME CONSTRAINT BUTTON-->
     <button mat-raised-button style="margin:10px;" [matMenuTriggerFor]="menu" (onMenuOpen)="filterMenuOpened()"
             matTooltip="Time filter"
-            class="actionMenuButton">
+            class="action-menu-button">
       <mat-icon>tune</mat-icon>
     </button>
     <mat-menu #menu="matMenu" class="menu">
@@ -41,7 +41,7 @@
   </div>
 
   <div class="runs-container">
-    <mat-form-field class="runFolderList">
+    <mat-form-field class="runs">
       <mat-select [(value)]="run" (valueChange)="refreshContent()">
         <mat-option *ngFor="let run of runs" [value]="run">
           {{run}}

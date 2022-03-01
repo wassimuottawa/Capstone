@@ -31,10 +31,10 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   @ViewChild('images') dragScrollComponent: DragScrollComponent | undefined
 
   imageIdToImageMap: Map<string, any> = new Map<string, any>() //imageId to image file map
-  dragThreshold: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
   isSelected: boolean = false
-  isHoveredTracklet: boolean = false
-  timeStampFormat: string = 'HH:mm:ss SS'
+  DRAG_THRESHOLD: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
+  TIMESTAMP_FORMAT: string = 'HH:mm:ss SS'
+  IMAGES_TIMEZONE = 'GMT'
 
   constructor(@Host() private parent: FolderComponent,
               private service: BackendService,
@@ -53,7 +53,7 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   //Checks if horizontal scroll threshold has been reached, if so load more files
   onScroll() {
     let ref: any = this.dragScrollComponent?._contentRef
-    const reachedScrollThreshold = ref.nativeElement.scrollLeft + ref.nativeElement.offsetWidth >= this.dragThreshold * ref.nativeElement.scrollWidth;
+    const reachedScrollThreshold = ref.nativeElement.scrollLeft + ref.nativeElement.offsetWidth >= this.DRAG_THRESHOLD * ref.nativeElement.scrollWidth;
     if (reachedScrollThreshold) {
       this.loadFiles()
     }
@@ -98,7 +98,7 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   @cache()
   getDate(imageId: string): string {
     let d: Date = new Date(parseInt(imageId.split(".")[0].split(";")[5]) / Math.pow(10, 6))
-    return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.timeStampFormat) ?? ""
+    return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.TIMESTAMP_FORMAT, this.IMAGES_TIMEZONE) ?? ""
   }
 
   getImageNames(): string[] {

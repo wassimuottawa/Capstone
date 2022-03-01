@@ -107,12 +107,16 @@ export class HomeComponent implements AfterViewInit {
   }
 
   mergeSelectedTracklets() {
-    this.service.mergeIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(newFolder => {
-      this.hiddenFolders.set(newFolder,
-        Array.from(this.folderToSelectedTrackletsMap.values())
-          .map(set => [...set])
-          .reduce((accumulator, value) => accumulator.concat(value), []))
-      this.removeSelectedTrackletsFromUI()
+    this.service.mergeIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(destinationFolder => {
+      this.visibleFolders.has(destinationFolder) ?
+        this.folders.filter(f => f.folder === destinationFolder)[0].loadImageNames() :
+        this.hiddenFolders.set(
+          destinationFolder,
+          Array.from(this.folderToSelectedTrackletsMap.values())
+            .map(set => [...set])
+            .reduce((accumulator, value) => accumulator.concat(value), [])
+        )
+      this.removeSelectedTrackletsFromUI(destinationFolder)
     })
   }
 
@@ -144,8 +148,8 @@ export class HomeComponent implements AfterViewInit {
     return shortcut.toString().toUpperCase().substr(0, 3)
   }
 
-  removeSelectedTrackletsFromUI() {
-    this.folders.filter(folder => this.folderToSelectedTrackletsMap.has(folder.folder)).forEach(folder => folder.deleteSelectedTracklets())
+  removeSelectedTrackletsFromUI(existingFolder?: string) {
+    this.folders.filter(folder => folder.folder != existingFolder && this.folderToSelectedTrackletsMap.has(folder.folder)).forEach(folder => folder.deleteSelectedTracklets())
     this.clearSelection()
     this.addFoldersUntilScreenFilled()
   }

@@ -8,6 +8,7 @@ import service
 app = Flask(__name__)
 cors = CORS(app)
 log.getLogger('werkzeug').setLevel(log.ERROR)
+app.config['JSON_SORT_KEYS'] = False
 
 
 @app.route("/image/<string:run>/<string:folder>/<string:tracklet>/<string:image>")
@@ -28,7 +29,7 @@ def get_runs():
 @app.route("/folder/<string:run>")
 def get_folders_by_run(run):
     """ :returns: a folder to tracklets map"""
-    return jsonify(service.get_folders_by_run_v2(run))
+    return jsonify(service.get_folders_by_run(run))
 
 
 @app.route("/trackletsToImages", methods=['POST'])

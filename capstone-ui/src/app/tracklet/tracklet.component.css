@@ -1,13 +1,22 @@
 .title {
-  height: 35px;
+  position: relative;
+  height: 150px;
   margin-left: 7px;
+  align-self: center;
 }
 
-.imageDivContainer {
-  height: 100%;
-  background-color: #fafafa;
-  opacity: 1 !important;
-  filter: none !important;
+.tracklet-container {
+  position: relative;
+  display: flex;
+}
+
+.selected-background {
+  background: #c5e5f9;
+  position: absolute;
+  height: 160px;
+  width: 100%;
+  top: -5px;
+  animation: anim .3s ease-in-out
 }
 
 .image {
@@ -18,7 +27,7 @@
   width: 150px;
   position: relative;
   height: 150px;
-  background-color: #c5e5f9;
+  background-color: #fafafa;
   margin-right: 2px;
   text-align: center;
 }
@@ -34,21 +43,28 @@
   color: white;
 }
 
-.check-button-on-image-container-hover {
-  display: block;
+.title-text {
+  font-size: .875rem !important;
 }
 
 .image-row {
   margin-right: 15px;
 }
 
-.selected-image {
-  transform: scale(0.8, 0.8);
-  animation: scale-anim 0.3s ease-in-out;
-}
-
-
-
 .drag-scroll-content {
   overflow: hidden !important;
+}
+
+@keyframes anim {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

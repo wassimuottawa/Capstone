@@ -53,24 +53,19 @@
   width: 100%;
 }
 
-.actionMenuButton {
+.action-menu-button {
   width: 22%;
   margin: 10px;
   color: white;
   background-color: #387da7;
 }
 
-.actionMenuButton:disabled {
+.action-menu-button:disabled {
   background-color: #5c5c5c !important;
   color: #00000085 !important;
 }
 
-/*Animation is laggy on my side, disabling for performance*/
-/*.actionMenuButton:hover {
-  background-color: rgb(63, 63, 63);
-}*/
-
-.runFolderList {
+.runs {
   width: 70%;
   color: white;
   float: right !important;
@@ -81,7 +76,7 @@
   width: 15%;
 }
 
-.actionButtonContainer {
+.action-button-container {
   text-align: center;
   width: 100%;
 }
@@ -91,7 +86,7 @@
     display: none;
   }
 
-  .actionMenuButton {
+  .action-menu-button {
     width: 20%;
     margin: 10px;
     color: white;

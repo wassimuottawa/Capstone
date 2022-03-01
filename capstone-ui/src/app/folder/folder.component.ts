@@ -36,10 +36,9 @@ export class FolderComponent implements AfterViewInit, AfterViewChecked {
 
   trackletsToImageNames: Map<string, Set<string>> = new Map<string, Set<string>>()
   selectedTracklets: Set<string> = new Set<string>();
-  isHoveredFolder: boolean = false //will be used to show/hide the select check buttons
   /**
    * Will be calculated based on the width of the screen, this is used to know how many images to preload,
-   * when user scrolls beyond {@link dragThreshold}, a count of {@link imagesPerRow} will be loaded more
+   * when user scrolls beyond {@link DRAG_THRESHOLD}, a count of {@link imagesPerRow} will be loaded more
    **/
   imagesPerRow = 0
   imageWidth = 150 //px
@@ -64,6 +63,7 @@ export class FolderComponent implements AfterViewInit, AfterViewChecked {
           Object.entries(trackletsToImages).forEach(([tracklet, images]) => {
             this.trackletsToImageNames.set(tracklet, new Set(images))
           })
+          this.deselectAllTracklets()
           this.checkIfEmpty()
         },
         () => {

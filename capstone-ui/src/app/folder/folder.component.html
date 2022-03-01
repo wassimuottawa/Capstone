@@ -1,18 +1,10 @@
-<mat-expansion-panel *ngIf="trackletsToImageNames.size" class="tracklets-container"
-                     (mouseenter)="isHoveredFolder = true"
-                     (mouseleave)="isHoveredFolder = false" (closed)="folderCollapsed.emit()" expanded>
+<mat-expansion-panel expanded *ngIf="trackletsToImageNames.size" class="tracklets-container"
+                     (closed)="folderCollapsed.emit()">
   <mat-expansion-panel-header class="deselected-expansion-panel-header"
                               [ngClass]="{'selected-expansion-panel-header' : isAllTrackletsSelected()}">
     <mat-panel-title (click)="toggleFolderSelect(); $event.stopPropagation()">
       <div class="title">
-        <button [ngClass]="{
-              'select-folder-visible' : isAllTrackletsSelected() || isHoveredFolder,
-              'selected-check-button' : isAllTrackletsSelected()}"
-                class="select-folder-hidden" mat-icon-button>
-          <mat-icon>check_circle</mat-icon>
-        </button>
-        <h2 [ngClass]="{'title-text-translateX' : isHoveredFolder || isAllTrackletsSelected()}"
-            class="folder-title">{{folder}}</h2>
+        <h2 class="title-text">{{folder}}</h2>
       </div>
     </mat-panel-title>
     <mat-panel-description (click)="toggleFolderSelect(); $event.stopPropagation()"></mat-panel-description>

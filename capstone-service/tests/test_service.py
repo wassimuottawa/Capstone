@@ -165,7 +165,7 @@ class TestService(unittest.TestCase):
         self.assertEqual(service.move_files(run, file_mapping, destination), True)
 
     def tearDown(self):
-        service.ROOT_PATH = 'root'
+        service.ROOT_PATH = '../root'
         service.ARCHIVE_FOLDER_NAME = 'archive'
         service.ARCHIVE_PATH = os.path.join(service.ROOT_PATH, service.ARCHIVE_FOLDER_NAME)
         shutil.rmtree('test root')
