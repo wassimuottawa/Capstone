@@ -2,6 +2,8 @@ import os
 import shutil
 import unittest
 from unittest.mock import patch
+import sys
+sys.path.append("/home/runner/work/Capstone/Capstone/capstone-service")
 
 import service
 
