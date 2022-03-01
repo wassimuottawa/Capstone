@@ -4,19 +4,19 @@
     <!--DESELECT ALL BUTTON-->
     <button mat-raised-button style="margin:10px;" class="action-menu-button" (click)="deselectAll()"
             matTooltip="Deselect all [{{getShortcutString(shortcuts.DESELECT)}}]"
-            [disabled]="selectionEmpty()">
+            [disabled]="isActionButtonsDisabled()">
       <mat-icon>close</mat-icon>
     </button>
     <!--Merge BUTTON-->
     <button mat-raised-button style="margin:10px;" class="action-menu-button" (click)="mergeSelectedTracklets()"
             matTooltip="Merge [{{getShortcutString(shortcuts.MERGE)}}]"
-            [disabled]="selectionEmpty()">
+            [disabled]="isActionButtonsDisabled()">
       <mat-icon>call_merge</mat-icon>
     </button>
     <!--DELETE BUTTON-->
     <button mat-raised-button style="margin:10px;" class="action-menu-button" (click)="deleteSelected()"
             matTooltip="Delete [{{getShortcutString(shortcuts.DELETE)}}]"
-            [disabled]="selectionEmpty()">
+            [disabled]="isActionButtonsDisabled()">
       <mat-icon>delete</mat-icon>
     </button>
     <!--TIME CONSTRAINT BUTTON-->

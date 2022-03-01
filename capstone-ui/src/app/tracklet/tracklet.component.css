@@ -20,6 +20,7 @@
 }
 
 .image {
+  user-select: none;
   height: 100%;
 }
 
@@ -33,6 +34,7 @@
 }
 
 .image-time {
+  user-select: none;
   position: absolute;
   background-color: rgba(0, 0, 0, 0.5);
   top: 90%;

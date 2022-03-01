@@ -1,6 +1,6 @@
-import math
 import shutil
 from enum import Enum
+from math import inf as infinity
 
 from flask import *
 from recordclass import recordclass
@@ -41,7 +41,7 @@ def get_folders_by_run(run):
     Folder = recordclass('Folder', 'name min_detection tracklets')
     folders = []
     for folder in get_folders_in_path(os.path.join(ROOT_PATH, run)):
-        _folder = Folder(folder, str(math.inf), [])
+        _folder = Folder(folder, str(infinity), [])
         for tracklet in get_folders_in_path(os.path.join(ROOT_PATH, run, folder)):
             _folder.min_detection = min(get_min_detection_time_by_tracklet(run, folder, tracklet),
                                         _folder.min_detection)

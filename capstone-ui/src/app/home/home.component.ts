@@ -39,6 +39,7 @@ export class HomeComponent implements AfterViewInit {
   shortcuts = KEYBOARD_SHORTCUTS
   imageHeight = 198
   mainContainer: HTMLElement | undefined
+  operationRunning = false
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -107,6 +108,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   mergeSelectedTracklets() {
+    this.operationRunning = true
     this.service.mergeIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(destinationFolder => {
       this.visibleFolders.has(destinationFolder) ?
         this.folders.filter(f => f.folder === destinationFolder)[0].loadImageNames() :
@@ -117,6 +119,7 @@ export class HomeComponent implements AfterViewInit {
             .reduce((accumulator, value) => accumulator.concat(value), [])
         )
       this.removeSelectedTrackletsFromUI(destinationFolder)
+      this.operationRunning = false
     })
   }
 
@@ -141,7 +144,11 @@ export class HomeComponent implements AfterViewInit {
   }
 
   deleteSelected() {
-    this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => this.removeSelectedTrackletsFromUI())
+    this.operationRunning = true
+    this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => {
+      this.removeSelectedTrackletsFromUI()
+      this.operationRunning = false
+    })
   }
 
   getShortcutString(shortcut: KEYBOARD_SHORTCUTS) {
@@ -181,5 +188,9 @@ export class HomeComponent implements AfterViewInit {
 
   onSelectionChange(selectedTracklets: Set<string>, folder: string) {
     selectedTracklets.size ? this.folderToSelectedTrackletsMap.set(folder, selectedTracklets) : this.folderToSelectedTrackletsMap.delete(folder)
+  }
+
+  isActionButtonsDisabled() {
+    return this.operationRunning || this.selectionEmpty()
   }
 }
