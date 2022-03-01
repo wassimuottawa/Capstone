@@ -3,7 +3,9 @@ import shutil
 import unittest
 from unittest.mock import patch
 import sys
-sys.path.append("/home/runner/work/Capstone/Capstone/capstone-service")
+sys.path.append("/home/runner/work/Capstone/Capstone/capstone-service") #This works on GitHub but may not work locally when running the tests.
+                                                                        # Since all the tests file are in the tests folder and don't have access to service anymore, it was
+                                                                        # the only way I found to import the service.py file... To update or verify again at some point...
 
 import service
 
