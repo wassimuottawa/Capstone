@@ -3,6 +3,8 @@ import shutil
 import unittest
 from datetime import time
 from unittest.mock import patch
+import sys
+sys.path.append("/home/runner/work/Capstone/Capstone/capstone-service") # Same comments mentionned in test_service.py apply here too...
 
 import utils
 
