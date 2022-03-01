@@ -51,10 +51,10 @@ class TestUtils(unittest.TestCase):
 
     def test_get_folders_in_path(self):
         try:
-            utils.get_folders_in_path()
+            utils.get_folders()
         except TypeError:
             pass
-        self.assertEqual(utils.get_folders_in_path('test root'), ['test run 1', 'test archive'])
+        self.assertEqual(utils.get_folders('test root'), ['test run 1', 'test archive'])
 
     def test_folder_contains_image(self):
         try:
@@ -84,11 +84,11 @@ class TestUtils(unittest.TestCase):
                                       'cam1;x_300;y_199;w_167;h_229;1636565415019736206.png',
                                       'cam1;x_299;y_198;w_167;h_228;1636565415019736207.png']
         try:
-            utils.get_image_names_in_path()
+            utils.get_image_names()
         except TypeError:
             pass
         path = 'test root/test run 1/0000000001/000000000001'
-        self.assertEqual(utils.get_image_names_in_path(path), ['cam1;x_306;y_205;w_167;h_235;1636565415019736200.png',
+        self.assertEqual(utils.get_image_names(path), ['cam1;x_306;y_205;w_167;h_235;1636565415019736200.png',
                                                                'cam1;x_305;y_204;w_167;h_234;1636565415019736201.png',
                                                                'cam1;x_304;y_203;w_167;h_233;1636565415019736202.png',
                                                                'cam1;x_303;y_202;w_167;h_232;1636565415019736203.png',

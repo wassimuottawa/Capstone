@@ -152,7 +152,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   getShortcutString(shortcut: KEYBOARD_SHORTCUTS) {
-    return shortcut.toString().toUpperCase().substr(0, 3)
+    return shortcut.toString().substr(0, 3).toUpperCase()
   }
 
   removeSelectedTrackletsFromUI(existingFolder?: string) {

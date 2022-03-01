@@ -12,7 +12,7 @@ MAX_IMAGE_SIZE = 150, 150
 MAX_UNIX_DATE = datetime(2999, 12, 31, 23, 59, 59, 999999).timestamp()
 
 
-def get_folders_in_path(path):
+def get_folders(path):
     return list(filter(lambda f: os.path.isdir(os.path.join(path, f)), os.listdir(path)))
 
 
@@ -20,7 +20,7 @@ def is_image(file_name):
     return str(file_name).endswith(SOURCE_IMAGE_EXTENSION)
 
 
-def get_image_names_in_path(path):
+def get_image_names(path):
     return list(filter(lambda f: is_image(f), os.listdir(path)))
 
 
