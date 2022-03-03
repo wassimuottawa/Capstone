@@ -84,7 +84,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.get_time_from_file_name('cam1;x_299;y_198;w_167;h_228;1636565415019736207.png'),
                          time(12, 30, 15, 19736)) 
         self.assertEqual(utils.get_time_from_file_name('cam1;x_301;y_200;w_167;h_222;1836565415025736194.png'),
-                         time(9, 3, 35, 25736))  
+                         time(8, 3, 35, 25736))  
 
 
     def test_is_in_time_range(self):

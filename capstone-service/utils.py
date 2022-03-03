@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 
 from PIL import Image
@@ -26,7 +26,8 @@ def get_image_names_in_path(path):
 
 # Returns time in local timezone
 def get_time_from_file_name(file_name):
-    return datetime.fromtimestamp(get_unix_date_from_file_name(file_name)).time()
+    tz = timezone(timedelta(hours=-5))
+    return datetime.fromtimestamp(get_unix_date_from_file_name(file_name), tz).time()
 
 
 def get_unix_date_from_file_name(file_name):
