@@ -54,7 +54,7 @@ class TestService(unittest.TestCase):
         service.ARCHIVE_PATH = os.path.join(service.ROOT_PATH, service.ARCHIVE_FOLDER_NAME)
 
 
-    def test_A_get_runs(self):
+    def test_get_runs(self):
         try:
             service.get_runs()
         except TypeError:
@@ -63,7 +63,7 @@ class TestService(unittest.TestCase):
         self.assertNotEqual(service.get_runs(), ['test run 1', 'test archive'])
 
 
-    def test_B_get_folders_by_run(self):
+    def test_get_folders_by_run(self):
         try:
             service.get_folders_by_run()
         except TypeError:
@@ -75,7 +75,7 @@ class TestService(unittest.TestCase):
                             {'0000000001': ['000000000001', '000000000004'], '0000000002': ['000000000004']})
 
     
-    def test_C_get_image_names(self):
+    def test_get_image_names(self):
         try:
             service.get_image_names()
 
@@ -107,7 +107,7 @@ class TestService(unittest.TestCase):
 		                                      "cam1;x_165;y_64;w_56;h_134;1636570207205401700.png"]})
 
 
-    def test_D_extract_into_new_folder(self):
+    def test_extract_into_new_folder(self):
         try:
             service.extract_into_new_folder()
         except TypeError:
@@ -122,7 +122,7 @@ class TestService(unittest.TestCase):
         self.assertEqual(service.extract_into_new_folder(payload), '0000000001')
     
 
-    def test_E_move_files(self):
+    def test_move_files(self):
         try:
             service.move_files()
         except TypeError:
@@ -135,7 +135,7 @@ class TestService(unittest.TestCase):
         self.assertEqual(service.move_files(run, file_mapping, destination), True)
 
 
-    def test_F_delete_tracklets(self):
+    def test_delete_tracklets(self):
         try:
             service.delete_tracklets()
         except TypeError:
@@ -150,7 +150,6 @@ class TestService(unittest.TestCase):
 
 
     def tearDown(self):
-        #pass
         service.ROOT_PATH = 'root'
         service.ARCHIVE_FOLDER_NAME = 'archive'
         service.ARCHIVE_PATH = os.path.join(service.ROOT_PATH, service.ARCHIVE_FOLDER_NAME)

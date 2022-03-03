@@ -24,6 +24,7 @@ def get_image_names_in_path(path):
     return list(filter(lambda f: is_image(f), os.listdir(path)))
 
 
+# Returns time in local timezone
 def get_time_from_file_name(file_name):
     return datetime.fromtimestamp(get_unix_date_from_file_name(file_name)).time()
 
