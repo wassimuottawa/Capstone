@@ -1,6 +1,6 @@
 import {
   AfterViewChecked,
-  AfterViewInit,
+  AfterViewInit, ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EventEmitter,
@@ -19,7 +19,8 @@ import {Utils} from "../utils/utils";
 @Component({
   selector: 'app-tracklet',
   templateUrl: './tracklet.component.html',
-  styleUrls: ['./tracklet.component.css']
+  styleUrls: ['./tracklet.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackletComponent implements AfterViewInit, AfterViewChecked {
 
@@ -27,7 +28,6 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   @Input() tracklet: string = ''
   @Input() unloadedImages: Set<string> = new Set()  //all imageIDs in a folder, load image file as needed later and remove from this set
   @Output() onSelectionChange: EventEmitter<boolean> = new EventEmitter<boolean>()
-  @Output() isLoading: EventEmitter<boolean> = new EventEmitter<boolean>()
   @ViewChild('images') dragScrollComponent: DragScrollComponent | undefined
 
   imageIdToImageMap: Map<string, any> = new Map<string, any>() //imageId to image file map
@@ -70,12 +70,10 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   }
 
   getImageFromService(imageId: string) {
-    this.isLoading.emit(false)
     let imageFile = new Image()
     imageFile.src = this.service.getImageSrc(this.parent.run, this.parent.folder, this.tracklet, imageId)
     this.unloadedImages.delete(imageId)
     this.imageIdToImageMap.set(imageId, imageFile)
-    imageFile.onload = (() => this.isLoading.emit(true))
   }
 
   toggleTrackletSelect() {
