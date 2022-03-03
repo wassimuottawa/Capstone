@@ -12,6 +12,5 @@
   <app-tracklet #trackletComponent *ngFor="let tracklet of getTracklets()"
                 (onSelectionChange)="onTrackletSelectToggle(tracklet, $event)"
                 [tracklet]="tracklet" [imagesPerRow]="imagesPerRow"
-                (isLoading)="trackletLoading($event)"
                 [unloadedImages]="getImagesByTracklet(tracklet)"></app-tracklet>
 </mat-expansion-panel>

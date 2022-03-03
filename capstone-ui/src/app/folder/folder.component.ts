@@ -1,6 +1,6 @@
 import {
   AfterViewChecked,
-  AfterViewInit,
+  AfterViewInit, ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -20,7 +20,8 @@ import {Utils} from "../utils/utils";
   selector: 'app-folder',
   templateUrl: './folder.component.html',
   styleUrls: ['./folder.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FolderComponent implements AfterViewInit, AfterViewChecked {
   @Output() onSelectionChange: EventEmitter<Set<string>> = new EventEmitter<Set<string>>()
@@ -42,7 +43,6 @@ export class FolderComponent implements AfterViewInit, AfterViewChecked {
    **/
   imagesPerRow = 0
   imageWidth = 150 //px
-  trackletsLoading = 0
 
   constructor(private service: BackendService,
               private changeDetectorRef: ChangeDetectorRef) {
@@ -51,10 +51,6 @@ export class FolderComponent implements AfterViewInit, AfterViewChecked {
   ngAfterViewInit() {
     this.imagesPerRow = Math.ceil(window.innerWidth / this.imageWidth) + 2
     this.loadImageNames()
-  }
-
-  trackletLoading(loading: boolean) {
-    this.trackletsLoading += loading ? 1 : -1
   }
 
   loadImageNames() {
