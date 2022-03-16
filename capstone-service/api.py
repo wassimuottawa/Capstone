@@ -47,7 +47,6 @@ def extract():
 @app.after_request
 def disable_cache_control(response: Response):
     response.cache_control.no_cache = True
-    response.cache_control.no_store = True
     return response
 
 
