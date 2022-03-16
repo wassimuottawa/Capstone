@@ -1,6 +1,7 @@
 import {
   AfterViewChecked,
-  AfterViewInit, ChangeDetectionStrategy,
+  AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EventEmitter,
@@ -34,7 +35,6 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   isSelected: boolean = false
   DRAG_THRESHOLD: number = 0.8 //to load more items if user beyond (x*100)% of the folder content
   TIMESTAMP_FORMAT: string = 'HH:mm:ss SS'
-  IMAGES_TIMEZONE = 'GMT'
 
   constructor(@Host() private parent: FolderComponent,
               private service: BackendService,
@@ -96,7 +96,7 @@ export class TrackletComponent implements AfterViewInit, AfterViewChecked {
   @cache()
   getDate(imageId: string): string {
     let d: Date = new Date(parseInt(imageId.split(".")[0].split(";")[5]) / Math.pow(10, 6))
-    return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.TIMESTAMP_FORMAT, this.IMAGES_TIMEZONE) ?? ""
+    return isNaN(d.getTime()) ? "Invalid timestamp" : this.datePipe.transform(d, this.TIMESTAMP_FORMAT) ?? ""
   }
 
   getImageNames(): string[] {
