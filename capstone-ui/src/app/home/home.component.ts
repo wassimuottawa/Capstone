@@ -88,6 +88,7 @@ export class HomeComponent implements AfterViewInit {
 
   removeEmptyFolder(folder: string) {
     this.visibleFolders.delete(folder)
+    this.addFoldersUntilScreenFilled()
   }
 
   applyTimeFilter() {
