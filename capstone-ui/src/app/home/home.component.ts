@@ -40,6 +40,7 @@ export class HomeComponent implements AfterViewInit {
   imageHeight = 198
   mainContainer: HTMLElement | undefined
   operationRunning = false
+  endOfItems = false
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -66,6 +67,7 @@ export class HomeComponent implements AfterViewInit {
     this.hiddenFolders.clear()
     this.visibleFolders.clear()
     this.lastLoadDate = new Date()
+    this.endOfItems = false
     this.loadFolders()
   }
 
@@ -126,7 +128,7 @@ export class HomeComponent implements AfterViewInit {
 
   addFoldersUntilScreenFilled() {
     setTimeout(() => {
-      if ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0)) this.addFoldersToViewport(1)
+      ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0)) ? this.addFoldersToViewport(1) : this.checkIfEndOfItems()
     }, 500)
   }
 
@@ -142,6 +144,12 @@ export class HomeComponent implements AfterViewInit {
       this.hiddenFolders.delete(folder)
       this.visibleFolders.set(folder, tracklets)
     })
+    this.checkIfEndOfItems()
+  }
+
+  checkIfEndOfItems() {
+    console.log(this.hiddenFolders)
+    if (!this.hiddenFolders.size) this.endOfItems = true
   }
 
   deleteSelected() {

@@ -59,8 +59,8 @@
               [start]="appliedStartTime" [end]="appliedEndTime"
               (folderCollapsed)="addFoldersUntilScreenFilled()"></app-folder>
   <div class="end-of-items">
-    <mat-spinner diameter="40" *ngIf="hiddenFolders.size"></mat-spinner>
-    <span *ngIf="!hiddenFolders.size">END OF ITEMS</span>
+    <mat-spinner diameter="40" *ngIf="!endOfItems"></mat-spinner>
+    <span *ngIf="endOfItems">END OF ITEMS</span>
   </div>
 </div>
 
