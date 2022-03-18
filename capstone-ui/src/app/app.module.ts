@@ -17,7 +17,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {ReactiveFormsModule} from "@angular/forms";
-import {SideMenuComponent} from './side-menu/side-menu.component';
 import {FolderComponent} from './folder/folder.component';
 import {DragScrollModule} from "ngx-drag-scroll";
 import {HttpClientModule} from "@angular/common/http";
@@ -29,7 +28,6 @@ import {TrackletComponent} from './tracklet/tracklet.component';
   declarations: [
     AppComponent,
     HomeComponent,
-    SideMenuComponent,
     FolderComponent,
     TrackletComponent,
   ],

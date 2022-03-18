@@ -44,9 +44,10 @@ export class HomeComponent implements AfterViewInit {
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if (event.key?.toLowerCase() === KEYBOARD_SHORTCUTS.MERGE) this.mergeSelectedTracklets()
-    if (event.key?.toLowerCase() === KEYBOARD_SHORTCUTS.DELETE) this.deleteSelected()
-    if (event.key?.toLowerCase() === KEYBOARD_SHORTCUTS.DESELECT) this.deselectAll()
+    const key = event.key?.toLowerCase()
+    if (key === KEYBOARD_SHORTCUTS.MERGE) this.mergeSelectedTracklets()
+    else if (key === KEYBOARD_SHORTCUTS.DELETE) this.deleteSelected()
+    else if (key === KEYBOARD_SHORTCUTS.DESELECT) this.deselectAll()
   }
 
   constructor(private service: BackendService) {
@@ -128,7 +129,9 @@ export class HomeComponent implements AfterViewInit {
 
   addFoldersUntilScreenFilled() {
     setTimeout(() => {
-      (((this.mainContainer?.scrollHeight ?? 1) - 100) <= (this.mainContainer?.offsetHeight ?? 0)) ? this.addFoldersToViewport(1) : this.checkIfEndOfItems()
+      (((this.mainContainer?.scrollHeight ?? 1) - 100) <= (this.mainContainer?.offsetHeight ?? 0)) ?
+        this.addFoldersToViewport(1) :
+        this.checkIfEndOfItems()
     }, 500)
   }
 
@@ -164,15 +167,16 @@ export class HomeComponent implements AfterViewInit {
   }
 
   removeSelectedTrackletsFromUI(existingFolder?: string) {
-    this.folders.filter(folder => folder.folder != existingFolder && this.folderToSelectedTrackletsMap.has(folder.folder)).forEach(folder => folder.deleteSelectedTracklets())
+    this.folders.filter(folder => folder.folder != existingFolder && this.folderToSelectedTrackletsMap.has(folder.folder))
+      .forEach(folder => folder.deleteSelectedTracklets())
     this.clearSelection()
     this.addFoldersUntilScreenFilled()
   }
 
   onScroll(event: any) {
     if (this.hiddenFolders.size) {
-      const scrolledBeyondThreshold = event.target.offsetHeight + event.target.scrollTop >= this.scrollThreshold * event.target.scrollHeight
-      if (scrolledBeyondThreshold) {
+      const containerEl = event.target
+      if (containerEl.offsetHeight + containerEl.scrollTop >= this.scrollThreshold * containerEl.scrollHeight) {
         let timeElapsedAfterLastLoad = new Date().getTime() - this.lastLoadDate.getTime()
         if (timeElapsedAfterLastLoad > this.waitBetweenLoadMore) {
           this.addFoldersToViewport()
