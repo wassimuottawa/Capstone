@@ -44,9 +44,9 @@ export class HomeComponent implements AfterViewInit {
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.MERGE) this.mergeSelectedTracklets()
-    if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.DELETE) this.deleteSelected()
-    if (event.key.toLowerCase() === KEYBOARD_SHORTCUTS.DESELECT) this.deselectAll()
+    if (event.key?.toLowerCase() === KEYBOARD_SHORTCUTS.MERGE) this.mergeSelectedTracklets()
+    if (event.key?.toLowerCase() === KEYBOARD_SHORTCUTS.DELETE) this.deleteSelected()
+    if (event.key?.toLowerCase() === KEYBOARD_SHORTCUTS.DESELECT) this.deselectAll()
   }
 
   constructor(private service: BackendService) {
@@ -128,7 +128,7 @@ export class HomeComponent implements AfterViewInit {
 
   addFoldersUntilScreenFilled() {
     setTimeout(() => {
-      ((this.mainContainer?.scrollHeight ?? 1) <= (this.mainContainer?.offsetHeight ?? 0)) ? this.addFoldersToViewport(1) : this.checkIfEndOfItems()
+      (((this.mainContainer?.scrollHeight ?? 1) - 100) <= (this.mainContainer?.offsetHeight ?? 0)) ? this.addFoldersToViewport(1) : this.checkIfEndOfItems()
     }, 500)
   }
 
@@ -148,7 +148,6 @@ export class HomeComponent implements AfterViewInit {
   }
 
   checkIfEndOfItems() {
-    console.log(this.hiddenFolders)
     if (!this.hiddenFolders.size) this.endOfItems = true
   }
 
