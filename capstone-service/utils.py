@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from io import BytesIO
 
 from PIL import Image
@@ -24,31 +24,6 @@ def get_image_names_in_path(path):
     return list(filter(lambda f: is_image(f), os.listdir(path)))
 
 
-# Returns time in local timezone
-def get_time_from_file_name(file_name):
-    return datetime.fromtimestamp(get_unix_date_from_file_name(file_name)).time()
-
-
-def get_unix_date_from_file_name(file_name):
-    try:
-        return float(int(os.path.splitext(file_name)[0].split(";")[5])) / 1e9
-    except (ValueError, Exception) as e:
-        print(f"{get_error_name(e)}: image={file_name} does not match the predefined filename format")
-        return MAX_UNIX_DATE
-
-
-def is_in_time_range(image_name, start, end):
-    try:
-        return True if start is None or end is None else start <= get_time_from_file_name(image_name) <= end
-    except (ValueError, Exception) as e:
-        print(f"{get_error_name(e)}: unable to filter by time for image={image_name}, start={start}, end={end}")
-
-
-def str_to_time(time_string):
-    if time_string is not None:
-        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
-
-
 def compress_image(image_path):
     image = Image.open(image_path)
     img_io = BytesIO()
@@ -65,6 +40,33 @@ def sort_images_by_time(image_names: list):
 def read_file_as_dict(path):
     with open(path, 'r') as f:
         return json.load(f)
+
+
+# Strip the date part from the timestamp
+def get_time_from_timestamp(timestamp: str) -> datetime.time:
+    return datetime.fromtimestamp(float(timestamp) / 1e9).time()
+
+
+def get_unix_date_from_file_name(file_name) -> str:
+    try:
+        return os.path.splitext(file_name)[0].split(";")[5]
+    except (ValueError, Exception) as e:
+        print(f"{get_error_name(e)}: image={file_name} does not match the predefined filename format")
+        return str(MAX_UNIX_DATE)
+
+
+def is_time_range_overlaps(optional_ui_range, range2) -> bool:
+    try:
+        return True if optional_ui_range.start is None or optional_ui_range.end is None else optional_ui_range.start <= get_time_from_timestamp(
+            range2.end) and get_time_from_timestamp(range2.start) < optional_ui_range.end
+    except (ValueError, Exception) as e:
+        print(
+            f"{get_error_name(e)}: unable to filter by time for range [{range2.start},{range2.end}], given start={optional_ui_range.start}, end={optional_ui_range.end}")
+
+
+def str_to_time(time_string: str) -> datetime.time:
+    if time_string is not None:
+        return datetime.strptime(time_string, TIME_FILTER_FORMAT).time()
 
 
 def get_error_name(e: Exception):

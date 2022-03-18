@@ -11,6 +11,8 @@ from utils import *
 ROOT_PATH = 'root'
 ARCHIVE_FOLDER_NAME = 'archive'
 ARCHIVE_PATH = join(ROOT_PATH, ARCHIVE_FOLDER_NAME)
+Folder = recordclass('Folder', 'name min_detection tracklets')
+Range = recordclass('Range', 'start end')
 
 
 # JSON keys from UI
@@ -39,7 +41,6 @@ def get_folders_by_run(run):
     Sorting is based on the min detection time in each folder
     :returns: a sorted folder to tracklets map,
     """
-    Folder = recordclass('Folder', 'name min_detection tracklets')
     folders = []
     for folder in get_folders(from_root(run)):
         _folder = Folder(folder, str(infinity), [])
@@ -49,12 +50,6 @@ def get_folders_by_run(run):
             _folder.tracklets.append(tracklet)
         folders.append(_folder)
     return dict(map(lambda f: (f.name, f.tracklets), sorted(folders, key=lambda f: f.min_detection)))
-
-
-def get_min_detection(run, folder, tracklet):
-    """ Time based sorting """
-    return read_file_as_dict(from_root(run, folder, tracklet, f"{tracklet}.json"))[
-        TrackletData.MIN_DETECTION_TIME.value]
 
 
 def get_image_names(body):
@@ -69,7 +64,11 @@ def get_image_names(body):
     images = {}
     for tracklet in os.listdir(from_root(run, folder)):
         images[tracklet] = sort_images_by_time(get_image_names_in_path(from_root(run, folder, tracklet)))
-    return images if any(is_in_time_range(img, start, end) for tracklet in images.values() for img in tracklet) else {}
+    return images if any(is_time_range_overlaps(Range(start, end),
+                                                Range(get_min_detection(run, folder, tracklet),
+                                                      get_max_detection(run, folder, tracklet)))
+                         for tracklet in images.keys()) \
+        else {}
 
 
 def get_runs():
@@ -133,6 +132,18 @@ def move_files(run, files_mapping, destination):
         if not get_folders(source_folder_path):
             rmtree(source_folder_path)
     return True
+
+
+def get_min_detection(run, folder, tracklet) -> str:
+    """ Time based sorting """
+    return read_file_as_dict(from_root(run, folder, tracklet, f"{tracklet}.json"))[
+        TrackletData.MIN_DETECTION_TIME.value]
+
+
+def get_max_detection(run, folder, tracklet) -> str:
+    """ Time based sorting """
+    return read_file_as_dict(from_root(run, folder, tracklet, f"{tracklet}.json"))[
+        TrackletData.MAX_DETECTION_TIME.value]
 
 
 def from_root(*paths):
