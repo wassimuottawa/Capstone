@@ -36,11 +36,14 @@ def get_compressed_image_file(run, folder, tracklet, file_name):
     return send_file(image, mimetype=f'image/{extension}')
 
 
-def get_folders_by_run(run):
+def get_folders_by_run(body):
     """
     Sorting is based on the min detection time in each folder
     :returns: a sorted folder to tracklets map,
     """
+    run = body.get(Params.RUN.value)
+    start = str_to_time(body.get(Params.START_TIME.value))
+    end = str_to_time(body.get(Params.END_TIME.value))
     folders = []
     for folder in get_folders(from_root(run)):
         _folder = Folder(folder, str(infinity), [])
@@ -49,7 +52,10 @@ def get_folders_by_run(run):
                                         _folder.min_detection)
             _folder.tracklets.append(tracklet)
         folders.append(_folder)
-    return dict(map(lambda f: (f.name, f.tracklets), sorted(folders, key=lambda f: f.min_detection)))
+    return dict(map(lambda f: (f.name, f.tracklets),
+                    sorted([folder for folder in folders if
+                            has_image_in_time_range(run, folder.name, folder.tracklets, Range(start, end))],
+                           key=lambda f: f.min_detection)))
 
 
 def get_image_names(body):
@@ -59,16 +65,9 @@ def get_image_names(body):
     """
     run = body.get(Params.RUN.value)
     folder = body.get(Params.FOLDER.value)
-    start = str_to_time(body.get(Params.START_TIME.value))
-    end = str_to_time(body.get(Params.END_TIME.value))
-    images = {}
-    for tracklet in os.listdir(from_root(run, folder)):
-        images[tracklet] = sort_images_by_time(get_image_names_in_path(from_root(run, folder, tracklet)))
-    return images if any(is_time_range_overlaps(Range(start, end),
-                                                Range(get_min_detection(run, folder, tracklet),
-                                                      get_max_detection(run, folder, tracklet)))
-                         for tracklet in images.keys()) \
-        else {}
+    return dict(
+        map(lambda tracklet: (tracklet, sort_images_by_time(get_image_names_in_path(from_root(run, folder, tracklet)))),
+            os.listdir(from_root(run, folder))))
 
 
 def get_runs():
@@ -144,6 +143,12 @@ def get_max_detection(run, folder, tracklet) -> str:
     """ Time based sorting """
     return read_file_as_dict(from_root(run, folder, tracklet, f"{tracklet}.json"))[
         TrackletData.MAX_DETECTION_TIME.value]
+
+
+def has_image_in_time_range(run, folder, tracklets, time_range):
+    return any(is_time_range_overlaps(time_range, Range(get_min_detection(run, folder, tracklet),
+                                                        get_max_detection(run, folder, tracklet)))
+               for tracklet in tracklets)
 
 
 def from_root(*paths):

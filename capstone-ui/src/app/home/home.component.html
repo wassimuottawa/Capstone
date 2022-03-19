@@ -56,7 +56,6 @@
               [tracklets]="getTrackletsByFolder(folder)"
               (isEmpty)="removeEmptyFolder(folder)"
               (onSelectionChange)="onSelectionChange($event, folder)"
-              [start]="appliedStartTime" [end]="appliedEndTime"
               (folderCollapsed)="addFoldersUntilScreenFilled()"></app-folder>
   <div class="end-of-items">
     <mat-spinner diameter="40" *ngIf="!endOfItems"></mat-spinner>

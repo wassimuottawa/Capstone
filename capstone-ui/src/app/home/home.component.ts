@@ -73,12 +73,13 @@ export class HomeComponent implements AfterViewInit {
   }
 
   loadFolders() {
-    this.service.getFoldersToTrackletsMap(this.run).subscribe((foldersToTracklets) => {
-      Object.entries(foldersToTracklets).forEach(([folder, tracklets]) => {
-        this.hiddenFolders.set(folder, tracklets)
+    this.service.getFoldersToTrackletsMap(this.run, this.appliedStartTime, this.appliedEndTime)
+      .subscribe((foldersToTracklets) => {
+        Object.entries(foldersToTracklets).forEach(([folder, tracklets]) => {
+          this.hiddenFolders.set(folder, tracklets)
+        })
+        this.addFoldersToViewport(this.trackletsPerScreen)
       })
-      this.addFoldersToViewport(this.trackletsPerScreen)
-    })
   }
 
   getFolders(): string[] {
@@ -112,19 +113,21 @@ export class HomeComponent implements AfterViewInit {
   }
 
   mergeSelectedTracklets() {
-    this.operationRunning = true
-    this.service.mergeIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(destinationFolder => {
-      this.visibleFolders.has(destinationFolder) ?
-        this.folders.filter(f => f.folder === destinationFolder)[0].loadImageNames() :
-        this.hiddenFolders.set(
-          destinationFolder,
-          Array.from(this.folderToSelectedTrackletsMap.values())
-            .map(set => [...set])
-            .reduce((accumulator, value) => accumulator.concat(value), [])
-        )
-      this.removeSelectedTrackletsFromUI(destinationFolder)
-      this.operationRunning = false
-    })
+    if (!this.isSelectionEmpty()) {
+      this.operationRunning = true
+      this.service.mergeIntoNewFolder(this.run, this.folderToSelectedTrackletsMap).subscribe(destinationFolder => {
+        this.visibleFolders.has(destinationFolder) ?
+          this.folders.filter(f => f.folder === destinationFolder)[0].loadImageNames() :
+          this.hiddenFolders.set(
+            destinationFolder,
+            Array.from(this.folderToSelectedTrackletsMap.values())
+              .map(set => [...set])
+              .reduce((accumulator, value) => accumulator.concat(value), [])
+          )
+        this.removeSelectedTrackletsFromUI(destinationFolder)
+        this.operationRunning = false
+      })
+    }
   }
 
   addFoldersUntilScreenFilled() {
@@ -155,11 +158,13 @@ export class HomeComponent implements AfterViewInit {
   }
 
   deleteSelected() {
-    this.operationRunning = true
-    this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => {
-      this.removeSelectedTrackletsFromUI()
-      this.operationRunning = false
-    })
+    if (!this.isSelectionEmpty()) {
+      this.operationRunning = true
+      this.service.delete(this.run, this.folderToSelectedTrackletsMap).subscribe(() => {
+        this.removeSelectedTrackletsFromUI()
+        this.operationRunning = false
+      })
+    }
   }
 
   getShortcutString(shortcut: KEYBOARD_SHORTCUTS) {
@@ -190,7 +195,7 @@ export class HomeComponent implements AfterViewInit {
     this.clearSelection()
   }
 
-  selectionEmpty(): boolean {
+  isSelectionEmpty(): boolean {
     return !Boolean(this.folderToSelectedTrackletsMap.size)
   }
 
@@ -203,6 +208,6 @@ export class HomeComponent implements AfterViewInit {
   }
 
   isActionButtonsDisabled() {
-    return this.operationRunning || this.selectionEmpty()
+    return this.operationRunning || this.isSelectionEmpty()
   }
 }

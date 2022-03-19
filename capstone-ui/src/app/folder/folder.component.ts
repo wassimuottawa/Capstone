@@ -30,8 +30,6 @@ export class FolderComponent implements AfterViewInit, AfterViewChecked {
   @Input() folder: string = ""
   @Input() tracklets: string[] = []
   @Input() run: string = ""
-  @Input() start: string = ""
-  @Input() end: string = ""
   @ViewChild('title') title: ElementRef | undefined
   @ViewChildren('trackletComponent') trackletComponent: QueryList<TrackletComponent> = new QueryList<TrackletComponent>()
 
@@ -54,7 +52,7 @@ export class FolderComponent implements AfterViewInit, AfterViewChecked {
   }
 
   loadImageNames() {
-    this.service.getTrackletsToImageNamesMap(this.run, this.folder, this.start, this.end)
+    this.service.getTrackletsToImageNamesMap(this.run, this.folder)
       .subscribe((trackletsToImages) => {
           Object.entries(trackletsToImages).forEach(([tracklet, images]) => {
             this.trackletsToImageNames.set(tracklet, new Set(images))
