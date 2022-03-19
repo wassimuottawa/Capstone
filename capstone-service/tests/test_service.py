@@ -124,7 +124,7 @@ class TestService(unittest.TestCase):
 
     def test_move_files(self):
         try:
-            service.move_files()
+            service.__move_files()
         except TypeError:
             pass
         run = 'test run 1'
@@ -132,7 +132,7 @@ class TestService(unittest.TestCase):
             "0000000001": ["000000000001"]
         }
         destination = 'test root/test run 1/0000000002'
-        self.assertEqual(service.move_files(run, file_mapping, destination), True)
+        self.assertEqual(service.__move_files(run, file_mapping, destination), True)
 
 
     def test_delete_tracklets(self):

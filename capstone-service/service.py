@@ -2,6 +2,7 @@ from enum import Enum
 from math import inf as infinity
 from os.path import join
 from shutil import move, rmtree
+from typing import List
 
 from flask import *
 from recordclass import recordclass
@@ -32,7 +33,7 @@ class TrackletData(Enum):
 
 
 def get_compressed_image_file(run, folder, tracklet, file_name):
-    image, extension = compress_image(from_root(run, folder, tracklet, file_name))
+    image, extension = compress_image(__from_root(run, folder, tracklet, file_name))
     return send_file(image, mimetype=f'image/{extension}')
 
 
@@ -44,17 +45,9 @@ def get_folders_by_run(body):
     run = body.get(Params.RUN.value)
     start = str_to_time(body.get(Params.START_TIME.value))
     end = str_to_time(body.get(Params.END_TIME.value))
-    folders = []
-    for folder in get_folders(from_root(run)):
-        _folder = Folder(folder, str(infinity), [])
-        for tracklet in get_folders(from_root(run, folder)):
-            _folder.min_detection = min(get_min_detection(run, folder, tracklet),
-                                        _folder.min_detection)
-            _folder.tracklets.append(tracklet)
-        folders.append(_folder)
     return dict(map(lambda f: (f.name, f.tracklets),
-                    sorted([folder for folder in folders if
-                            has_image_in_time_range(run, folder.name, folder.tracklets, Range(start, end))],
+                    sorted([folder for folder in __get_all_folders(run) if
+                            __has_image_in_time_range(run, folder.name, folder.tracklets, Range(start, end))],
                            key=lambda f: f.min_detection)))
 
 
@@ -66,12 +59,12 @@ def get_image_names(body):
     run = body.get(Params.RUN.value)
     folder = body.get(Params.FOLDER.value)
     return dict(
-        map(lambda tracklet: (tracklet, sort_images_by_time(get_image_names_in_path(from_root(run, folder, tracklet)))),
-            os.listdir(from_root(run, folder))))
+        map(lambda tracklet: (tracklet, sort_images_by_time(get_image_names_in_path(__from_root(run, folder, tracklet)))),
+            os.listdir(__from_root(run, folder))))
 
 
 def get_runs():
-    runs = get_folders(from_root())
+    runs = get_folders(__from_root())
     runs.remove(ARCHIVE_FOLDER_NAME)
     return runs
 
@@ -79,7 +72,7 @@ def get_runs():
 def delete_tracklets(body: dict):
     """ :param body: folder to tracklets map """
     os.makedirs(ARCHIVE_PATH, exist_ok=True)
-    return move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
+    return __move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
 
 def extract_into_new_folder(body: dict):
@@ -91,18 +84,18 @@ def extract_into_new_folder(body: dict):
     """
     run = body.get(Params.RUN.value)
     mapping: dict = body.get(Params.MAPPING.value)
-    destination_folder = get_min_id_of_selected_folder(run, mapping)
+    destination_folder = __get_min_id_of_selected_folder(run, mapping)
     if destination_folder:
         mapping.pop(destination_folder, None)
     else:
-        last_index = max(get_folders(from_root(run)))
+        last_index = max(get_folders(__from_root(run)))
         destination_folder = str(int(last_index) + 1).zfill(len(last_index))
-        os.mkdir(from_root(run, destination_folder))
-    move_files(run, mapping, from_root(run, destination_folder))
+        os.mkdir(__from_root(run, destination_folder))
+    __move_files(run, mapping, __from_root(run, destination_folder))
     return destination_folder
 
 
-def get_min_id_of_selected_folder(run, files_mapping):
+def __get_min_id_of_selected_folder(run, files_mapping):
     """
     Determines if an entire folder is selected by the user
     If more than one entire folder is selected, determines the lowest folder id of them all
@@ -110,10 +103,10 @@ def get_min_id_of_selected_folder(run, files_mapping):
     :return: The lowest folder ID if entire folder is selected, else None
     """
     return next((folder for (folder, tracklets) in sorted(files_mapping.items()) if
-                 len(get_folders(from_root(run, folder))) == len(tracklets)), None)
+                 len(get_folders(__from_root(run, folder))) == len(tracklets)), None)
 
 
-def move_files(run, files_mapping, destination):
+def __move_files(run, files_mapping, destination):
     """
     Overwrites tracklet in destination if another one with same id is being moved
     Deletes the source folder if empty after operation
@@ -121,7 +114,7 @@ def move_files(run, files_mapping, destination):
     :return: false if destination path already exists, or another error occurs while moving
     """
     for folder, tracklets in files_mapping.items():
-        source_folder_path = from_root(run, folder)
+        source_folder_path = __from_root(run, folder)
         for tracklet in tracklets:
             new_tracklet_path = join(destination, tracklet)
             if os.path.isdir(new_tracklet_path):
@@ -133,25 +126,37 @@ def move_files(run, files_mapping, destination):
     return True
 
 
-def get_min_detection(run, folder, tracklet) -> str:
+def __get_min_detection(run, folder, tracklet) -> str:
     """ Time based sorting """
-    return read_file_as_dict(from_root(run, folder, tracklet, f"{tracklet}.json"))[
+    return read_file_as_dict(__from_root(run, folder, tracklet, f"{tracklet}.json"))[
         TrackletData.MIN_DETECTION_TIME.value]
 
 
-def get_max_detection(run, folder, tracklet) -> str:
+def __get_max_detection(run, folder, tracklet) -> str:
     """ Time based sorting """
-    return read_file_as_dict(from_root(run, folder, tracklet, f"{tracklet}.json"))[
+    return read_file_as_dict(__from_root(run, folder, tracklet, f"{tracklet}.json"))[
         TrackletData.MAX_DETECTION_TIME.value]
 
 
-def has_image_in_time_range(run, folder, tracklets, time_range):
-    return any(is_time_range_overlaps(time_range, Range(get_min_detection(run, folder, tracklet),
-                                                        get_max_detection(run, folder, tracklet)))
+def __get_all_folders(run) -> List[Folder]:
+    folders = []
+    for folder in get_folders(__from_root(run)):
+        _folder = Folder(folder, str(infinity), [])
+        for tracklet in get_folders(__from_root(run, folder)):
+            _folder.min_detection = min(__get_min_detection(run, folder, tracklet),
+                                        _folder.min_detection)
+            _folder.tracklets.append(tracklet)
+        folders.append(_folder)
+    return folders
+
+
+def __has_image_in_time_range(run, folder, tracklets, time_range):
+    return any(is_time_range_overlaps(time_range, Range(__get_min_detection(run, folder, tracklet),
+                                                        __get_max_detection(run, folder, tracklet)))
                for tracklet in tracklets)
 
 
-def from_root(*paths):
+def __from_root(*paths):
     return join(ROOT_PATH, *paths)
 
 
