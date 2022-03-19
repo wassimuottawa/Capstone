@@ -28,19 +28,21 @@ export class BackendService {
   constructor(private http: HttpClient, private _snackBar: MatSnackBar) {
   }
 
-  getFoldersToTrackletsMap(run: string): Observable<Object> {
-    return this.http.get<Map<string, string[]>>(BackendService.SERVICE_URL + `folder/${run}`)
+  getFoldersToTrackletsMap(run: string, start: string = '', end: string = ''): Observable<Object> {
+    let request = new Request()
+    request.run = run
+    request.setStartEnd(start, end)
+    return this.http.post<Map<string, string[]>>(BackendService.SERVICE_URL + `folders`, request)
   }
 
   getRuns(): Observable<string[]> {
     return this.http.get<string[]>(BackendService.SERVICE_URL + "runs")
   }
 
-  getTrackletsToImageNamesMap(run: string, folder: string, start: string = '', end: string = ''): Observable<Object> {
+  getTrackletsToImageNamesMap(run: string, folder: string): Observable<Object> {
     let request = new Request();
     request.run = run
     request.folder = folder
-    request.setStartEnd(start, end)
     return this.http.post<Object>(BackendService.SERVICE_URL + "trackletsToImages", request)
   }
 

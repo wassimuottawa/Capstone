@@ -26,10 +26,10 @@ def get_runs():
     return jsonify(service.get_runs())
 
 
-@app.route("/folder/<string:run>")
-def get_folders_by_run(run):
+@app.post("/folders")
+def get_folders_by_run():
     """ :returns: a folder to tracklets map"""
-    return jsonify(service.get_folders_by_run(run))
+    return jsonify(service.get_folders_by_run(request.json))
 
 
 @app.post("/trackletsToImages")
