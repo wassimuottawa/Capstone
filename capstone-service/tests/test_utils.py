@@ -2,9 +2,12 @@ import os
 import shutil
 import unittest
 from datetime import time
+from recordclass import recordclass
 
 
 import utils
+
+Range = recordclass('Range', 'start end')
 
 
 class TestUtils(unittest.TestCase):
@@ -76,26 +79,29 @@ class TestUtils(unittest.TestCase):
                                                                "cam1;x_480;y_83;w_65;h_167;1636570203580522800.png"]))
 
 
-    def test_get_time_from_file_name(self):
+    def test_get_unix_date_from_file_name(self):
         try:
-            utils.get_time_from_file_name()
+            utils.get_unix_date_from_file_name()
         except TypeError:
             pass
-        self.assertEqual(utils.get_time_from_file_name('cam1;x_299;y_198;w_167;h_228;1636565415019736207.png'),
-                         time(12, 30, 15, 19736)) 
-        self.assertEqual(utils.get_time_from_file_name('cam1;x_301;y_200;w_167;h_222;1836565415025736194.png'),
-                         time(8, 3, 35, 25736))  
+        self.assertEqual(utils.get_unix_date_from_file_name('cam1;x_299;y_198;w_167;h_228;1636565415019736207.png'),
+                         '1636565415019736207') 
+        self.assertEqual(utils.get_unix_date_from_file_name('cam1;x_301;y_200;w_167;h_222;1836565415025736194.png'),
+                         '1836565415025736194')  
 
 
-    def test_is_in_time_range(self):
+    def test_is_time_range_overlaps(self):
+        ui_range = Range(time(0, 0), time(23, 59))
+        ui_range2 = Range(time(0, 0), time(2, 0))
+        range = Range('1636565415019736207', '1836565415025736194')
         try:
-            utils.is_in_time_range()
+            utils.is_time_range_overlaps()
         except TypeError:
             pass
         self.assertEqual(
-            utils.is_in_time_range('cam1;x_299;y_198;w_167;h_228;1636565415019736207.png', None, None), True)
+            utils.is_time_range_overlaps(ui_range, range), True)
         self.assertEqual(
-            utils.is_in_time_range('cam1;x_299;y_198;w_167;h_228;1636565415019736207.png', time(12, 0), time(13, 0)), True)
+            utils.is_time_range_overlaps(ui_range2, range), False)
 
 
     def test_str_to_time(self):
@@ -118,11 +124,11 @@ class TestUtils(unittest.TestCase):
                        'cam1;x_302;y_201;w_167;h_199;1636565415019736201.png',
                        'cam1;x_303;y_202;w_167;h_150;1636565415019736199.png']
         self.assertEqual(utils.sort_images_by_time(list_images),
-                         ['cam1;x_299;y_198;w_167;h_218;1636565415019736202.png',
-                          'cam1;x_300;y_199;w_167;h_229;1636565415019736206.png',
+                         ['cam1;x_303;y_202;w_167;h_150;1636565415019736199.png',
                           'cam1;x_301;y_200;w_167;h_280;1636565415019736200.png',
                           'cam1;x_302;y_201;w_167;h_199;1636565415019736201.png',
-                          'cam1;x_303;y_202;w_167;h_150;1636565415019736199.png'])
+                          'cam1;x_299;y_198;w_167;h_218;1636565415019736202.png',
+                          'cam1;x_300;y_199;w_167;h_229;1636565415019736206.png'])
 
 
     def test_get_error_name(self):

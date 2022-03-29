@@ -64,14 +64,19 @@ class TestService(unittest.TestCase):
 
 
     def test_get_folders_by_run(self):
+        payload = {
+            'run': 'test run 1',
+            'start': '00:00',
+            'end': '23:59'
+        }
         try:
             service.get_folders_by_run()
         except TypeError:
             pass
-        self.assertEqual(service.get_folders_by_run('test run 1'),
+        self.assertEqual(service.get_folders_by_run(payload),
                          {'0000000001': ['000000000001'], '0000000002': ['000000000002']})
 
-        self.assertNotEqual(service.get_folders_by_run('test run 1'),
+        self.assertNotEqual(service.get_folders_by_run(payload),
                             {'0000000001': ['000000000001', '000000000004'], '0000000002': ['000000000004']})
 
     
@@ -124,7 +129,7 @@ class TestService(unittest.TestCase):
 
     def test_move_files(self):
         try:
-            service.__move_files()
+            service._move_files()
         except TypeError:
             pass
         run = 'test run 1'
@@ -132,7 +137,7 @@ class TestService(unittest.TestCase):
             "0000000001": ["000000000001"]
         }
         destination = 'test root/test run 1/0000000002'
-        self.assertEqual(service.__move_files(run, file_mapping, destination), True)
+        self.assertEqual(service._move_files(run, file_mapping, destination), True)
 
 
     def test_delete_tracklets(self):

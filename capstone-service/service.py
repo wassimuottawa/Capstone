@@ -72,7 +72,7 @@ def get_runs():
 def delete_tracklets(body: dict):
     """ :param body: folder to tracklets map """
     os.makedirs(ARCHIVE_PATH, exist_ok=True)
-    return __move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
+    return _move_files(body.get(Params.RUN.value), body.get(Params.MAPPING.value), ARCHIVE_PATH)
 
 
 def extract_into_new_folder(body: dict):
@@ -91,7 +91,7 @@ def extract_into_new_folder(body: dict):
         last_index = max(get_folders(__from_root(run)))
         destination_folder = str(int(last_index) + 1).zfill(len(last_index))
         os.mkdir(__from_root(run, destination_folder))
-    __move_files(run, mapping, __from_root(run, destination_folder))
+    _move_files(run, mapping, __from_root(run, destination_folder))
     return destination_folder
 
 
@@ -106,7 +106,7 @@ def __get_min_id_of_selected_folder(run, files_mapping):
                  len(get_folders(__from_root(run, folder))) == len(tracklets)), None)
 
 
-def __move_files(run, files_mapping, destination):
+def _move_files(run, files_mapping, destination):
     """
     Overwrites tracklet in destination if another one with same id is being moved
     Deletes the source folder if empty after operation
