@@ -41,6 +41,7 @@ export class HomeComponent implements AfterViewInit {
   mainContainer: HTMLElement | undefined
   operationRunning = false
   endOfItems = false
+  mode = 'annotate'
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -80,6 +81,14 @@ export class HomeComponent implements AfterViewInit {
         })
         this.addFoldersToViewport(this.trackletsPerScreen)
       })
+  }
+
+  isAnnotate() {
+    return this.mode == 'annotate'
+  }
+
+  isStatistics() {
+    return this.mode == 'statistics'
   }
 
   getFolders(): string[] {
@@ -132,7 +141,7 @@ export class HomeComponent implements AfterViewInit {
 
   addFoldersUntilScreenFilled() {
     setTimeout(() => {
-      (((this.mainContainer?.scrollHeight ?? 1) - 100) <= (this.mainContainer?.offsetHeight ?? 0)) ?
+      (this.mainContainer?.scrollHeight! - 100 <= this.mainContainer?.offsetHeight!) ?
         this.addFoldersToViewport(1) :
         this.checkIfEndOfItems()
     }, 500)

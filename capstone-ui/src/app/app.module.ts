@@ -16,13 +16,18 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatPaginatorModule} from '@angular/material/paginator';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FolderComponent} from './folder/folder.component';
 import {DragScrollModule} from "ngx-drag-scroll";
 import {HttpClientModule} from "@angular/common/http";
 import {BackendService} from "./service/backend.service";
 import {DatePipe} from "@angular/common";
 import {TrackletComponent} from './tracklet/tracklet.component';
+import {StatsDashboardComponent} from './stats-dashboard/stats-dashboard.component';
+import {MatDividerModule} from "@angular/material/divider";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatTableModule} from "@angular/material/table";
 
 @NgModule({
   declarations: [
@@ -30,6 +35,7 @@ import {TrackletComponent} from './tracklet/tracklet.component';
     HomeComponent,
     FolderComponent,
     TrackletComponent,
+    StatsDashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,6 +55,11 @@ import {TrackletComponent} from './tracklet/tracklet.component';
     ReactiveFormsModule,
     DragScrollModule,
     HttpClientModule,
+    MatDividerModule,
+    MatSidenavModule,
+    MatButtonToggleModule,
+    FormsModule,
+    MatTableModule,
   ],
   providers: [BackendService, DatePipe],
   bootstrap: [AppComponent]

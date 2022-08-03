@@ -1,4 +1,7 @@
 <mat-toolbar class="toolbar">
+  <button mat-icon-button aria-label="menu">
+    <mat-icon style="color: white; margin-right: 10px" (click)="drawer.toggle()">menu</mat-icon>
+  </button>
   <span class="main-title">Re-Identification Annotator</span>
   <div class="action-button-container">
     <!--DESELECT ALL BUTTON-->
@@ -51,16 +54,32 @@
   </div>
 </mat-toolbar>
 
-<div id="main-container" class="main-container" (scroll)="onScroll($event)">
-  <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [run]="run"
-              [tracklets]="getTrackletsByFolder(folder)"
-              (isEmpty)="removeEmptyFolder(folder)"
-              (onSelectionChange)="onSelectionChange($event, folder)"
-              (folderCollapsed)="addFoldersUntilScreenFilled()"></app-folder>
-  <div class="end-of-items">
-    <mat-spinner diameter="40" *ngIf="!endOfItems"></mat-spinner>
-    <span *ngIf="endOfItems">END OF ITEMS</span>
+
+<mat-drawer-container class="drawer-container" style="background: #7c7c7c">
+  <mat-drawer #drawer mode="side" style="min-width: 150px">
+    <mat-button-toggle-group style="width: 100%" vertical [(ngModel)]="mode" (change)="drawer.close()">
+      <mat-button-toggle value="annotate">Annotate</mat-button-toggle>
+      <mat-button-toggle value="statistics">Statistics</mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-drawer>
+
+  <div *ngIf="isAnnotate()" id="main-container" class="main-container" (scroll)="onScroll($event)">
+    <app-folder #folderComponent *ngFor="let folder of getFolders()" [folder]="folder" [run]="run"
+                [tracklets]="getTrackletsByFolder(folder)"
+                (isEmpty)="removeEmptyFolder(folder)"
+                (onSelectionChange)="onSelectionChange($event, folder)"
+                (folderCollapsed)="addFoldersUntilScreenFilled()"></app-folder>
+    <div class="end-of-items">
+      <mat-spinner diameter="40" *ngIf="!endOfItems"></mat-spinner>
+      <span *ngIf="endOfItems">END OF ITEMS</span>
+    </div>
   </div>
-</div>
+
+  <div *ngIf="isStatistics()" class="main-container">
+    <app-stats-dashboard></app-stats-dashboard>
+  </div>
+
+</mat-drawer-container>
+
 
 

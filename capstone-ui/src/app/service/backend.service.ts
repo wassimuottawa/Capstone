@@ -43,7 +43,7 @@ export class BackendService {
     let request = new Request();
     request.run = run
     request.folder = folder
-    return this.http.post<Object>(BackendService.SERVICE_URL + "trackletsToImages", request)
+    return this.http.post<Object>(BackendService.SERVICE_URL + "tracklets-to-images", request)
   }
 
   getImageSrc(run: string, folder: string, tracklet: string, imageId: string): string {
@@ -60,6 +60,31 @@ export class BackendService {
       .pipe(tap(newFolder => this.openSnackbar(`Tracklet${folderToImages.size > 1 ? 's' : ''} deleted`)))
   }
 
+  generateStats(file: any) {
+    return this.http.post<void>(BackendService.SERVICE_URL + "generate-stats", file)
+  }
+
+  getTicketsByInterval() {
+    return this.http.get<any>(BackendService.SERVICE_URL + "get-stats-by-interval")
+  }
+
+  getServiceTimeGraphSrc() {
+    return BackendService.appendTimeStamp(BackendService.SERVICE_URL + "service-time-graph")
+  }
+
+  getDistributionByTimeIntervalGraphSrc() {
+    return BackendService.appendTimeStamp(BackendService.SERVICE_URL + "distribution-by-time-interval-graph")
+  }
+
+  getServiceTimeDistributionGraphSrc() {
+    return BackendService.appendTimeStamp(BackendService.SERVICE_URL + "service-time-distribution-graph")
+  }
+
+  private static appendTimeStamp(url: string) {
+    return url + '?' + new Date().getTime()
+  }
+
+  //to force refresh
   private getMoveRequest(run: string, folderToImages: Map<string, any>): Request {
     let request = new Request();
     request.run = run

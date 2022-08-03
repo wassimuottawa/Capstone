@@ -56,8 +56,7 @@ def get_unix_date_from_file_name(file_name) -> str:
 
 
 def is_time_range_overlaps(optional_ui_range, range2) -> bool:
-    try:
-        return True if optional_ui_range.start is None or optional_ui_range.end is None else optional_ui_range.start <= get_time_from_timestamp(
+    try:        return True if optional_ui_range.start is None or optional_ui_range.end is None else optional_ui_range.start <= get_time_from_timestamp(
             range2.end) and get_time_from_timestamp(range2.start) < optional_ui_range.end
     except (ValueError, Exception) as e:
         print(
