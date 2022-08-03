@@ -1,3 +1,6 @@
 Flask~=2.0.2
 Pillow~=9.0.1
 recordclass~=0.17.2
+numpy~=1.20.1
+matplotlib~=3.5.2
+pandas~=1.4.3

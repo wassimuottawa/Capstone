@@ -44,7 +44,7 @@ def read_file_as_dict(path):
 
 # Strip the date part from the timestamp
 def get_time_from_timestamp(timestamp: str) -> datetime.time:
-    return datetime.fromtimestamp(float(timestamp) / 1e9).time()
+    return datetime.fromtimestamp(float(timestamp) / 1e9).time().replace(microsecond=0)
 
 
 def get_unix_date_from_file_name(file_name) -> str:
