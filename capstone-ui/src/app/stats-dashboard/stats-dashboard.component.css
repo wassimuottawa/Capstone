@@ -1,0 +1,29 @@
+.file-upload {
+  color: white;
+  padding: 0.5em;
+  border: 1px solid rgb(36, 43, 45);
+  align-self: center;
+  font-size: large;
+}
+
+.container {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.inner-container {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 30px;
+}
+
+.graph {
+}
+
+.table {
+  width: 100%;
+  margin-top: 10px;
+}

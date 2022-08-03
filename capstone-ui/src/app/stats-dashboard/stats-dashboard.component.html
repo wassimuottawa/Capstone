@@ -1,0 +1,37 @@
+<div class="container">
+  <input type="file" class="file-upload" (change)="onFileChange($event)" accept="application/json">
+</div>
+
+<div class="container" *ngIf="intervalsData">
+  <div class="inner-container">
+    <div *ngFor="let interval of intervals">
+      <span style="font-size: large; color: white">{{interval}}</span>
+      <table mat-table [dataSource]="intervalsData[interval]" class="mat-elevation-z8 table">
+        <ng-container matColumnDef="From">
+          <th mat-header-cell *matHeaderCellDef> From</th>
+          <td mat-cell *matCellDef="let element"> {{element.from}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="To">
+          <th mat-header-cell *matHeaderCellDef> To</th>
+          <td mat-cell *matCellDef="let element"> {{element.to}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Tickets">
+          <th mat-header-cell *matHeaderCellDef> Tickets</th>
+          <td mat-cell *matCellDef="let element"> {{element.tickets}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="inner-container">
+    <img class="graph" [src]="getImageFile(distributionByTimeIntervalGraph)" alt="">
+    <img class="graph" [src]="getImageFile(serviceTimeGraph)" alt="">
+    <img class="graph" [src]="getImageFile(serviceTimeDistributionGraph)" alt="">
+  </div>
+</div>
+
